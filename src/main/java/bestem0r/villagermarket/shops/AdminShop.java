@@ -7,6 +7,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
+import java.util.List;
 
 public class AdminShop extends VillagerShop {
 
@@ -18,11 +19,21 @@ public class AdminShop extends VillagerShop {
     }
 
     @Override
-    protected ItemForSale newItemForSale(ItemStack itemStack, double price) {
-        return new ItemForSale.Builder(itemStack)
-                .price(price)
-                .villagerType(VillagerType.ADMIN)
-                .build();
+    void buildItemList() {
+        List<Double> priceList = config.getDoubleList("prices");
+        List<ItemStack> itemList = (List<ItemStack>) this.config.getList("for_sale");
+
+        for (int i = 0; i < itemList.size(); i ++) {
+            double price = (priceList.size() > i ? priceList.get(i) : 0.0);
+            ItemForSale itemForSale = null;
+            if (itemList.get(i) != null) {
+                itemForSale = new ItemForSale.Builder(itemList.get(i))
+                        .price(price)
+                        .villagerType(VillagerType.ADMIN)
+                        .build();
+            }
+            this.itemList.put(i, itemForSale);
+        }
     }
 
     @Override
@@ -32,11 +43,10 @@ public class AdminShop extends VillagerShop {
 
     @Override
     protected Inventory newForSaleInventory(Boolean isEditor) {
-        return new ForSaleInventory.Builder()
+        return new ForSaleInventory.Builder(this)
                 .isEditor(isEditor)
                 .size(super.generalSize)
-                .villagerType(VillagerType.ADMIN)
-                .itemsForSale(super.itemsForSale)
+                .itemList(itemList)
                 .build();
     }
 

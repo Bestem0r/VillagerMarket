@@ -19,16 +19,13 @@ public class ForSaleInventory {
 
     public static class Builder {
 
-        private VillagerShop.VillagerType villagerType;
+        private VillagerShop villagerShop;
         private boolean isEditor = false;
         private int size;
-        private HashMap<Integer, ItemForSale> itemsForSale = new HashMap<>();
+        private HashMap<Integer, ItemForSale> itemList;
 
-        public Builder() {
-        }
-        public Builder villagerType(VillagerShop.VillagerType villagerType) {
-            this.villagerType = villagerType;
-            return this;
+        public Builder(VillagerShop villagerShop) {
+            this.villagerShop = villagerShop;
         }
         public Builder isEditor(boolean isEditor) {
             this.isEditor = isEditor;
@@ -38,8 +35,8 @@ public class ForSaleInventory {
             this.size = size;
             return this;
         }
-        public Builder itemsForSale(HashMap<Integer, ItemForSale> itemsForSale) {
-            this.itemsForSale = itemsForSale;
+        public Builder itemList(HashMap<Integer, ItemForSale> itemsForSale) {
+            this.itemList = itemsForSale;
             return this;
         }
 
@@ -50,12 +47,16 @@ public class ForSaleInventory {
             ItemStack[] inventoryItems = new ItemStack[size];
             Arrays.fill(inventoryItems, null);
 
-            for (Integer slot : itemsForSale.keySet()) {
+            for (Integer slot : itemList.keySet()) {
+                if (itemList.get(slot) != null) {
+                    ItemForSale itemForSale = itemList.get(slot);
+                    itemForSale.toggleEditor(isEditor);
+                    itemForSale.updateStorage(villagerShop);
+                    inventoryItems[slot] = itemForSale.asItemStack();
+                } else {
+                    inventoryItems[slot] = null;
+                }
 
-                ItemForSale itemForSale = itemsForSale.get(slot);
-                itemForSale.toggleEditor(isEditor);
-
-                inventoryItems[slot] = itemForSale;
             }
             inventory.setContents(inventoryItems);
             FileConfiguration mainConfig = VMPlugin.getInstance().getConfig();

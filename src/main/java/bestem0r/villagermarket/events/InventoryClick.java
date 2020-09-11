@@ -128,7 +128,7 @@ public class InventoryClick implements Listener {
                     //Delete item
                     if (event.getClick() == ClickType.RIGHT && currentItem != null) {
                         player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.remove_item")), 0.5f, 1);
-                        villagerShop.getItemsForSale().remove(event.getRawSlot());
+                        villagerShop.getItemList().remove(event.getRawSlot());
                         villagerShop.updateShopInventories();
                     }
                     event.setCancelled(true);
@@ -141,8 +141,8 @@ public class InventoryClick implements Listener {
                 if (currentItem == null) { return; }
 
                 int amount = currentItem.getAmount();
-                double price = villagerShop.getItemsForSale().get(event.getRawSlot()).getPrice();
-                int inStock = (isAdminShop ? 999 : villagerShop.getItemAmount(villagerShop.getItemsForSale().get(event.getRawSlot()).asItemStack()));
+                double price = villagerShop.getItemList().get(event.getRawSlot()).getPrice();
+                int inStock = (isAdminShop ? 999 : villagerShop.getItemAmount(villagerShop.getItemList().get(event.getRawSlot()).asItemStack()));
                 if ((inStock < amount)) {
                     player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.not_enough_stock"));
                     event.getView().close();
@@ -178,7 +178,7 @@ public class InventoryClick implements Listener {
                 player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.buy_item")), 1, 1);
 
                 villagerShop.updateShopInventories();
-                if (!isAdminShop) villagerShop.removeFromStock(villagerShop.getItemsForSale().get(event.getRawSlot()));
+                if (!isAdminShop) villagerShop.removeFromStock(villagerShop.getItemList().get(event.getRawSlot()));
                 break;
             //Edit villager
             case 4:

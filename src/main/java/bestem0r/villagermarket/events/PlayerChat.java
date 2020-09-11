@@ -56,7 +56,7 @@ public class PlayerChat implements Listener {
                 return;
             }
             ItemForSale.Builder builder = dataManager.getAmountHashMap().get(playerUUID);
-            builder.price(Integer.parseInt(event.getMessage()));
+            builder.amount(Integer.parseInt(event.getMessage()));
             dataManager.addPrice(playerUUID, builder);
 
             player.sendMessage(" ");
@@ -88,8 +88,8 @@ public class PlayerChat implements Listener {
             VillagerShop villagerShop = dataManager.getVillagers().get(entityUUID);
 
             ItemForSale itemForSale = builder.build();
-            itemForSale.updateStorage(villagerShop.getItemAmount(itemForSale.asItemStack()));
-            villagerShop.getItemsForSale().put(itemForSale.getSlot(), itemForSale);
+            itemForSale.updateStorage(villagerShop);
+            villagerShop.getItemList().put(itemForSale.getSlot(), itemForSale);
 
             player.sendMessage(" ");
             player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.add_successfull"));

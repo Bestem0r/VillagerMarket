@@ -38,7 +38,7 @@ public abstract class VillagerShop {
     protected int size;
     protected int cost;
 
-    protected HashMap<Integer, ItemForSale> itemsForSale = new HashMap<>();
+    protected HashMap<Integer, ItemForSale> itemList = new HashMap<>();
 
     protected int generalSize;
     protected int storageSize;
@@ -73,15 +73,7 @@ public abstract class VillagerShop {
 
         this.cost = config.getInt("cost");
 
-        List<Double> priceList = config.getDoubleList("prices");
-        List<ItemStack> itemList = (List<ItemStack>) this.config.getList("for_sale");
-
-        for (int i = 0; i < itemList.size(); i ++) {
-            double price = (priceList.size() > i ? priceList.get(i) : 0.0);
-            ItemForSale itemForSale = null;
-            if (itemList.get(i) != null) itemForSale = newItemForSale(itemList.get(i), price);
-            this.itemsForSale.put(i, itemForSale);
-        }
+        buildItemList();
 
         this.ownerUUID = "";
         this.ownerName = "";
@@ -98,7 +90,7 @@ public abstract class VillagerShop {
         this.sellShopInventory = newSellShopInventory();
     }
 
-    protected abstract ItemForSale newItemForSale(ItemStack itemStack, double price);
+    abstract void buildItemList();
 
     /** Inventory methods */
 
@@ -174,13 +166,13 @@ public abstract class VillagerShop {
 
         List<ItemStack> forSaleList = new ArrayList<>();
         List<Double> priceList = new ArrayList<>();
-        for (Integer slot : itemsForSale.keySet()) {
-            if (itemsForSale.get(slot) == null) {
+        for (Integer slot : itemList.keySet()) {
+            if (itemList.get(slot) == null) {
                 forSaleList.add(null);
                 priceList.add(0.0);
             } else {
-                forSaleList.add(itemsForSale.get(slot).asItemStack());
-                priceList.add(itemsForSale.get(slot).getPrice());
+                forSaleList.add(itemList.get(slot).asItemStack());
+                priceList.add(itemList.get(slot).getPrice());
             }
         }
         config.set("prices", priceList);
@@ -214,10 +206,13 @@ public abstract class VillagerShop {
 
     public int getItemAmount(ItemStack itemStack) {
         int i = 0;
+        Bukkit.getLogger().info("Type: " + itemStack.getType().name());
+
         for (ItemStack storageStack : storageInventory.getContents()) {
             if (storageStack == null) { continue; }
             if (storageStack.getType() == Material.AIR) { continue; }
             if (i == storageSize - 1) continue;
+            Bukkit.getLogger().info(storageStack.getType().name());
             if (storageStack.isSimilar(itemStack)) {
                 i = i + storageStack.getAmount();
             }
@@ -241,8 +236,8 @@ public abstract class VillagerShop {
 
     public abstract VillagerType getType();
 
-    public HashMap<Integer, ItemForSale> getItemsForSale() {
-        return itemsForSale;
+    public HashMap<Integer, ItemForSale> getItemList() {
+        return itemList;
     }
 
     /** Setters */

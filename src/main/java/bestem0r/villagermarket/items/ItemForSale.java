@@ -2,9 +2,11 @@ package bestem0r.villagermarket.items;
 
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.ColorBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemForSale extends ItemStack {
@@ -29,7 +31,11 @@ public class ItemForSale extends ItemStack {
         super(itemStack);
 
         this.itemMeta = super.getItemMeta();
-        this.itemLore = super.getItemMeta().getLore();
+
+        this.itemLore = new ArrayList<>();
+        if (itemStack.getItemMeta().hasLore()) {
+            itemLore.addAll(itemStack.getItemMeta().getLore());
+        }
     }
 
     public static class Builder {
@@ -40,6 +46,7 @@ public class ItemForSale extends ItemStack {
 
         private double price;
         private int slot;
+        private int amount = 1;
 
         private LoreType loreType = LoreType.MENU;
 
@@ -64,6 +71,10 @@ public class ItemForSale extends ItemStack {
             this.slot = slot;
             return this;
         }
+        public Builder amount(int amount) {
+            this.amount = amount;
+            return this;
+        }
         public Builder loreType(LoreType loreType) {
             this.loreType = loreType;
             return this;
@@ -74,6 +85,7 @@ public class ItemForSale extends ItemStack {
 
             itemForSale.price = price;
             itemForSale.slot = slot;
+            itemForSale.setAmount(amount);
 
             itemForSale.loreType = loreType;
 
@@ -112,7 +124,9 @@ public class ItemForSale extends ItemStack {
         }
     }
 
-    public void updateStorage(int storageAmount) {
+    public void updateStorage(VillagerShop villagerShop) {
+        int storageAmount = villagerShop.getItemAmount(asItemStack());
+
         String itemAmount_s = String.valueOf(super.getAmount());
         String price_s = String.valueOf(price);
         String storageAmount_s = String.valueOf(storageAmount);
@@ -132,12 +146,22 @@ public class ItemForSale extends ItemStack {
                 }
                 break;
         }
+        switch (loreType) {
+            case MENU:
+                itemMeta.setLore(menuLore);
+                break;
+            case ITEM:
+                itemMeta.setLore(itemLore);
+                break;
+        }
+        setItemMeta(itemMeta);
     }
 
     public ItemStack asItemStack() {
         ItemStack itemStack = new ItemStack(super.clone());
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setLore(itemLore);
+        itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
 }
