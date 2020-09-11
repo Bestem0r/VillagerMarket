@@ -1,0 +1,188 @@
+#----------------------- General settings -----------------------#
+
+#Villager Market's message prefix
+plugin_prefix: '&8[&aMarket&8]&r'
+#How much (%) should shop owner get refunded when selling shop
+refund_percent: 50.0
+#How often should villager shops auto-save? (minutes)
+auto_save_interval: 10
+
+
+#----------------------- Messages & Sounds -----------------------#
+
+messages:
+  cancelled: '&cAction was cancelled!'
+  not_number: '&cYou must type a number!'
+  not_valid_range: '&cAmount must be between 1 and 64!'
+  amount_successfull: '&aAmount set successfully!'
+  negative_price: '&cPrice can not be negative!'
+  add_successfull: '&aItem added successfully!'
+  type_price: '&bPlease type the price you wish to sell for in chat...'
+  type_amount: '&bPlease type the amount you wish to sell in chat...'
+  type_cancel: '&bOr type &ccancel &bto cancel'
+  someone_bought: '&b%player%&7 bought &b%amount%X %material%&7 from you for &a%price%$&7!' #Placeholders: %player%, %amount%, %material%, %price%
+  type_price_for_shop: '&bPlease type the price you wish to sell your shop for...'
+  sold_shop: '&bYou have successfully sold your shop,'
+  sold_shop_2: '&band it is now available for purchase again!'
+  not_enough_money: '&cYou do not have enough money to buy this!'
+  not_enough_stock: '&cThere is not enough items in stock at the moment!'
+  received: '&bYou have received &a%amount%$ &bfrom your shops while you were away!' #Placeholders: %amount%
+  reloaded: "&aPlugin reloaded!"
+  remove_villager: "&cRight click&b the Villager Shop you want to &cremove!"
+  no_villager_shop: "&cThis is not a Villager Shop! Aborting action!"
+  villager_removed: "&cVillager Shop removed!"
+  blacklisted: "&cThis item is blacklisted!"
+
+sounds:
+  open_shop: ENTITY_VILLAGER_TRADE
+  menu_click: UI_BUTTON_CLICK
+  buy_shop: ENTITY_EXPERIENCE_ORB_PICKUP
+  add_item: ENTITY_EXPERIENCE_ORB_PICKUP
+  remove_item: BLOCK_LAVA_EXTINGUISH
+  buy_item: ENTITY_ITEM_PICKUP
+  back: UI_BUTTON_CLICK
+  change_profession: ITEM_ARMOR_EQUIP_LEATHER
+  sell_shop: ENTITY_EXPERIENCE_ORB_PICKUP
+  remove_villager: BLOCK_LAVA_EXTINGUISH
+
+
+#----------------------- Villager settings -----------------------#
+
+#These are the default settings for created Villager Shops
+villager:
+  name_admin: "&cAdmin Shop"
+  name_available: "&aAvailable shop!"
+  name_taken: "&b%player%'s shop" #Placeholders: %player%
+  default_profession: NONE
+
+
+#----------------------- Items settings -----------------------#
+
+items:
+  back:
+    name: '&c&lBack'
+    material: ARROW
+
+
+#----------------------- Menus settings -----------------------#
+
+menus:
+  #Menu for buying shop
+  buy_shop:
+    title: '&8Buy available shop'
+    items:
+      for_sale_size:
+        name: '&a%amount%&7 selling slots' #Placeholders: %amount%
+        material: CHEST
+      storage_size:
+        name: '&a%amount%&7 storage slots' #Placeholders: %amount%
+        material: WRITABLE_BOOK
+      buy_shop:
+        material: EMERALD
+        name: '&aBuy this shop!'
+        lore: #Placeholders: %price%
+          - '&7Click to buy this'
+          - '&7shop for &a%price%$&7!'
+          - ''
+  #Menu for shop editor
+  edit_shop:
+    title: '&8Edit shop'
+    items:
+      #Edit items for sale item
+      edit_for_sale:
+        name: '&bAdd items for sale'
+        lore:
+          - '&7Click to edit'
+          - '&7the items for'
+          - '&7sale in your shop!'
+          - ''
+      #Edit storage item
+      edit_storage:
+        name: '&cEdit storage'
+        lore:
+          - '&7Click to edit'
+          - '&7the storage'
+          - '&7of your shop!'
+          - ''
+      #Edit villager item
+      edit_villager:
+        name: '&eEdit villager'
+        lore:
+          - '&7Click to edit'
+          - '&7the profession'
+          - '&7of your villager!'
+          - ''
+      #Sell shop item
+      sell_shop:
+        name: '&cSell shop'
+        lore:
+          - '&7Click to abandon this'
+          - '&7villager and sell it'
+          - '&7to someone else'
+          - ''
+  #Edit items for sale menu
+  edit_for_sale:
+    title: '&8Add items for sale'
+    item_lore: #Placeholders: %amount%, %price%, %stock%
+      - ''
+      - '&8Amount: &b%amount%'
+      - '&8Price: &b%price%$'
+      - '&8Currently &b%stock% &8in stock!'
+      - ''
+      - '&cRight click &8to remove'
+      - ''
+    item_lore_admin:
+      - ''
+      - '&8Amount: &b%amount%'
+      - '&8Price: &b%price%$'
+      - ''
+      - '&cRight click &bto remove'
+      - ''
+  #Edit storage menu
+  edit_storage:
+    title: '&8Edit storage'
+  #Edit villager menu
+  edit_villager:
+    title: '&8Edit villager'
+    items:
+      smith: '&7Smith'
+      butcher: '&cButcher'
+      cartographer: '&bCartographer'
+      cleric: '&dCleric'
+      farmer: '&eFarmer'
+      fisherman: '&bFisherman'
+      leatherworker: '&cLeatherworker'
+      librarian: '&6Librarian'
+  #Buy items menu
+  buy_items:
+    title: '&8Buy items'
+    item_lore: #Placeholders: %amount%, %price%, %stock%
+      - ''
+      - '&8Amount: &b%amount%'
+      - '&8Price: &b%price%$'
+      - '&8Currently &b%stock% &8in stock!'
+      - ''
+    item_lore_admin:
+      - ''
+      - '&8Amount: &b%amount%'
+      - '&8Price: &b%price%$'
+      - ''
+  #Sell shop menu
+  sell_shop:
+    title: '&8Are you sure?'
+    items:
+      no_cancel: '&cNo, cancel'
+      yes_confirm:
+        name: '&aYes, sell shop'
+        lore: #Placeholders: %amount%
+          - '&7You will receive &a50%'
+          - '&7(&a%amount%$&7) of money spend'
+          - '&7when you abandon/sell this shop'
+          - ''
+
+
+
+#----------------------- Other settings -----------------------#
+
+item_blacklist:
+  - DEAD_BUSH
