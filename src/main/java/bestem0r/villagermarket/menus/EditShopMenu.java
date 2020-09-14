@@ -1,8 +1,9 @@
-package bestem0r.villagermarket.inventories;
+package bestem0r.villagermarket.menus;
 
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.items.MenuItem;
 import bestem0r.villagermarket.shops.VillagerShop;
+import bestem0r.villagermarket.utilities.Color;
 import bestem0r.villagermarket.utilities.ColorBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -11,31 +12,41 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 
-public class EditShopInventory {
+public abstract class EditShopMenu {
 
     public static Inventory create(VillagerShop.VillagerType villagerType) {
         Inventory inventory = Bukkit.createInventory(null, 9, ColorBuilder.color("menus.edit_shop.title"));
 
         FileConfiguration mainConfig = VMPlugin.getInstance().getConfig();
 
-        MenuItem editForSale = new MenuItem.Builder(Material.WRITABLE_BOOK)
-                .nameFromPath("menus.edit_shop.items.edit_for_sale.name")
-                .lore(ColorBuilder.lore("menus.edit_shop.items.edit_for_sale.lore"))
+        MenuItem editShopfront = new MenuItem.Builder(Material.WRITABLE_BOOK)
+                .nameFromPath("menus.edit_shop.items.edit_shopfront.name")
+                .lore(new Color.Builder().path("menus.edit_shop.items.edit_shopfront.lore").buildLore())
+                .build();
+
+        MenuItem previewShop = new MenuItem.Builder(Material.BOOK)
+                .nameFromPath("menus.edit_shop.items.preview_shop.name")
+                .lore(new Color.Builder().path("menus.edit_shop.items.preview_shop.lore").buildLore())
                 .build();
 
         MenuItem storage = new MenuItem.Builder(Material.CHEST)
                 .nameFromPath("menus.edit_shop.items.edit_storage.name")
-                .lore(ColorBuilder.lore("menus.edit_shop.items.edit_storage.lore"))
+                .lore(new Color.Builder().path("menus.edit_shop.items.edit_storage.lore").buildLore())
                 .build();
 
         MenuItem editVillager = new MenuItem.Builder(Material.VILLAGER_SPAWN_EGG)
                 .nameFromPath("menus.edit_shop.items.edit_villager.name")
-                .lore(ColorBuilder.lore("menus.edit_shop.items.edit_villager.lore"))
+                .lore(new Color.Builder().path("menus.edit_shop.items.edit_villager.lore").buildLore())
+                .build();
+
+        MenuItem changeName = new MenuItem.Builder(Material.NAME_TAG)
+                .nameFromPath("menus.edit_shop.items.change_name.name")
+                .lore(new Color.Builder().path("menus.edit_shop.items.change_name.lore").buildLore())
                 .build();
 
         MenuItem sellShop = new MenuItem.Builder(Material.EMERALD)
                 .nameFromPath("menus.edit_shop.items.sell_shop.name")
-                .lore(ColorBuilder.lore("menus.edit_shop.items.sell_shop.lore"))
+                .lore(new Color.Builder().path("menus.edit_shop.items.sell_shop.lore").buildLore())
                 .build();
 
         MenuItem back = new MenuItem.Builder(Material.valueOf(mainConfig.getString("items.back.material")))
@@ -45,10 +56,10 @@ public class EditShopInventory {
         ItemStack[] inventoryItems;
         if (villagerType == VillagerShop.VillagerType.ADMIN) {
             inventoryItems = new ItemStack[] {
-                    editForSale,
+                    editShopfront,
+                    previewShop,
                     editVillager,
-                    null,
-                    null,
+                    changeName,
                     null,
                     null,
                     null,
@@ -57,12 +68,12 @@ public class EditShopInventory {
             };
         } else {
             inventoryItems = new ItemStack[] {
-                    editForSale,
-                    editVillager,
+                    editShopfront,
+                    previewShop,
                     storage,
+                    editVillager,
+                    changeName,
                     sellShop,
-                    null,
-                    null,
                     null,
                     null,
                     back

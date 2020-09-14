@@ -1,11 +1,12 @@
 package bestem0r.villagermarket.events;
 
-import bestem0r.villagermarket.utilities.Config;
 import bestem0r.villagermarket.DataManager;
-import bestem0r.villagermarket.shops.AdminShop;
 import bestem0r.villagermarket.VMPlugin;
+import bestem0r.villagermarket.shops.AdminShop;
 import bestem0r.villagermarket.shops.VillagerShop;
+import bestem0r.villagermarket.utilities.Color;
 import bestem0r.villagermarket.utilities.ColorBuilder;
+import bestem0r.villagermarket.utilities.Config;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -45,7 +46,10 @@ public class PlayerEvents implements Listener {
             }
             Economy economy = VMPlugin.getEconomy();
             economy.depositPlayer(player, pendingAmount);
-            player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.colorReplace("messages.received", "%amount%", String.valueOf(pendingAmount)));
+            player.sendMessage(VMPlugin.getPrefix() + new Color.Builder()
+                    .path("messages.received")
+                    .replace("%amount%", String.valueOf(pendingAmount))
+                    .build());
             Config.getPendingConfig().set(playerUUID, 0);
             Config.savePending();
         }
@@ -82,24 +86,22 @@ public class PlayerEvents implements Listener {
 
             if (villagerShop instanceof AdminShop) {
                 if (player.hasPermission("villagermarket.admin")) {
-                    inventory = villagerShop.getInventory(VillagerShop.ShopInventory.EDIT_SHOP);
+                    inventory = villagerShop.getInventory(VillagerShop.ShopMenu.EDIT_SHOP);
                 } else {
-                    inventory = villagerShop.getInventory(VillagerShop.ShopInventory.BUY_ITEMS);
+                    inventory = villagerShop.getInventory(VillagerShop.ShopMenu.SHOPFRONT);
                 }
             } else {
                 if (villagerShop.getOwnerUUID().equals("null")) {
-                    inventory = villagerShop.getInventory(VillagerShop.ShopInventory.BUY_SHOP);
+                    inventory = villagerShop.getInventory(VillagerShop.ShopMenu.BUY_SHOP);
                 } else if (villagerShop.getOwnerUUID().equals(player.getUniqueId().toString())) {
-                    inventory = villagerShop.getInventory(VillagerShop.ShopInventory.EDIT_SHOP);
+                    inventory = villagerShop.getInventory(VillagerShop.ShopMenu.EDIT_SHOP);
                 } else {
-                    inventory = villagerShop.getInventory(VillagerShop.ShopInventory.BUY_ITEMS);
+                    inventory = villagerShop.getInventory(VillagerShop.ShopMenu.SHOPFRONT);
                 }
             }
 
             dataManager.getClickMap().put(player.getUniqueId().toString(), entityUUID);
-            if (player.isSneaking()) {
-                inventory = villagerShop.getInventory(VillagerShop.ShopInventory.BUY_ITEMS);
-            }
+
             player.openInventory(inventory);
             player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.open_shop")), 0.5f, 1);
 

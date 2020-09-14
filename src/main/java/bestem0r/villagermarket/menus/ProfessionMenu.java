@@ -1,4 +1,4 @@
-package bestem0r.villagermarket.inventories;
+package bestem0r.villagermarket.menus;
 
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.items.MenuItem;
@@ -9,7 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class ProfessionInventory {
+public abstract class ProfessionMenu {
 
     public static Inventory create() {
         Inventory inventory = Bukkit.createInventory(null, 9, ColorBuilder.color("menus.edit_villager.title"));

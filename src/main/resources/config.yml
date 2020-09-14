@@ -11,27 +11,33 @@ auto_save_interval: 10
 #----------------------- Messages & Sounds -----------------------#
 
 messages:
+  reloaded: '&aPlugin reloaded!'
   cancelled: '&cAction was cancelled!'
   not_number: '&cYou must type a number!'
   not_valid_range: '&cAmount must be between 1 and 64!'
-  amount_successfull: '&aAmount set successfully!'
+  amount_successful: '&aAmount set successfully!'
   negative_price: '&cPrice can not be negative!'
-  add_successfull: '&aItem added successfully!'
+  add_successful: '&aItem added successfully!'
   type_price: '&bPlease type the price you wish to sell for in chat...'
   type_amount: '&bPlease type the amount you wish to sell in chat...'
   type_cancel: '&bOr type &ccancel &bto cancel'
-  someone_bought: '&b%player%&7 bought &b%amount%X %material%&7 from you for &a%price%$&7!' #Placeholders: %player%, %amount%, %material%, %price%
   type_price_for_shop: '&bPlease type the price you wish to sell your shop for...'
   sold_shop: '&bYou have successfully sold your shop,'
   sold_shop_2: '&band it is now available for purchase again!'
   not_enough_money: '&cYou do not have enough money to buy this!'
   not_enough_stock: '&cThere is not enough items in stock at the moment!'
   received: '&bYou have received &a%amount%$ &bfrom your shops while you were away!' #Placeholders: %amount%
-  reloaded: "&aPlugin reloaded!"
-  remove_villager: "&cRight click&b the Villager Shop you want to &cremove!"
-  no_villager_shop: "&cThis is not a Villager Shop! Aborting action!"
-  villager_removed: "&cVillager Shop removed!"
-  blacklisted: "&cThis item is blacklisted!"
+  remove_villager: '&cRight click&b the Villager Shop you want to &cremove!'
+  no_villager_shop: '&cThis is not a Villager Shop! Aborting action!'
+  villager_removed: '&cVillager Shop removed!'
+  blacklisted: '&cThis item is blacklisted!'
+  owner_not_enough_money: '&cThe shop owner does not have enough money!'
+  not_enough_in_inventory: '&cYou do not have enough items in your inventory!'
+  bought_item_as_owner: '&b%player%&7 sold you &b%amount%x %item%&7 for &a%price%$&7!' #Placeholders: %player%, %amount%, %item%, %price%
+  sold_item_as_owner: '&b%player%&7 bought &b%amount%x %item%&7 from you for &a%price%$&7!' #Placeholders: %player%, %amount%, %material%, %price%
+  change_name: "&bPlease type the name you want for your shop!"
+  change_name_set: "&aSuccessfully set name to: %name%&a!"
+  must_be_menulore: "&cPlease toggle back to &e&nmenu lore&c to sell/buy items!"
 
 sounds:
   open_shop: ENTITY_VILLAGER_TRADE
@@ -50,8 +56,8 @@ sounds:
 
 #These are the default settings for created Villager Shops
 villager:
-  name_admin: "&cAdmin Shop"
-  name_available: "&aAvailable shop!"
+  name_admin: '&cAdmin Shop'
+  name_available: '&aAvailable shop!'
   name_taken: "&b%player%'s shop" #Placeholders: %player%
   default_profession: NONE
 
@@ -62,6 +68,15 @@ items:
   back:
     name: '&c&lBack'
     material: ARROW
+  toggle_details:
+    name: '&eToggle details'
+    material: BOOK
+    lore:
+      - ''
+      - '&7Click to toggle'
+      - '&7between &eitem lore'
+      - '&7and &emenu lore&7!'
+      - ''
 
 
 #----------------------- Menus settings -----------------------#
@@ -71,8 +86,8 @@ menus:
   buy_shop:
     title: '&8Buy available shop'
     items:
-      for_sale_size:
-        name: '&a%amount%&7 selling slots' #Placeholders: %amount%
+      shop_size:
+        name: '&a%amount%&7 shop slots' #Placeholders: %amount%
         material: CHEST
       storage_size:
         name: '&a%amount%&7 storage slots' #Placeholders: %amount%
@@ -89,17 +104,28 @@ menus:
     title: '&8Edit shop'
     items:
       #Edit items for sale item
-      edit_for_sale:
-        name: '&bAdd items for sale'
+      edit_shopfront:
+        name: '&bEdit shopfront'
         lore:
+          - ''
           - '&7Click to edit'
           - '&7the items for'
           - '&7sale in your shop!'
+          - ''
+      #Preview shop item
+      preview_shop:
+        name: '&ePreview shop'
+        lore:
+          - ''
+          - '&7Click to preview'
+          - '&7your shop (the menu'
+          - '&7your &ncustomers&7 will see)'
           - ''
       #Edit storage item
       edit_storage:
         name: '&cEdit storage'
         lore:
+          - ''
           - '&7Click to edit'
           - '&7the storage'
           - '&7of your shop!'
@@ -108,36 +134,83 @@ menus:
       edit_villager:
         name: '&eEdit villager'
         lore:
+          - ''
           - '&7Click to edit'
           - '&7the profession'
           - '&7of your villager!'
+          - ''
+      #Change villager name item
+      change_name:
+        name: '&eChange villager name'
+        lore:
+          - ''
+          - '&7Click to change'
+          - '&7the name of'
+          - '&7you villager!'
           - ''
       #Sell shop item
       sell_shop:
         name: '&cSell shop'
         lore:
+          - ''
           - '&7Click to abandon this'
           - '&7villager and sell it'
           - '&7to someone else'
           - ''
-  #Edit items for sale menu
-  edit_for_sale:
+  #Edit shopfront menu. (Add/remove items)
+  edit_shopfront:
     title: '&8Add items for sale'
-    item_lore: #Placeholders: %amount%, %price%, %stock%
-      - ''
-      - '&8Amount: &b%amount%'
-      - '&8Price: &b%price%$'
-      - '&8Currently &b%stock% &8in stock!'
-      - ''
-      - '&cRight click &8to remove'
-      - ''
-    item_lore_admin:
-      - ''
-      - '&8Amount: &b%amount%'
-      - '&8Price: &b%price%$'
-      - ''
-      - '&cRight click &bto remove'
-      - ''
+    item_name: '&f%item_name% &8[&a%mode%&8]' #Placeholders: %item_name%, %mode%
+    player:
+      sell_lore: #Placeholders: %amount%, %price%, %stock%
+        - ''
+        - '&7Amount: &e%amount%'
+        - '&7Price: &a%price%$'
+        - '&7Currently &b%stock% &7in stock!'
+        - ''
+        - '&7>> Right click &7to &cremove'
+        - '&7>> Left click &7to toggle: &esell&8 | &7buy'
+      buy_lore: #Placeholders: %amount%, %price%, %money%
+        - ''
+        - '&7Amount: &e%amount%'
+        - '&7Price: &a%price%$'
+        - '&7You have &a%money%$ &7left!'
+        - ''
+        - '&7>> Right click &7to &cremove'
+        - '&7>> Left click &7to toggle: sell&8 | &ebuy'
+
+    admin:
+      item_lore:
+        - ''
+        - '&7Amount: &e%amount%'
+        - '&7Price: &a%price%$'
+        - ''
+        - '&7>> Right click &7to &cremove'
+        - '&7>> Left click &7to toggle &esell&7/&ebuy'
+        - ''
+  #Buy/sell items menu (This is the menu for customers)
+  shopfront:
+    title: '&8Buy items'
+    item_name: '&f%item_name% &8[&a%mode%&8]' #Placeholders: %item_name%, %mode%
+    player:
+      buy_lore: #Placeholders: %amount%, %price%, %stock%
+        - ''
+        - '&7Amount: &b%amount%'
+        - '&7Price: &b%price%$'
+        - '&7Currently &b%stock% &7in stock!'
+        - ''
+      sell_lore: #Placeholders: %amount%, %price%, %money%
+        - ''
+        - '&7Amount: &e%amount%'
+        - '&7Price: &a%price%$'
+        - '&7Owner has &a%money%$ &7left!'
+        - ''
+    admin:
+      item_lore:
+        - ''
+        - '&8Amount: &e%amount%'
+        - '&8Price: &a%price%$'
+        - ''
   #Edit storage menu
   edit_storage:
     title: '&8Edit storage'
@@ -153,20 +226,6 @@ menus:
       fisherman: '&bFisherman'
       leatherworker: '&cLeatherworker'
       librarian: '&6Librarian'
-  #Buy items menu
-  buy_items:
-    title: '&8Buy items'
-    item_lore: #Placeholders: %amount%, %price%, %stock%
-      - ''
-      - '&8Amount: &b%amount%'
-      - '&8Price: &b%price%$'
-      - '&8Currently &b%stock% &8in stock!'
-      - ''
-    item_lore_admin:
-      - ''
-      - '&8Amount: &b%amount%'
-      - '&8Price: &b%price%$'
-      - ''
   #Sell shop menu
   sell_shop:
     title: '&8Are you sure?'

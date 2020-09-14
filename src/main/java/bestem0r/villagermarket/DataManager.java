@@ -1,6 +1,6 @@
 package bestem0r.villagermarket;
 
-import bestem0r.villagermarket.items.ItemForSale;
+import bestem0r.villagermarket.items.ShopfrontItem;
 import bestem0r.villagermarket.shops.AdminShop;
 import bestem0r.villagermarket.shops.PlayerShop;
 import bestem0r.villagermarket.shops.VillagerShop;
@@ -14,8 +14,8 @@ import java.util.HashMap;
 public class DataManager {
 
     private HashMap<String, String> clickMap = new HashMap<>();
-    private HashMap<String, ItemForSale.Builder> amountHashMap = new HashMap<>();
-    private HashMap<String, ItemForSale.Builder> priceHashMap = new HashMap<>();
+    private HashMap<String, ShopfrontItem.Builder> amountHashMap = new HashMap<>();
+    private HashMap<String, ShopfrontItem.Builder> priceHashMap = new HashMap<>();
 
     private ArrayList<Player> removeVillager = new ArrayList<>();
 
@@ -36,10 +36,10 @@ public class DataManager {
         villagers.remove(entityUUID);
     }
 
-    public void addAmount(String playerUUID, ItemForSale.Builder builder) {
+    public void addAmount(String playerUUID, ShopfrontItem.Builder builder) {
         amountHashMap.put(playerUUID, builder);
     }
-    public void addPrice(String playerUUID, ItemForSale.Builder builder) {
+    public void addPrice(String playerUUID, ShopfrontItem.Builder builder) {
         priceHashMap.put(playerUUID, builder);
     }
 
@@ -52,10 +52,10 @@ public class DataManager {
     }
 
 
-    public HashMap<String, ItemForSale.Builder> getAmountHashMap() {
+    public HashMap<String, ShopfrontItem.Builder> getAmountHashMap() {
         return amountHashMap;
     }
-    public HashMap<String, ItemForSale.Builder> getPriceHashMap() {
+    public HashMap<String, ShopfrontItem.Builder> getPriceHashMap() {
         return priceHashMap;
     }
 

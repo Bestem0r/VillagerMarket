@@ -1,8 +1,9 @@
-package bestem0r.villagermarket.inventories;
+package bestem0r.villagermarket.menus;
 
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.items.MenuItem;
 import bestem0r.villagermarket.shops.VillagerShop;
+import bestem0r.villagermarket.utilities.Color;
 import bestem0r.villagermarket.utilities.ColorBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -10,7 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class SellShopInventory {
+public abstract class SellShopMenu {
 
     public static Inventory create(VillagerShop villagerShop) {
         Inventory inventory = Bukkit.createInventory(null, 9, ColorBuilder.color("menus.sell_shop.title"));
@@ -27,7 +28,7 @@ public class SellShopInventory {
                 .build();
         MenuItem confirm = new MenuItem.Builder(Material.LIME_TERRACOTTA)
                 .nameFromPath("menus.sell_shop.items.yes_confirm.name")
-                .lore(ColorBuilder.loreReplace("menus.sell_shop.items.yes_confirm.lore", "%amount%", priceHalved))
+                .lore(new Color.Builder().path("menus.sell_shop.items.yes_confirm.lore").replace("%amount%", priceHalved).buildLore())
                 .build();
 
 

@@ -3,11 +3,14 @@ package bestem0r.villagermarket.commands;
 import bestem0r.villagermarket.utilities.Config;
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.utilities.ColorBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
+
+import java.util.UUID;
 
 public class MainCommand implements org.bukkit.command.CommandExecutor {
 
@@ -61,8 +64,12 @@ public class MainCommand implements org.bukkit.command.CommandExecutor {
                 String namePath = (type.equalsIgnoreCase("player") ? "name_available" : "name_admin");
                 villager.setCustomName(ColorBuilder.color("villager." + namePath));
 
-                String uuid = villager.getUniqueId().toString();
-                Config.newShopConfig(uuid, villager, size, cost, type);
+                String entityUUID = villager.getUniqueId().toString();
+                if (Bukkit.getEntity(UUID.fromString(entityUUID)) != null) {
+                    Config.newShopConfig(entityUUID, villager, size, cost, type);
+                } else {
+                    player.sendMessage(VMPlugin.getPrefix() + ChatColor.RED + "Unable to spawn Villager! Does WorldGuard deny mobspawn?");
+                }
             } else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
                 if (!player.hasPermission("villagermarket.reload")) {
                     player.sendMessage(ChatColor.RED + "You do not have permission for this command!");

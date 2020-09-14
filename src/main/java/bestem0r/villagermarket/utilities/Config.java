@@ -3,10 +3,8 @@ package bestem0r.villagermarket.utilities;
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.shops.VillagerShop;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 
@@ -39,6 +37,7 @@ public class Config {
         ArrayList<Double> priceList = new ArrayList<>(Arrays.asList(new Double[size * 9]));
         Collections.fill(priceList, 0.0);
         config.set("prices", priceList);
+
         try {
             config.save(file);
             VMPlugin.getDataManager().addVillager(entityUUID, file, VillagerShop.VillagerType.valueOf(type.toUpperCase()));

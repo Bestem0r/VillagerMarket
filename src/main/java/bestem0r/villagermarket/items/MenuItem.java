@@ -1,6 +1,6 @@
 package bestem0r.villagermarket.items;
 
-import bestem0r.villagermarket.utilities.ColorBuilder;
+import bestem0r.villagermarket.utilities.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -22,7 +22,7 @@ public class MenuItem extends ItemStack {
         }
 
         public Builder nameFromPath(String path) {
-            this.name = ColorBuilder.color(path);
+            this.name = new Color.Builder().path(path).build();
             return this;
         }
         public Builder name(String name) {

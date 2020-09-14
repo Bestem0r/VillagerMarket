@@ -1,23 +1,19 @@
 package bestem0r.villagermarket.events;
 
-import bestem0r.villagermarket.*;
-import bestem0r.villagermarket.utilities.ColorBuilder;
-import net.milkbowl.vault.economy.Economy;
-import org.bukkit.*;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.*;
+import bestem0r.villagermarket.DataManager;
+import bestem0r.villagermarket.VMPlugin;
+import bestem0r.villagermarket.shops.VillagerShop;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.*;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.WorldLoadEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.Objects;
@@ -67,6 +63,19 @@ public class GenericEvents implements Listener {
         String entityUUID = event.getEntity().getUniqueId().toString();
         if (dataManager.getVillagers().containsKey(entityUUID)) {
             event.setCancelled(true);
+        }
+    }
+    @EventHandler
+    public void onHitEntity(EntityDamageByEntityEvent event) {
+        String entityUUID = event.getEntity().getUniqueId().toString();
+        if (dataManager.getVillagers().containsKey(entityUUID)) {
+            if (event.getDamager() instanceof Player) {
+                Player player = (Player) event.getDamager();
+                if (!player.isSneaking()) return;
+                if (!player.hasPermission("villagermarket.spy")) return;
+                VillagerShop villagerShop = dataManager.getVillagers().get(entityUUID);
+                player.openInventory(villagerShop.getInventory(VillagerShop.ShopMenu.STORAGE));
+            }
         }
     }
 }

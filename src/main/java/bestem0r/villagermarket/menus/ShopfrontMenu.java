@@ -1,9 +1,10 @@
-package bestem0r.villagermarket.inventories;
+package bestem0r.villagermarket.menus;
 
 import bestem0r.villagermarket.VMPlugin;
-import bestem0r.villagermarket.items.ItemForSale;
+import bestem0r.villagermarket.items.ShopfrontItem;
 import bestem0r.villagermarket.items.MenuItem;
 import bestem0r.villagermarket.shops.VillagerShop;
+import bestem0r.villagermarket.utilities.Color;
 import bestem0r.villagermarket.utilities.ColorBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,18 +16,20 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class ForSaleInventory {
+public abstract class ShopfrontMenu {
 
     public static class Builder {
 
         private VillagerShop villagerShop;
         private boolean isEditor = false;
         private int size;
-        private HashMap<Integer, ItemForSale> itemList;
+        private HashMap<Integer, ShopfrontItem> itemList;
+        private ShopfrontItem.LoreType loreType;
 
         public Builder(VillagerShop villagerShop) {
             this.villagerShop = villagerShop;
         }
+
         public Builder isEditor(boolean isEditor) {
             this.isEditor = isEditor;
             return this;
@@ -35,13 +38,18 @@ public class ForSaleInventory {
             this.size = size;
             return this;
         }
-        public Builder itemList(HashMap<Integer, ItemForSale> itemsForSale) {
+        public Builder itemList(HashMap<Integer, ShopfrontItem> itemsForSale) {
             this.itemList = itemsForSale;
+            return this;
+        }
+        public Builder loreType(ShopfrontItem.LoreType loreType) {
+            this.loreType = loreType;
             return this;
         }
 
         public Inventory build() {
-            String title = (isEditor ? ColorBuilder.color("menus.edit_for_sale.title") : ColorBuilder.color("menus.buy_items.title"));
+            String title = (isEditor ? ColorBuilder.color("menus.edit_shopfront.title") : ColorBuilder.color("menus.shopfront.title"));
+            title = (!isEditor && loreType == ShopfrontItem.LoreType.ITEM ? title + " (details)" : title);
             Inventory inventory = Bukkit.createInventory(null, size, ChatColor.DARK_GRAY + title);
 
             ItemStack[] inventoryItems = new ItemStack[size];
@@ -49,10 +57,10 @@ public class ForSaleInventory {
 
             for (Integer slot : itemList.keySet()) {
                 if (itemList.get(slot) != null) {
-                    ItemForSale itemForSale = itemList.get(slot);
-                    itemForSale.toggleEditor(isEditor);
-                    itemForSale.updateStorage(villagerShop);
-                    inventoryItems[slot] = itemForSale.asItemStack();
+                    ShopfrontItem shopfrontItem = itemList.get(slot);
+                    shopfrontItem.toggleEditor(isEditor);
+                    shopfrontItem.refreshLore(villagerShop);
+                    inventoryItems[slot] = shopfrontItem.asItemStack(loreType);
                 } else {
                     inventoryItems[slot] = null;
                 }
@@ -65,7 +73,12 @@ public class ForSaleInventory {
                     .nameFromPath("items.back.name")
                     .build();
 
-            if (isEditor) inventory.setItem(size - 1, back);
+            MenuItem toggleDetails = new MenuItem.Builder(Material.valueOf(mainConfig.getString("items.toggle_details.material")))
+                    .nameFromPath("items.toggle_details.name")
+                    .lore(new Color.Builder().path("items.toggle_details.lore").buildLore())
+                    .build();
+
+            inventory.setItem(size - 1, (isEditor) ? back : toggleDetails);
             return inventory;
         }
     }

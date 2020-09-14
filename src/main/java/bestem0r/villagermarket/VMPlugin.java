@@ -42,7 +42,6 @@ public class VMPlugin extends JavaPlugin {
         getConfig().options().copyDefaults();
         saveDefaultConfig();
         reloadConfig();
-        getLogger().info("Villager Market enabled!");
 
         setupConfigValues();
         loadConfigs();
@@ -86,7 +85,7 @@ public class VMPlugin extends JavaPlugin {
 
     private void registerEvents() {
         GenericEvents genericEvents = new GenericEvents(this, dataManager);
-        InventoryClick inventoryClick = new InventoryClick(dataManager);
+        InventoryClick inventoryClick = new InventoryClick(dataManager, this);
         PlayerChat playerChat = new PlayerChat(this, dataManager);
         PlayerEvents playerEvents = new PlayerEvents(dataManager);
 

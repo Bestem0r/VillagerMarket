@@ -4,6 +4,7 @@ version: 1.4.0
 description: A plugin made by Bestem0r to create Villager Shops
 api-version: 1.13
 depend: [Vault]
+softdepend: [Essentials]
 commands:
   vm:
     description: Create a new villager

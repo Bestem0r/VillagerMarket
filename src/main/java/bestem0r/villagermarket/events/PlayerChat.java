@@ -1,9 +1,10 @@
 package bestem0r.villagermarket.events;
 
-import bestem0r.villagermarket.*;
-import bestem0r.villagermarket.items.ItemForSale;
+import bestem0r.villagermarket.DataManager;
+import bestem0r.villagermarket.VMPlugin;
+import bestem0r.villagermarket.items.ShopfrontItem;
 import bestem0r.villagermarket.shops.VillagerShop;
-import bestem0r.villagermarket.utilities.ColorBuilder;
+import bestem0r.villagermarket.utilities.Color;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -21,13 +22,13 @@ public class PlayerChat implements Listener {
         this.dataManager = dataManager;
     }
     public static void startChatSession(Player player, String entityUUID, ItemStack itemStack, int slot) {
-        player.sendMessage(" ");
-        player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color( ColorBuilder.color("messages.type_amount")));
-        player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color( "messages.type_cancel"));
+
+        player.sendMessage(new Color.Builder().path("messages.type_amount").addPrefix().build());
+        player.sendMessage(new Color.Builder().path("messages.type_cancel").addPrefix().build());
 
         VillagerShop villagerShop = dataManager.getVillagers().get(entityUUID);
 
-        ItemForSale.Builder builder = new ItemForSale.Builder(itemStack)
+        ShopfrontItem.Builder builder = new ShopfrontItem.Builder(itemStack)
                 .entityUUID(entityUUID)
                 .villagerType(villagerShop.getType())
                 .slot(slot);
@@ -44,60 +45,58 @@ public class PlayerChat implements Listener {
         if (dataManager.getAmountHashMap().containsKey(playerUUID)) {
             event.setCancelled(true);
             if (message.equalsIgnoreCase("cancel")) {
-                player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.cancelled"));
+                player.sendMessage(new Color.Builder().path("messages.cancelled").addPrefix().build());
                 dataManager.removeAmount(playerUUID);
                 return;
             }
             if (!canConvert(message)) {
-                player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.not_number"));
+                player.sendMessage(new Color.Builder().path("messages.not_number").addPrefix().build());
                 return;
             } else if (Integer.parseInt(message) > 64 || Integer.parseInt(message) < 1) {
-                player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.not_valid_range"));
+                player.sendMessage(new Color.Builder().path("messages_not_valid_range").addPrefix().build());
                 return;
             }
-            ItemForSale.Builder builder = dataManager.getAmountHashMap().get(playerUUID);
+            ShopfrontItem.Builder builder = dataManager.getAmountHashMap().get(playerUUID);
             builder.amount(Integer.parseInt(event.getMessage()));
             dataManager.addPrice(playerUUID, builder);
 
+            player.sendMessage(new Color.Builder().path("messages.amount_successful").addPrefix().build());
             player.sendMessage(" ");
-            player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.amount_successfull"));
-            player.sendMessage(" ");
-            player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.type_price"));
-            player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.type_cancel"));
+            player.sendMessage(new Color.Builder().path("messages.type_price").addPrefix().build());
+            player.sendMessage(new Color.Builder().path("messages.type_cancel").addPrefix().build());
             dataManager.removeAmount(playerUUID);
             return;
         }
         if (dataManager.getPriceHashMap().containsKey(playerUUID)) {
             event.setCancelled(true);
             if (message.equalsIgnoreCase("cancel")) {
-                player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.cancelled"));
+                player.sendMessage(new Color.Builder().path("messages.cancelled").addPrefix().build());
                 dataManager.removePrice(playerUUID);
                 return;
             }
             if (!canConvert(message)) {
-                player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.not_number"));
+                player.sendMessage(new Color.Builder().path("messages.not_number").addPrefix().build());
                 return;
             } else if (Integer.parseInt(message) < 1) {
-                player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.negative_price"));
+                player.sendMessage(new Color.Builder().path("messages.negative_price").addPrefix().build());
                 return;
             }
-            ItemForSale.Builder builder = dataManager.getPriceHashMap().get(playerUUID);
+            ShopfrontItem.Builder builder = dataManager.getPriceHashMap().get(playerUUID);
             builder.price(Double.parseDouble(message));
 
             String entityUUID = builder.getEntityUUID();
             VillagerShop villagerShop = dataManager.getVillagers().get(entityUUID);
 
-            ItemForSale itemForSale = builder.build();
-            itemForSale.updateStorage(villagerShop);
-            villagerShop.getItemList().put(itemForSale.getSlot(), itemForSale);
+            ShopfrontItem shopfrontItem = builder.build();
+            shopfrontItem.refreshLore(villagerShop);
+            villagerShop.getItemList().put(shopfrontItem.getSlot(), shopfrontItem);
 
-            player.sendMessage(" ");
-            player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.add_successfull"));
+            player.sendMessage(new Color.Builder().path("messages.add_successful").addPrefix().build());
             villagerShop.updateShopInventories();
             dataManager.removePrice(playerUUID);
 
             Bukkit.getScheduler().runTask(VMPlugin.getInstance(), () -> {
-                player.openInventory(villagerShop.getInventory(VillagerShop.ShopInventory.EDIT_FOR_SALE));
+                player.openInventory(villagerShop.getInventory(VillagerShop.ShopMenu.EDIT_SHOPFRONT));
                 player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.add_item")), 0.5f, 1);
             });
         }

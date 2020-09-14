@@ -1,8 +1,9 @@
-package bestem0r.villagermarket.inventories;
+package bestem0r.villagermarket.menus;
 
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.items.MenuItem;
 import bestem0r.villagermarket.shops.VillagerShop;
+import bestem0r.villagermarket.utilities.Color;
 import bestem0r.villagermarket.utilities.ColorBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -10,7 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class BuyShopInventory {
+public abstract class BuyShopMenu {
 
     public static Inventory create(VillagerShop villagerShop) {
         Inventory inventory = Bukkit.createInventory(null, 9, ColorBuilder.color("menus.buy_shop.title"));
@@ -18,18 +19,25 @@ public class BuyShopInventory {
         FileConfiguration mainConfig = VMPlugin.getInstance().getConfig();
 
         String cost = String.valueOf(villagerShop.getCost());
-        String forSaleAmount = String.valueOf(villagerShop.getSize() * 9 - 1);
+        String shopAmount = String.valueOf(villagerShop.getSize() * 9 - 1);
         String storageAmount = String.valueOf(villagerShop.getSize() * 18 - 1);
 
-        String forSaleSizeName = ColorBuilder.colorReplace("menus.buy_shop.items.for_sale_size.name", "%amount%", forSaleAmount);
-        String storageSizeName = ColorBuilder.colorReplace("menus.buy_shop.items.storage_size.name", "%amount%", storageAmount);
+        String shopName = new Color.Builder()
+                .path("menus.buy_shop.items.shop_size.name")
+                .replace("%amount%", shopAmount)
+                .build();
 
-        MenuItem forSaleSize = new MenuItem.Builder(Material.valueOf(mainConfig.getString("menus.buy_shop.items.for_sale_size.material")))
-                .nameFromPath(forSaleSizeName)
+        String storageName = new Color.Builder()
+                .path("menus.buy_shop.items.storage_size.name")
+                .replace("%amount%", storageAmount)
+                .build();
+
+        MenuItem shopSize = new MenuItem.Builder(Material.valueOf(mainConfig.getString("menus.buy_shop.items.for_sale_size.material")))
+                .nameFromPath(shopName)
                 .build();
 
         MenuItem storageSize = new MenuItem.Builder(Material.valueOf(mainConfig.getString("menus.buy_shop.items.storage_size.material")))
-                .nameFromPath(storageSizeName)
+                .nameFromPath(storageName)
                 .build();
 
         MenuItem fillerItem = new MenuItem.Builder(Material.BLUE_STAINED_GLASS_PANE)
@@ -38,14 +46,14 @@ public class BuyShopInventory {
 
         MenuItem buyShop = new MenuItem.Builder(Material.valueOf(mainConfig.getString("menus.buy_shop.items.buy_shop.material")))
                 .nameFromPath("menus.buy_shop.items.buy_shop.name")
-                .lore(ColorBuilder.loreReplace("menus.buy_shop.items.buy_shop.lore", "%price%", cost))
+                .lore(new Color.Builder().path("menus.buy_shop.items.buy_shop.lore").replace("%price%", cost).buildLore())
                 .build();
 
         ItemStack[] items = {
                 fillerItem,
                 fillerItem,
                 fillerItem,
-                forSaleSize,
+                shopSize,
                 buyShop,
                 storageSize,
                 fillerItem,
