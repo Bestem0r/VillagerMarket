@@ -1,8 +1,8 @@
 package bestem0r.villagermarket.commands;
 
+import bestem0r.villagermarket.utilities.Color;
 import bestem0r.villagermarket.utilities.Config;
 import bestem0r.villagermarket.VMPlugin;
-import bestem0r.villagermarket.utilities.ColorBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -62,7 +62,7 @@ public class MainCommand implements org.bukkit.command.CommandExecutor {
                 villager.setSilent(true);
                 villager.setProfession(Villager.Profession.valueOf(VMPlugin.getInstance().getConfig().getString("villager.default_profession")));
                 String namePath = (type.equalsIgnoreCase("player") ? "name_available" : "name_admin");
-                villager.setCustomName(ColorBuilder.color("villager." + namePath));
+                villager.setCustomName(new Color.Builder().path("villager." + namePath).build());
 
                 String entityUUID = villager.getUniqueId().toString();
                 if (Bukkit.getEntity(UUID.fromString(entityUUID)) != null) {
@@ -77,7 +77,7 @@ public class MainCommand implements org.bukkit.command.CommandExecutor {
                 }
                 VMPlugin.getInstance().reloadConfig();
                 VMPlugin.loadDefaultValues();
-                player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.reloaded"));
+                player.sendMessage(new Color.Builder().path("messages.reloaded").addPrefix().build());
                 for (String id : VMPlugin.getDataManager().getVillagers().keySet()) {
                     VMPlugin.getDataManager().getVillagers().get(id).reload();
                 }
@@ -86,11 +86,11 @@ public class MainCommand implements org.bukkit.command.CommandExecutor {
                     player.sendMessage(ChatColor.RED + "You do not have permission for this command!");
                     return true;
                 }
-                player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.remove_villager"));
+                player.sendMessage(new Color.Builder().path("messages.remove_villager").addPrefix().build());
                 VMPlugin.getDataManager().getRemoveVillager().add(player);
             }
             else {
-                player.sendMessage(ChatColor.RED + "Incorrect usage: /vm <create/reload>");
+                player.sendMessage(ChatColor.RED + "Incorrect usage: /vm <create/reload/remove>");
                 return true;
             }
         }

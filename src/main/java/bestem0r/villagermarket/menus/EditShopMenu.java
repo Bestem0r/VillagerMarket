@@ -4,7 +4,6 @@ import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.items.MenuItem;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
-import bestem0r.villagermarket.utilities.ColorBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class EditShopMenu {
 
     public static Inventory create(VillagerShop.VillagerType villagerType) {
-        Inventory inventory = Bukkit.createInventory(null, 9, ColorBuilder.color("menus.edit_shop.title"));
+        Inventory inventory = Bukkit.createInventory(null, 9, new Color.Builder().path("menus.edit_shop.title").build());
 
         FileConfiguration mainConfig = VMPlugin.getInstance().getConfig();
 

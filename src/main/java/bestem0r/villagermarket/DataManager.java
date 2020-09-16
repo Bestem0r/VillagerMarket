@@ -14,8 +14,6 @@ import java.util.HashMap;
 public class DataManager {
 
     private HashMap<String, String> clickMap = new HashMap<>();
-    private HashMap<String, ShopfrontItem.Builder> amountHashMap = new HashMap<>();
-    private HashMap<String, ShopfrontItem.Builder> priceHashMap = new HashMap<>();
 
     private ArrayList<Player> removeVillager = new ArrayList<>();
 
@@ -35,30 +33,6 @@ public class DataManager {
     public void removeVillager(String entityUUID) {
         villagers.remove(entityUUID);
     }
-
-    public void addAmount(String playerUUID, ShopfrontItem.Builder builder) {
-        amountHashMap.put(playerUUID, builder);
-    }
-    public void addPrice(String playerUUID, ShopfrontItem.Builder builder) {
-        priceHashMap.put(playerUUID, builder);
-    }
-
-
-    public void removePrice(String playerUUID) {
-        priceHashMap.remove(playerUUID);
-    }
-    public void removeAmount(String playerUUID) {
-        amountHashMap.remove(playerUUID);
-    }
-
-
-    public HashMap<String, ShopfrontItem.Builder> getAmountHashMap() {
-        return amountHashMap;
-    }
-    public HashMap<String, ShopfrontItem.Builder> getPriceHashMap() {
-        return priceHashMap;
-    }
-
 
     public HashMap<String, VillagerShop> getVillagers() {
         return villagers;

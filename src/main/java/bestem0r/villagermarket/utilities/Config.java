@@ -34,9 +34,14 @@ public class Config {
 
         config.set("storage", itemStackStorage);
         config.set("for_sale", itemStackSelection);
+
         ArrayList<Double> priceList = new ArrayList<>(Arrays.asList(new Double[size * 9]));
+        ArrayList<String> modeList = new ArrayList<>(Arrays.asList(new String[size * 9]));
         Collections.fill(priceList, 0.0);
+        Collections.fill(modeList, "SELL");
+
         config.set("prices", priceList);
+        config.set("modes", modeList);
 
         try {
             config.save(file);

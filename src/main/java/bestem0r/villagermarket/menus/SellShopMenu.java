@@ -4,7 +4,6 @@ import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.items.MenuItem;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
-import bestem0r.villagermarket.utilities.ColorBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class SellShopMenu {
 
     public static Inventory create(VillagerShop villagerShop) {
-        Inventory inventory = Bukkit.createInventory(null, 9, ColorBuilder.color("menus.sell_shop.title"));
+        Inventory inventory = Bukkit.createInventory(null, 9, new Color.Builder().path("menus.sell_shop.title").build());
 
         FileConfiguration mainConfig = VMPlugin.getInstance().getConfig();
         String priceHalved = String.valueOf((double) villagerShop.getCost() * (mainConfig.getDouble("refund_percent") / 100));

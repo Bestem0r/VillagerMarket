@@ -27,14 +27,14 @@ public class ChangeName implements Listener {
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (event.getPlayer() == this.player) {
             if (event.getMessage().equalsIgnoreCase("cancel")) {
+                player.sendMessage(VMPlugin.getPrefix() + new Color.Builder().path("messages.cancelled").build());
+            } else {
                 String name = ChatColor.translateAlternateColorCodes('&', event.getMessage());
                 villager.setCustomName(name);
                 player.sendMessage(VMPlugin.getPrefix() + new Color.Builder()
                         .path("messages.change_name_set")
                         .replace("%name%", name)
                         .build());
-            } else {
-                player.sendMessage(VMPlugin.getPrefix() + new Color.Builder().path("messages.cancelled"));
             }
 
             event.setCancelled(true);

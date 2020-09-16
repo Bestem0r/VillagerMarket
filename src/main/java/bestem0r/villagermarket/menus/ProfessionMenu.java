@@ -2,7 +2,7 @@ package bestem0r.villagermarket.menus;
 
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.items.MenuItem;
-import bestem0r.villagermarket.utilities.ColorBuilder;
+import bestem0r.villagermarket.utilities.Color;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class ProfessionMenu {
 
     public static Inventory create() {
-        Inventory inventory = Bukkit.createInventory(null, 9, ColorBuilder.color("menus.edit_villager.title"));
+        Inventory inventory = Bukkit.createInventory(null, 9, new Color.Builder().path("menus.edit_villager.title").build());
 
         FileConfiguration mainConfig = VMPlugin.getInstance().getConfig();
 

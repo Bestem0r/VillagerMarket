@@ -5,7 +5,6 @@ import bestem0r.villagermarket.items.ShopfrontItem;
 import bestem0r.villagermarket.items.MenuItem;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
-import bestem0r.villagermarket.utilities.ColorBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -48,7 +47,7 @@ public abstract class ShopfrontMenu {
         }
 
         public Inventory build() {
-            String title = (isEditor ? ColorBuilder.color("menus.edit_shopfront.title") : ColorBuilder.color("menus.shopfront.title"));
+            String title = (isEditor ? new Color.Builder().path("menus.edit_shopfront.title").build() : new Color.Builder().path("menus.shopfront.title").build());
             title = (!isEditor && loreType == ShopfrontItem.LoreType.ITEM ? title + " (details)" : title);
             Inventory inventory = Bukkit.createInventory(null, size, ChatColor.DARK_GRAY + title);
 

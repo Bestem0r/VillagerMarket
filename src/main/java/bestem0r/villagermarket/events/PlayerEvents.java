@@ -5,7 +5,6 @@ import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.shops.AdminShop;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
-import bestem0r.villagermarket.utilities.ColorBuilder;
 import bestem0r.villagermarket.utilities.Config;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -22,7 +21,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.Objects;
@@ -63,7 +61,7 @@ public class PlayerEvents implements Listener {
 
         if (dataManager.getRemoveVillager().contains(player)) {
             if (dataManager.getVillagers().containsKey(entityUUID)) {
-                player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.villager_removed"));
+                player.sendMessage(new Color.Builder().path("messages.villager_removed").addPrefix().build());
                 player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.remove_villager")), 0.5f, 1);
                 File file = new File(Objects.requireNonNull(Bukkit.getServer().getPluginManager().getPlugin("VillagerMarket")).getDataFolder() + "/Shops/", entityUUID + ".yml");
                 if (file.exists()) {
@@ -73,7 +71,7 @@ public class PlayerEvents implements Listener {
                 entity.remove();
 
             } else {
-                player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.no_villager_shop"));
+                player.sendMessage(new Color.Builder().path("messages.no_villager_shop").addPrefix().build());
             }
             dataManager.getRemoveVillager().remove(player);
         }
@@ -113,10 +111,9 @@ public class PlayerEvents implements Listener {
         Player player = (Player) event.getPlayer();
         if (!dataManager.getClickMap().containsKey(player.getUniqueId().toString())) { return; }
         String entityUUID = dataManager.getClickMap().get(player.getUniqueId().toString());
-        ItemStack[] items = event.getView().getTopInventory().getContents();
 
         String title = ChatColor.stripColor(event.getView().getTitle());
-        if (title.equalsIgnoreCase(ChatColor.stripColor(ColorBuilder.color("menus.edit_storage.title")))) {
+        if (title.equalsIgnoreCase(ChatColor.stripColor(new Color.Builder().path("menus.edit_storage.title").build()))) {
             dataManager.getVillagers().get(entityUUID).updateShopInventories();
         }
     }
@@ -131,11 +128,11 @@ public class PlayerEvents implements Listener {
         }
     }
 
-    @EventHandler
+    /*@EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
         if (dataManager.getAmountHashMap().containsKey(player.getUniqueId().toString())) {
             event.setCancelled(true);
         }
-    }
+    }*/
 }

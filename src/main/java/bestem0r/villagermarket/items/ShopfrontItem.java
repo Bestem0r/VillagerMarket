@@ -49,7 +49,7 @@ public class ShopfrontItem extends ItemStack {
         private int slot;
         private int amount = 1;
 
-        private final Mode mode = Mode.SELL;
+        private Mode mode = Mode.SELL;
 
         public Builder(ItemStack itemStack) {
             this.itemStack = itemStack;
@@ -76,6 +76,11 @@ public class ShopfrontItem extends ItemStack {
             this.amount = amount;
             return this;
         }
+        public Builder mode(Mode mode) {
+            this.mode = mode;
+            return this;
+        }
+
         public ShopfrontItem build() {
             ShopfrontItem shopfrontItem = new ShopfrontItem(itemStack);
             shopfrontItem.villagerType = villagerType;

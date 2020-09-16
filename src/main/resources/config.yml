@@ -22,8 +22,8 @@ messages:
   type_amount: '&bPlease type the amount you wish to sell in chat...'
   type_cancel: '&bOr type &ccancel &bto cancel'
   type_price_for_shop: '&bPlease type the price you wish to sell your shop for...'
-  sold_shop: '&bYou have successfully sold your shop,'
-  sold_shop_2: '&band it is now available for purchase again!'
+  sold_shop: '&bYou have successfully sold your shop!'
+  sold_shop_2: '&bIt is now available for purchase again!'
   not_enough_money: '&cYou do not have enough money to buy this!'
   not_enough_stock: '&cThere is not enough items in stock at the moment!'
   received: '&bYou have received &a%amount%$ &bfrom your shops while you were away!' #Placeholders: %amount%
@@ -35,9 +35,9 @@ messages:
   not_enough_in_inventory: '&cYou do not have enough items in your inventory!'
   bought_item_as_owner: '&b%player%&7 sold you &b%amount%x %item%&7 for &a%price%$&7!' #Placeholders: %player%, %amount%, %item%, %price%
   sold_item_as_owner: '&b%player%&7 bought &b%amount%x %item%&7 from you for &a%price%$&7!' #Placeholders: %player%, %amount%, %material%, %price%
-  change_name: "&bPlease type the name you want for your shop!"
-  change_name_set: "&aSuccessfully set name to: %name%&a!"
-  must_be_menulore: "&cPlease toggle back to &e&nmenu lore&c to sell/buy items!"
+  change_name: '&bPlease type the name you want for your shop!'
+  change_name_set: '&aSuccessfully set name to: &r%name%&a!'
+  must_be_menulore: '&cPlease toggle back to &e&nmenu lore&c to sell/buy items!'
 
 sounds:
   open_shop: ENTITY_VILLAGER_TRADE
@@ -46,6 +46,7 @@ sounds:
   add_item: ENTITY_EXPERIENCE_ORB_PICKUP
   remove_item: BLOCK_LAVA_EXTINGUISH
   buy_item: ENTITY_ITEM_PICKUP
+  sell_item: ENTITY_EXPERIENCE_ORB_PICKUP
   back: UI_BUTTON_CLICK
   change_profession: ITEM_ARMOR_EQUIP_LEATHER
   sell_shop: ENTITY_EXPERIENCE_ORB_PICKUP
@@ -169,7 +170,8 @@ menus:
         - '&7Currently &b%stock% &7in stock!'
         - ''
         - '&7>> Right click &7to &cremove'
-        - '&7>> Left click &7to toggle: &esell&8 | &7buy'
+        - '&7>> Left click &7to toggle: '
+        - '&7Villager will &e&nsell&8 | &7buy'
       buy_lore: #Placeholders: %amount%, %price%, %money%
         - ''
         - '&7Amount: &e%amount%'
@@ -177,17 +179,26 @@ menus:
         - '&7You have &a%money%$ &7left!'
         - ''
         - '&7>> Right click &7to &cremove'
-        - '&7>> Left click &7to toggle: sell&8 | &ebuy'
+        - '&7>> Left click &7to toggle: '
+        - '&7Villager will sell&8 | &e&nbuy'
 
     admin:
-      item_lore:
+      sell_lore:
         - ''
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%$'
         - ''
         - '&7>> Right click &7to &cremove'
-        - '&7>> Left click &7to toggle &esell&7/&ebuy'
+        - '&7>> Left click &7to toggle: '
+        - '&7Villager will &e&nsell&8 | &7buy'
+      buy_lore:
         - ''
+        - '&7Amount: &e%amount%'
+        - '&7Price: &a%price%$'
+        - ''
+        - '&7>> Right click &7to &cremove'
+        - '&7>> Left click &7to toggle: '
+        - '&7Villager will sell&8 | &e&nbuy'
   #Buy/sell items menu (This is the menu for customers)
   shopfront:
     title: '&8Buy items'
@@ -195,8 +206,8 @@ menus:
     player:
       buy_lore: #Placeholders: %amount%, %price%, %stock%
         - ''
-        - '&7Amount: &b%amount%'
-        - '&7Price: &b%price%$'
+        - '&7Amount: &e%amount%'
+        - '&7Price: &a%price%$'
         - '&7Currently &b%stock% &7in stock!'
         - ''
       sell_lore: #Placeholders: %amount%, %price%, %money%
@@ -206,10 +217,15 @@ menus:
         - '&7Owner has &a%money%$ &7left!'
         - ''
     admin:
-      item_lore:
+      buy_lore:
         - ''
-        - '&8Amount: &e%amount%'
-        - '&8Price: &a%price%$'
+        - '&7Amount: &e%amount%'
+        - '&7Price: &a%price%$'
+        - ''
+      sell_lore:
+        - ''
+        - '&7Amount: &e%amount%'
+        - '&7Price: &a%price%$'
         - ''
   #Edit storage menu
   edit_storage:

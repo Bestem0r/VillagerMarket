@@ -4,10 +4,9 @@ import bestem0r.villagermarket.commands.MainCommand;
 import bestem0r.villagermarket.commands.TabComplete;
 import bestem0r.villagermarket.events.GenericEvents;
 import bestem0r.villagermarket.events.InventoryClick;
-import bestem0r.villagermarket.events.PlayerChat;
 import bestem0r.villagermarket.events.PlayerEvents;
 import bestem0r.villagermarket.shops.VillagerShop;
-import bestem0r.villagermarket.utilities.ColorBuilder;
+import bestem0r.villagermarket.utilities.Color;
 import bestem0r.villagermarket.utilities.Config;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -86,13 +85,11 @@ public class VMPlugin extends JavaPlugin {
     private void registerEvents() {
         GenericEvents genericEvents = new GenericEvents(this, dataManager);
         InventoryClick inventoryClick = new InventoryClick(dataManager, this);
-        PlayerChat playerChat = new PlayerChat(this, dataManager);
         PlayerEvents playerEvents = new PlayerEvents(dataManager);
 
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(genericEvents, this);
         pluginManager.registerEvents(inventoryClick, this);
-        pluginManager.registerEvents(playerChat, this);
         pluginManager.registerEvents(playerEvents, this);
     }
 
@@ -125,7 +122,7 @@ public class VMPlugin extends JavaPlugin {
         }
     }
     public static void loadDefaultValues() {
-        prefix = ColorBuilder.color("plugin_prefix") + " ";
+        prefix = new Color.Builder().path("plugin_prefix").build() + " ";
     }
     public static Economy getEconomy() {
         return econ;

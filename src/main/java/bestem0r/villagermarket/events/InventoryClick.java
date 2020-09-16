@@ -4,7 +4,6 @@ import bestem0r.villagermarket.DataManager;
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
-import bestem0r.villagermarket.utilities.ColorBuilder;
 import bestem0r.villagermarket.utilities.Config;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -16,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -51,31 +51,21 @@ public class InventoryClick implements Listener {
         VillagerShop villagerShop = dataManager.getVillagers().get(entityUUID);
         Entity villager = Bukkit.getEntity(UUID.fromString(entityUUID));
 
-        Economy economy = VMPlugin.getEconomy();
-        int cost = villagerShop.getCost();
+        if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && titleIndex != 5) event.setCancelled(true);
+
         switch (titleIndex) {
             //Buy available
             case 0:
+                if (event.getRawSlot() > 8) return;
                 event.setCancelled(true);
-                if (event.getRawSlot() != 4) break;
-
-                if (economy.getBalance(player) < cost) {
-                    player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.not_enough_money"));
+                if (event.getRawSlot() == 4) {
                     event.getView().close();
-                    return;
+                    villagerShop.buyShop(player, villager);
                 }
-                economy.withdrawPlayer(player, cost);
-
-                villager.setCustomName(new Color.Builder().path("villager.name_taken").replace("%player%", player.getName()).build());
-                villagerShop.setOwnerUUID(player.getUniqueId().toString());
-                villagerShop.setOwnerName(player.getName());
-                event.getView().close();
-                player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.buy_shop")), 1, 1);
-                player.openInventory(villagerShop.getInventory(VillagerShop.ShopMenu.EDIT_SHOP));
                 break;
             //Edit shop
             case 1:
-                if (event.getRawSlot() > event.getView().getTopInventory().getSize() - 1) return;
+                if (event.getRawSlot() > 8) return;
                 event.setCancelled(true);
                 villagerShop.editShopInteract(player, event);
                 break;
@@ -102,6 +92,7 @@ public class InventoryClick implements Listener {
             //Edit villager
             case 4:
                 Villager villagerObject = (Villager) villager;
+                if (event.getRawSlot() > 8) return;
                 event.getView().close();
                 event.setCancelled(true);
                 switch (event.getRawSlot()) {
@@ -130,10 +121,12 @@ public class InventoryClick implements Listener {
                         villagerObject.setProfession(Villager.Profession.LIBRARIAN);
                         break;
                     case 8:
-                        player.openInventory(villagerShop.getInventory(VillagerShop.ShopMenu.EDIT_SHOP));
                         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.back")), 0.5f, 1);
-                        break;
+                        event.getView().close();
+                        player.openInventory(villagerShop.getInventory(VillagerShop.ShopMenu.EDIT_SHOP));
+                        return;
                 }
+                player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.change_profession")), 0.5f, 1);
                 break;
             //Storage
             case 5:
@@ -146,31 +139,10 @@ public class InventoryClick implements Listener {
                 break;
             //Sell shop
             case 6:
+                if (event.getRawSlot() > 8) return;
                 event.setCancelled(true);
-                if (event.getRawSlot() == 3) {
+                if (villagerShop.sellShop(event.getRawSlot(), player, dataManager, villager)) {
                     event.getView().close();
-                    villager.setCustomName(ColorBuilder.color("villager.name_available"));
-                    dataManager.getVillagerEntities().remove(villager);
-                    dataManager.removeVillager(entityUUID);
-                    Config.newShopConfig(entityUUID, (Villager) villager, villagerShop.getSize(), villagerShop.getCost(), "player");
-
-                    economy.depositPlayer(player, ((double) villagerShop.getCost() * (mainConfig.getDouble("refund_percent") / 100)));
-
-                    ArrayList<ItemStack> storage = new ArrayList<>(Arrays.asList(villagerShop.getInventory(VillagerShop.ShopMenu.STORAGE).getContents()));
-                    for (ItemStack storageStack : storage) {
-                        if (storageStack != null) {
-                            if (storage.indexOf(storageStack) == villagerShop.getSize() * 18 - 1) continue;
-                            player.getInventory().addItem(storageStack);
-                        }
-                    }
-                    player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.sold_shop"));
-                    player.sendMessage(ColorBuilder.color("messages.sold_shop_2"));
-                    player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_shop")), 0.5f, 1);
-                    player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.menu_click")), 0.5f, 1);
-                } else if (event.getRawSlot() == 5) {
-                    event.getView().close();
-                    player.openInventory(villagerShop.getInventory(VillagerShop.ShopMenu.EDIT_SHOP));
-                    player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.back")), 0.5f, 1);
                 }
                 break;
             //Details
@@ -193,7 +165,8 @@ public class InventoryClick implements Listener {
         if (!dataManager.getClickMap().containsKey(player.getUniqueId().toString())) { return; }
 
         String title = ChatColor.stripColor(event.getView().getTitle());
-        if (title.equals(menus.get(0)) || title.equals(menus.get(2))) {
+        if (menus.contains(title)) {
+            if (title.equals(menus.get(5))) return;
             event.setCancelled(true);
         }
     }

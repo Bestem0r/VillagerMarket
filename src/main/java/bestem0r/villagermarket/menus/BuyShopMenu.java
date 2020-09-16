@@ -4,7 +4,6 @@ import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.items.MenuItem;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
-import bestem0r.villagermarket.utilities.ColorBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class BuyShopMenu {
 
     public static Inventory create(VillagerShop villagerShop) {
-        Inventory inventory = Bukkit.createInventory(null, 9, ColorBuilder.color("menus.buy_shop.title"));
+        Inventory inventory = Bukkit.createInventory(null, 9, new Color.Builder().path("menus.buy_shop.title").build());
 
         FileConfiguration mainConfig = VMPlugin.getInstance().getConfig();
 
@@ -32,7 +31,7 @@ public abstract class BuyShopMenu {
                 .replace("%amount%", storageAmount)
                 .build();
 
-        MenuItem shopSize = new MenuItem.Builder(Material.valueOf(mainConfig.getString("menus.buy_shop.items.for_sale_size.material")))
+        MenuItem shopSize = new MenuItem.Builder(Material.valueOf(mainConfig.getString("menus.buy_shop.items.shop_size.material")))
                 .nameFromPath(shopName)
                 .build();
 

@@ -6,7 +6,6 @@ import bestem0r.villagermarket.items.ShopfrontItem;
 import bestem0r.villagermarket.menus.EditShopMenu;
 import bestem0r.villagermarket.menus.ShopfrontMenu;
 import bestem0r.villagermarket.utilities.Color;
-import bestem0r.villagermarket.utilities.ColorBuilder;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -27,8 +26,6 @@ public class AdminShop extends VillagerShop {
         super.ownerUUID = "admin_shop";
         super.ownerName = "admin_shop";
 
-        super.owner = null;
-
 
         super.shopfrontMenu = newShopfrontMenu(false, ShopfrontItem.LoreType.MENU);
         super.shopfrontDetailedMenu = newShopfrontMenu(false, ShopfrontItem.LoreType.ITEM);
@@ -38,15 +35,18 @@ public class AdminShop extends VillagerShop {
     @Override
     void buildItemList() {
         List<Double> priceList = config.getDoubleList("prices");
+        List<String> modeList = config.getStringList("modes");
         List<ItemStack> itemList = (List<ItemStack>) this.config.getList("for_sale");
 
         for (int i = 0; i < itemList.size(); i ++) {
             double price = (priceList.size() > i ? priceList.get(i) : 0.0);
+            ShopfrontItem.Mode mode = (modeList.size() > i ? ShopfrontItem.Mode.valueOf(modeList.get(i)) : ShopfrontItem.Mode.SELL);
             ShopfrontItem shopfrontItem = null;
             if (itemList.get(i) != null) {
                 shopfrontItem = new ShopfrontItem.Builder(itemList.get(i))
                         .price(price)
                         .villagerType(VillagerType.ADMIN)
+                        .mode(mode)
                         .build();
             }
             this.itemList.put(i, shopfrontItem);
@@ -61,7 +61,7 @@ public class AdminShop extends VillagerShop {
         double price = shopfrontItem.getPrice();
 
         if (economy.getBalance(player) < price) {
-            player.sendMessage(VMPlugin.getPrefix() + ColorBuilder.color("messages.not_enough_money"));
+            player.sendMessage(new Color.Builder().path("messages.not_enough_money").addPrefix().build());
             return false;
         }
         economy.withdrawPlayer(player, price);
@@ -89,6 +89,7 @@ public class AdminShop extends VillagerShop {
             return false;
         }
         player.getInventory().removeItem(shopfrontItem.asItemStack(ShopfrontItem.LoreType.ITEM));
+        player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_item")), 0.5f, 1);
         economy.depositPlayer(player, price);
         return true;
     }
@@ -103,11 +104,11 @@ public class AdminShop extends VillagerShop {
             //Edit for sale
             case 0:
                 updateShopInventories();
-                inventory = getInventory(ShopMenu.EDIT_SHOP);
+                inventory = getInventory(ShopMenu.EDIT_SHOPFRONT);
                 break;
             //Preview shop
             case 1:
-                inventory = getInventory(ShopMenu.SHOPFRONT);
+                inventory = getInventory(ShopMenu. SHOPFRONT);
                 break;
             //Edit villager
             case 2:
@@ -118,7 +119,7 @@ public class AdminShop extends VillagerShop {
                 inventory = null;
                 Bukkit.getServer().getPluginManager().registerEvents(new ChangeName(player, entityUUID), VMPlugin.getInstance());
                 player.sendMessage(VMPlugin.getPrefix() + new Color.Builder().path("messages.change_name").build());
-                player.sendMessage(VMPlugin.getPrefix() + new Color.Builder().path("messages.type_cancel"));
+                player.sendMessage(VMPlugin.getPrefix() + new Color.Builder().path("messages.type_cancel").build());
                 break;
             //Back
             case 8:
