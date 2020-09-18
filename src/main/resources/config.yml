@@ -26,7 +26,6 @@ messages:
   sold_shop_2: '&bIt is now available for purchase again!'
   not_enough_money: '&cYou do not have enough money to buy this!'
   not_enough_stock: '&cThere is not enough items in stock at the moment!'
-  received: '&bYou have received &a%amount%$ &bfrom your shops while you were away!' #Placeholders: %amount%
   remove_villager: '&cRight click&b the Villager Shop you want to &cremove!'
   no_villager_shop: '&cThis is not a Villager Shop! Aborting action!'
   villager_removed: '&cVillager Shop removed!'

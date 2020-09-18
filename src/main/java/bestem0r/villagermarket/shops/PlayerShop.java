@@ -73,6 +73,8 @@ public class PlayerShop extends VillagerShop {
             return false;
         }
         OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
+
+        economy.depositPlayer(owner, price);
         if (owner.isOnline()) {
             Player ownerOnline = owner.getPlayer();
             economy.depositPlayer(owner, price);
@@ -84,13 +86,6 @@ public class PlayerShop extends VillagerShop {
                     .replace("%price%", String.valueOf(price))
                     .addPrefix()
                     .build());
-        } else {
-            double pendingMoney = price;
-            if (Config.getPendingConfig().get(ownerUUID) != null) {
-                pendingMoney += Config.getPendingConfig().getDouble(ownerUUID);
-            }
-            Config.getPendingConfig().set(ownerUUID, pendingMoney);
-            Config.savePending();
         }
         economy.withdrawPlayer(player, price);
 

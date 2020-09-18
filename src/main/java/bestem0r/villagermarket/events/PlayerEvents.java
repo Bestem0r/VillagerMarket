@@ -33,7 +33,7 @@ public class PlayerEvents implements Listener {
         this.dataManager = dataManager;
     }
 
-    @EventHandler
+    /*@EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         String playerUUID = player.getUniqueId().toString();
@@ -51,7 +51,7 @@ public class PlayerEvents implements Listener {
             Config.getPendingConfig().set(playerUUID, 0);
             Config.savePending();
         }
-    }
+    }*/
     @EventHandler
     public void playerRightClick(PlayerInteractEntityEvent event) {
 
@@ -127,12 +127,4 @@ public class PlayerEvents implements Listener {
             }
         }
     }
-
-    /*@EventHandler
-    public void onPlayerDropItem(PlayerDropItemEvent event) {
-        Player player = event.getPlayer();
-        if (dataManager.getAmountHashMap().containsKey(player.getUniqueId().toString())) {
-            event.setCancelled(true);
-        }
-    }*/
 }

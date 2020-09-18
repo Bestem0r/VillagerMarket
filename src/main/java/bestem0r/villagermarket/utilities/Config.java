@@ -16,8 +16,8 @@ import java.util.Collections;
 
 public class Config {
 
-    private static File pendingFile;
-    private static FileConfiguration pendingConfig;
+    //private static File pendingFile;
+    //private static FileConfiguration pendingConfig;
 
 
     public static void newShopConfig(String entityUUID, Villager villager, int size, int cost, String type) {
@@ -53,7 +53,7 @@ public class Config {
 
     }
 
-    public static void savePending() {
+    /*public static void savePending() {
         try {
             pendingConfig.save(pendingFile);
         } catch (IOException i) {}
@@ -69,5 +69,5 @@ public class Config {
     }
     public static FileConfiguration getPendingConfig() {
         return pendingConfig;
-    }
+    }*/
 }

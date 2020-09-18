@@ -51,7 +51,7 @@ public class VMPlugin extends JavaPlugin {
 
         getCommand("vm").setTabCompleter(new TabComplete());
         getCommand("vm").setExecutor(new MainCommand());
-        Config.setupPendingConfig();
+        //Config.setupPendingConfig();
         super.onEnable();
     }
 
