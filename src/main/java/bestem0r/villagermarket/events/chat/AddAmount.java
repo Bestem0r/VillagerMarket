@@ -1,8 +1,7 @@
 package bestem0r.villagermarket.events.chat;
 
-import bestem0r.villagermarket.DataManager;
 import bestem0r.villagermarket.VMPlugin;
-import bestem0r.villagermarket.items.ShopfrontItem;
+import bestem0r.villagermarket.items.ShopItem;
 import bestem0r.villagermarket.utilities.Color;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -14,9 +13,9 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 public class AddAmount implements Listener {
 
     private Player player;
-    private ShopfrontItem.Builder builder;
+    private ShopItem.Builder builder;
 
-    public AddAmount(Player player, ShopfrontItem.Builder builder) {
+    public AddAmount(Player player, ShopItem.Builder builder) {
         this.player = player;
         this.builder = builder;
     }

@@ -1,7 +1,7 @@
 package bestem0r.villagermarket.menus;
 
 import bestem0r.villagermarket.VMPlugin;
-import bestem0r.villagermarket.items.ShopfrontItem;
+import bestem0r.villagermarket.items.ShopItem;
 import bestem0r.villagermarket.items.MenuItem;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
@@ -22,8 +22,8 @@ public abstract class ShopfrontMenu {
         private VillagerShop villagerShop;
         private boolean isEditor = false;
         private int size;
-        private HashMap<Integer, ShopfrontItem> itemList;
-        private ShopfrontItem.LoreType loreType;
+        private HashMap<Integer, ShopItem> itemList;
+        private ShopItem.LoreType loreType;
 
         public Builder(VillagerShop villagerShop) {
             this.villagerShop = villagerShop;
@@ -37,18 +37,18 @@ public abstract class ShopfrontMenu {
             this.size = size;
             return this;
         }
-        public Builder itemList(HashMap<Integer, ShopfrontItem> itemsForSale) {
+        public Builder itemList(HashMap<Integer, ShopItem> itemsForSale) {
             this.itemList = itemsForSale;
             return this;
         }
-        public Builder loreType(ShopfrontItem.LoreType loreType) {
+        public Builder loreType(ShopItem.LoreType loreType) {
             this.loreType = loreType;
             return this;
         }
 
         public Inventory build() {
             String title = (isEditor ? new Color.Builder().path("menus.edit_shopfront.title").build() : new Color.Builder().path("menus.shopfront.title").build());
-            title = (!isEditor && loreType == ShopfrontItem.LoreType.ITEM ? title + " (details)" : title);
+            title = (!isEditor && loreType == ShopItem.LoreType.ITEM ? title + " (details)" : title);
             Inventory inventory = Bukkit.createInventory(null, size, ChatColor.DARK_GRAY + title);
 
             ItemStack[] inventoryItems = new ItemStack[size];
@@ -56,10 +56,10 @@ public abstract class ShopfrontMenu {
 
             for (Integer slot : itemList.keySet()) {
                 if (itemList.get(slot) != null) {
-                    ShopfrontItem shopfrontItem = itemList.get(slot);
-                    shopfrontItem.toggleEditor(isEditor);
-                    shopfrontItem.refreshLore(villagerShop);
-                    inventoryItems[slot] = shopfrontItem.asItemStack(loreType);
+                    ShopItem shopItem = itemList.get(slot);
+                    shopItem.toggleEditor(isEditor);
+                    shopItem.refreshLore(villagerShop);
+                    inventoryItems[slot] = shopItem.asItemStack(loreType);
                 } else {
                     inventoryItems[slot] = null;
                 }

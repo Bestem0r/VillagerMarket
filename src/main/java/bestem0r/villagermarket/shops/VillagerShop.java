@@ -2,12 +2,13 @@ package bestem0r.villagermarket.shops;
 
 import bestem0r.villagermarket.DataManager;
 import bestem0r.villagermarket.VMPlugin;
+import bestem0r.villagermarket.events.ItemDrop;
 import bestem0r.villagermarket.events.chat.AddAmount;
+import bestem0r.villagermarket.items.MenuItem;
+import bestem0r.villagermarket.items.ShopItem;
 import bestem0r.villagermarket.menus.BuyShopMenu;
 import bestem0r.villagermarket.menus.ProfessionMenu;
 import bestem0r.villagermarket.menus.SellShopMenu;
-import bestem0r.villagermarket.items.ShopfrontItem;
-import bestem0r.villagermarket.items.MenuItem;
 import bestem0r.villagermarket.utilities.Color;
 import bestem0r.villagermarket.utilities.Config;
 import net.milkbowl.vault.economy.Economy;
@@ -51,7 +52,7 @@ public abstract class VillagerShop {
     protected int size;
     protected int cost;
 
-    protected HashMap<Integer, ShopfrontItem> itemList = new HashMap<>();
+    protected HashMap<Integer, ShopItem> itemList = new HashMap<>();
 
     protected int shopfrontSize;
     protected int storageSize;
@@ -131,9 +132,9 @@ public abstract class VillagerShop {
 
     /** Buy items and sell items */
     public Boolean customerInteract(int slot, Player player) {
-        ShopfrontItem shopfrontItem = itemList.get(slot);
-        if (shopfrontItem == null) return false;
-        switch (shopfrontItem.getMode()) {
+        ShopItem shopItem = itemList.get(slot);
+        if (shopItem == null) return false;
+        switch (shopItem.getMode()) {
             case BUY:
                 sellItem(slot, player);
                 break;
@@ -166,11 +167,12 @@ public abstract class VillagerShop {
                 player.sendMessage(new Color.Builder().path("messages.type_amount").addPrefix().build());
                 player.sendMessage(new Color.Builder().path("messages.type_cancel").addPrefix().build());
 
-                ShopfrontItem.Builder builder = new ShopfrontItem.Builder(cursorItem)
+                ShopItem.Builder builder = new ShopItem.Builder(cursorItem)
                         .entityUUID(entityUUID)
                         .villagerType(getType())
                         .slot(slot);
 
+                Bukkit.getServer().getPluginManager().registerEvents(new ItemDrop(player), VMPlugin.getInstance());
                 Bukkit.getServer().getPluginManager().registerEvents(new AddAmount(player, builder), VMPlugin.getInstance());
             }
             event.getView().close();
@@ -204,7 +206,9 @@ public abstract class VillagerShop {
         Economy economy = VMPlugin.getEconomy();
         if (economy.getBalance(player) < cost) {
             player.sendMessage(new Color.Builder().path("messages.not_enough_money").addPrefix().build());
+            return;
         }
+
         economy.withdrawPlayer(player, cost);
 
         villager.setCustomName(new Color.Builder().path("villager.name_taken").replace("%player%", player.getName()).build());
@@ -253,7 +257,7 @@ public abstract class VillagerShop {
     /** Create new edit shop inventory */
     protected abstract Inventory newEditShopInventory();
     /** Create new EditForSale inventory*/
-    protected abstract Inventory newShopfrontMenu(Boolean isEditor, ShopfrontItem.LoreType loreType);
+    protected abstract Inventory newShopfrontMenu(Boolean isEditor, ShopItem.LoreType loreType);
 
     /** Create new storage inventory */
     protected Inventory newStorageInventory() {
@@ -306,7 +310,7 @@ public abstract class VillagerShop {
                 priceList.add(0.0);
                 modeList.add("SELL");
             } else {
-                itemStackList.add(itemList.get(slot).asItemStack(ShopfrontItem.LoreType.ITEM));
+                itemStackList.add(itemList.get(slot).asItemStack(ShopItem.LoreType.ITEM));
                 priceList.add(itemList.get(slot).getPrice());
                 modeList.add(itemList.get(slot).getMode().toString());
             }
@@ -327,18 +331,18 @@ public abstract class VillagerShop {
 
     /** Update ForSaleInventory Inventory and ForSaleInventory inventory method*/
     public void updateShopInventories() {
-        this.shopfrontMenu.setContents(newShopfrontMenu(false, ShopfrontItem.LoreType.MENU).getContents());
-        this.shopfrontDetailedMenu.setContents(newShopfrontMenu(false, ShopfrontItem.LoreType.ITEM).getContents());
-        this.editShopfrontMenu.setContents(newShopfrontMenu(true, ShopfrontItem.LoreType.MENU).getContents());
+        this.shopfrontMenu.setContents(newShopfrontMenu(false, ShopItem.LoreType.MENU).getContents());
+        this.shopfrontDetailedMenu.setContents(newShopfrontMenu(false, ShopItem.LoreType.ITEM).getContents());
+        this.editShopfrontMenu.setContents(newShopfrontMenu(true, ShopItem.LoreType.MENU).getContents());
     }
 
     /** Reload all inventories */
     public void reload() {
         this.buyShopMenu.setContents(newBuyShopInventory().getContents());
         this.editShopMenu.setContents(newEditShopInventory().getContents());
-        this.shopfrontMenu.setContents(newShopfrontMenu(false, ShopfrontItem.LoreType.MENU).getContents());
-        this.shopfrontDetailedMenu.setContents(newShopfrontMenu(false, ShopfrontItem.LoreType.ITEM).getContents());
-        this.editShopfrontMenu.setContents(newShopfrontMenu(true, ShopfrontItem.LoreType.MENU).getContents());
+        this.shopfrontMenu.setContents(newShopfrontMenu(false, ShopItem.LoreType.MENU).getContents());
+        this.shopfrontDetailedMenu.setContents(newShopfrontMenu(false, ShopItem.LoreType.ITEM).getContents());
+        this.editShopfrontMenu.setContents(newShopfrontMenu(true, ShopItem.LoreType.MENU).getContents());
         this.editVillagerMenu.setContents(newEditVillagerInventory().getContents());
         this.sellShopMenu.setContents(newSellShopInventory().getContents());
     }
@@ -386,7 +390,7 @@ public abstract class VillagerShop {
 
     public abstract VillagerType getType();
 
-    public HashMap<Integer, ShopfrontItem> getItemList() {
+    public HashMap<Integer, ShopItem> getItemList() {
         return itemList;
     }
 

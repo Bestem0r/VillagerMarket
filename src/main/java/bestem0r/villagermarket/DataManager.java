@@ -1,6 +1,5 @@
 package bestem0r.villagermarket;
 
-import bestem0r.villagermarket.items.ShopfrontItem;
 import bestem0r.villagermarket.shops.AdminShop;
 import bestem0r.villagermarket.shops.PlayerShop;
 import bestem0r.villagermarket.shops.VillagerShop;
@@ -40,6 +39,9 @@ public class DataManager {
     public ArrayList<Entity> getVillagerEntities() {
         return villagerEntities;
     }
+     public void setVillagerEntities(ArrayList<Entity> list) {
+        this.villagerEntities = list;
+     }
 
     public ArrayList<Player> getRemoveVillager() {
         return removeVillager;

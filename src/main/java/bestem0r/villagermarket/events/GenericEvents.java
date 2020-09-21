@@ -13,9 +13,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class GenericEvents implements Listener {
@@ -34,6 +36,17 @@ public class GenericEvents implements Listener {
                 dataManager.getVillagerEntities().add(entity);
             }
         }
+    }
+
+    @EventHandler
+    public void onChunkUnload(ChunkUnloadEvent event) {
+        ArrayList<Entity> entityList = new ArrayList<>(dataManager.getVillagerEntities());
+        for (Entity entity : event.getChunk().getEntities()) {
+            if (dataManager.getVillagerEntities().contains(entity)) {
+                entityList.remove(entity);
+            }
+        }
+        dataManager.setVillagerEntities(entityList);
     }
 
     @EventHandler

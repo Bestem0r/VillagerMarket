@@ -1,8 +1,7 @@
 package bestem0r.villagermarket.events.chat;
 
-import bestem0r.villagermarket.DataManager;
 import bestem0r.villagermarket.VMPlugin;
-import bestem0r.villagermarket.items.ShopfrontItem;
+import bestem0r.villagermarket.items.ShopItem;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
 import org.bukkit.Bukkit;
@@ -16,9 +15,9 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 public class AddPrice implements Listener {
 
     private Player player;
-    private ShopfrontItem.Builder builder;
+    private ShopItem.Builder builder;
 
-    public AddPrice(Player player, ShopfrontItem.Builder builder) {
+    public AddPrice(Player player, ShopItem.Builder builder) {
         this.player = player;
         this.builder = builder;
     }
@@ -47,9 +46,9 @@ public class AddPrice implements Listener {
         String entityUUID = builder.getEntityUUID();
         VillagerShop villagerShop = VMPlugin.getDataManager().getVillagers().get(entityUUID);
 
-        ShopfrontItem shopfrontItem = builder.build();
-        shopfrontItem.refreshLore(villagerShop);
-        villagerShop.getItemList().put(shopfrontItem.getSlot(), shopfrontItem);
+        ShopItem shopItem = builder.build();
+        shopItem.refreshLore(villagerShop);
+        villagerShop.getItemList().put(shopItem.getSlot(), shopItem);
 
         player.sendMessage(new Color.Builder().path("messages.add_successful").addPrefix().build());
         villagerShop.updateShopInventories();

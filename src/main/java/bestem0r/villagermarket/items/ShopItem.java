@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 import java.util.UUID;
 
-public class ShopfrontItem extends ItemStack {
+public class ShopItem extends ItemStack {
 
     public enum LoreType {
         ITEM,
@@ -35,7 +35,7 @@ public class ShopfrontItem extends ItemStack {
 
     private String menuName;
 
-    private ShopfrontItem(ItemStack itemStack) {
+    private ShopItem(ItemStack itemStack) {
         super(itemStack);
     }
 
@@ -81,17 +81,17 @@ public class ShopfrontItem extends ItemStack {
             return this;
         }
 
-        public ShopfrontItem build() {
-            ShopfrontItem shopfrontItem = new ShopfrontItem(itemStack);
-            shopfrontItem.villagerType = villagerType;
+        public ShopItem build() {
+            ShopItem shopItem = new ShopItem(itemStack);
+            shopItem.villagerType = villagerType;
 
-            shopfrontItem.price = price;
-            shopfrontItem.slot = slot;
-            shopfrontItem.setAmount(amount);
+            shopItem.price = price;
+            shopItem.slot = slot;
+            shopItem.setAmount(amount);
 
-            shopfrontItem.mode = mode;
+            shopItem.mode = mode;
 
-            return shopfrontItem;
+            return shopItem;
         }
 
         public String getEntityUUID() {

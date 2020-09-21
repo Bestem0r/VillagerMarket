@@ -2,11 +2,10 @@ package bestem0r.villagermarket.shops;
 
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.events.chat.ChangeName;
-import bestem0r.villagermarket.items.ShopfrontItem;
+import bestem0r.villagermarket.items.ShopItem;
 import bestem0r.villagermarket.menus.EditShopMenu;
 import bestem0r.villagermarket.menus.ShopfrontMenu;
 import bestem0r.villagermarket.utilities.Color;
-import bestem0r.villagermarket.utilities.Config;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -29,9 +28,9 @@ public class PlayerShop extends VillagerShop {
         super.ownerUUID = config.getString("ownerUUID");
         super.ownerName = config.getString("ownerName");
 
-        super.shopfrontMenu = newShopfrontMenu(false, ShopfrontItem.LoreType.MENU);
-        super.shopfrontDetailedMenu = newShopfrontMenu(false, ShopfrontItem.LoreType.ITEM);
-        super.editShopfrontMenu = newShopfrontMenu(true, ShopfrontItem.LoreType.MENU);
+        super.shopfrontMenu = newShopfrontMenu(false, ShopItem.LoreType.MENU);
+        super.shopfrontDetailedMenu = newShopfrontMenu(false, ShopItem.LoreType.ITEM);
+        super.editShopfrontMenu = newShopfrontMenu(true, ShopItem.LoreType.MENU);
     }
 
     @Override
@@ -42,27 +41,28 @@ public class PlayerShop extends VillagerShop {
 
         for (int i = 0; i < itemList.size(); i ++) {
             double price = (priceList.size() > i ? priceList.get(i) : 0.0);
-            ShopfrontItem.Mode mode = (modeList.size() > i ? ShopfrontItem.Mode.valueOf(modeList.get(i)) : ShopfrontItem.Mode.SELL);
-            ShopfrontItem shopfrontItem = null;
+            ShopItem.Mode mode = (modeList.size() > i ? ShopItem.Mode.valueOf(modeList.get(i)) : ShopItem.Mode.SELL);
+            ShopItem shopItem = null;
             if (itemList.get(i) != null) {
-                shopfrontItem = new ShopfrontItem.Builder(itemList.get(i))
+                shopItem = new ShopItem.Builder(itemList.get(i))
                         .price(price)
                         .villagerType(VillagerType.PLAYER)
+                        .amount(itemList.get(i).getAmount())
                         .mode(mode)
                         .build();
             }
-            this.itemList.put(i, shopfrontItem);
+            this.itemList.put(i, shopItem);
         }
     }
 
     @Override
     protected Boolean buyItem(int slot, Player player) {
-        ShopfrontItem shopfrontItem = itemList.get(slot);
+        ShopItem shopItem = itemList.get(slot);
         Economy economy = VMPlugin.getEconomy();
 
-        int amount = shopfrontItem.getAmount();
-        int inStock = getItemAmount(shopfrontItem.asItemStack(ShopfrontItem.LoreType.ITEM));
-        double price = shopfrontItem.getPrice();
+        int amount = shopItem.getAmount();
+        int inStock = getItemAmount(shopItem.asItemStack(ShopItem.LoreType.ITEM));
+        double price = shopItem.getPrice();
 
         if ((inStock < amount)) {
             player.sendMessage(new Color.Builder().path("messages.not_enough_stock").addPrefix().build());
@@ -82,14 +82,14 @@ public class PlayerShop extends VillagerShop {
                     .path("messages.sold_item_as_owner")
                     .replace("%player%", player.getName())
                     .replace("%amount%", String.valueOf(amount))
-                    .replace("%item%", shopfrontItem.getType().name().toLowerCase())
+                    .replace("%item%", shopItem.getType().name().toLowerCase())
                     .replace("%price%", String.valueOf(price))
                     .addPrefix()
                     .build());
         }
         economy.withdrawPlayer(player, price);
 
-        ItemStack boughtStack = shopfrontItem.asItemStack(ShopfrontItem.LoreType.ITEM);
+        ItemStack boughtStack = shopItem.asItemStack(ShopItem.LoreType.ITEM);
 
         HashMap<Integer, ItemStack> itemsLeft = player.getInventory().addItem(boughtStack);
         for (int i : itemsLeft.keySet()) {
@@ -103,14 +103,14 @@ public class PlayerShop extends VillagerShop {
 
     @Override
     protected Boolean sellItem(int slot, Player player) {
-        ShopfrontItem shopfrontItem = itemList.get(slot);
+        ShopItem shopItem = itemList.get(slot);
         Economy economy = VMPlugin.getEconomy();
         OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
 
-        int amount = shopfrontItem.getAmount();
+        int amount = shopItem.getAmount();
         double moneyLeft = economy.getBalance(owner);
-        double price = shopfrontItem.getPrice();
-        int amountInInventory = getAmountInventory(shopfrontItem.asItemStack(ShopfrontItem.LoreType.ITEM), player.getInventory());
+        double price = shopItem.getPrice();
+        int amountInInventory = getAmountInventory(shopItem.asItemStack(ShopItem.LoreType.ITEM), player.getInventory());
 
         if (moneyLeft < price) {
             player.sendMessage(VMPlugin.getPrefix() + new Color.Builder().path("messages.owner_not_enough_money").build());
@@ -120,9 +120,9 @@ public class PlayerShop extends VillagerShop {
             player.sendMessage(VMPlugin.getPrefix() + new Color.Builder().path("messages.not_enough_in_inventory").build());
             return false;
         }
-        player.getInventory().removeItem(shopfrontItem.asItemStack(ShopfrontItem.LoreType.ITEM));
+        player.getInventory().removeItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
         economy.depositPlayer(player, price);
-        getInventory(ShopMenu.STORAGE).addItem(shopfrontItem.asItemStack(ShopfrontItem.LoreType.ITEM));
+        getInventory(ShopMenu.STORAGE).addItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
 
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_item")), 0.5f, 1);
 
@@ -133,7 +133,7 @@ public class PlayerShop extends VillagerShop {
                     .path("messages.bought_item_as_owner")
                     .replace("%player%", player.getName())
                     .replace("%amount%", String.valueOf(amount))
-                    .replace("%item%", shopfrontItem.getType().name().replaceAll("_", " ").toLowerCase())
+                    .replace("%item%", shopItem.getType().name().replaceAll("_", " ").toLowerCase())
                     .replace("%price%", String.valueOf(price))
                     .addPrefix()
                     .build());
@@ -198,7 +198,7 @@ public class PlayerShop extends VillagerShop {
 
     /** Create new inventory for items for sale editor, or shop front */
     @Override
-    protected Inventory newShopfrontMenu(Boolean isEditor, ShopfrontItem.LoreType loreType) {
+    protected Inventory newShopfrontMenu(Boolean isEditor, ShopItem.LoreType loreType) {
         return new ShopfrontMenu.Builder(this)
                 .isEditor(isEditor)
                 .size(super.shopfrontSize)
