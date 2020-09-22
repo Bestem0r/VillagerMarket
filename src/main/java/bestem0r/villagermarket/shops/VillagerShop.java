@@ -242,7 +242,6 @@ public abstract class VillagerShop {
         if (slot == 3) {
             Economy economy = VMPlugin.getEconomy();
             villager.setCustomName(new Color.Builder().path("villager.name_available").build());
-            dataManager.getVillagerEntities().remove(villager);
             dataManager.removeVillager(entityUUID);
             Config.newShopConfig(entityUUID, (Villager) villager, storageSize / 9, shopfrontSize / 9, getCost(), "player");
 

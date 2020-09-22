@@ -10,12 +10,13 @@ import java.util.List;
 
 public class TabComplete implements TabCompleter {
     @Override
-    public List<String> onTabComplete (CommandSender sender, Command cmd, String label, String[] args){
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args){
         if(sender instanceof Player) {
             List<String> list = new ArrayList<>();
 
             if ((args.length == 0 || args.length == 1)) {
                 if (args[0].isEmpty()) {
+                    list.add("help");
                     list.add("reload");
                     list.add("create");
                     list.add("remove");

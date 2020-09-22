@@ -7,7 +7,6 @@ import bestem0r.villagermarket.events.InventoryClick;
 import bestem0r.villagermarket.events.PlayerEvents;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
-import bestem0r.villagermarket.utilities.Config;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -51,7 +50,7 @@ public class VMPlugin extends JavaPlugin {
 
         getCommand("vm").setTabCompleter(new TabComplete());
         getCommand("vm").setExecutor(new MainCommand());
-        //Config.setupPendingConfig();
+
         super.onEnable();
     }
 

@@ -53,7 +53,7 @@ public class GenericEvents implements Listener {
     public void onWorldLoad(WorldLoadEvent event) {
         World world = event.getWorld();
         for (Entity entity : world.getEntities()) {
-            if (dataManager.getVillagerEntities().contains(entity)) { continue; }
+            if (dataManager.getVillagerEntities().contains(entity)) continue;
             if (dataManager.getVillagers().containsKey(entity.getUniqueId().toString())) {
                 dataManager.getVillagerEntities().add(entity);
             }

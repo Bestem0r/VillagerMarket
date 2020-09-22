@@ -7,7 +7,7 @@ depend: [Vault]
 softdepend: [Essentials]
 commands:
   vm:
-    description: Create a new villager
-    usage: /vm <create/remove/reload>
+    description: List all Villager Market commands
+    usage: /vm help
     aliases:
       - villagermarket

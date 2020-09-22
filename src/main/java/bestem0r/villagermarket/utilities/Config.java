@@ -5,7 +5,6 @@ import bestem0r.villagermarket.shops.VillagerShop;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
@@ -17,7 +16,7 @@ import java.util.Collections;
 public class Config {
 
 
-    public static void newShopConfig(String entityUUID, Villager villager, int storageSize, int shopfrontSize, int cost, String type) {
+    public static void newShopConfig(String entityUUID, int storageSize, int shopfrontSize, int cost, String type, int duration) {
         File file = new File(Bukkit.getServer().getPluginManager().getPlugin("VillagerMarket").getDataFolder() + "/Shops/", entityUUID + ".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         config.set("ownerUUID", "null");
@@ -44,7 +43,6 @@ public class Config {
         try {
             config.save(file);
             VMPlugin.getDataManager().addVillager(entityUUID, file, VillagerShop.VillagerType.valueOf(type.toUpperCase()));
-            VMPlugin.getDataManager().getVillagerEntities().add(villager);
         } catch (IOException i) {
             Bukkit.getLogger().severe("Failed to save config!");
         }

@@ -20,7 +20,6 @@ public class MainCommand implements org.bukkit.command.CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (sender instanceof Player) {
 
-
             Player player = (Player) sender;
             if ((args.length == 4 || args.length == 5) && args[0].equalsIgnoreCase("create")) {
                 if (!player.hasPermission("villagermarket.create")) {
@@ -29,14 +28,17 @@ public class MainCommand implements org.bukkit.command.CommandExecutor {
                 }
                 if (!args[1].equalsIgnoreCase("player") && !args[1].equalsIgnoreCase("admin")) {
                     player.sendMessage(ChatColor.RED + "Incorrect usage: Type must be Player or Admin!");
+                    player.sendMessage(ChatColor.RED + "Usage: /vm create <type> <shopsize> [storagesize] [price] [hours]");
                     return true;
                 }
                 if (args[1].equalsIgnoreCase("player") && args.length != 5) {
                     player.sendMessage(ChatColor.RED + "You need to specify a price for the villager!");
+                    player.sendMessage(ChatColor.RED + "Usage: /vm create <type> <shopsize> [storagesize] [price] [hours]");
                     return true;
                 }
                 if ((!canConvert(args[2]) && !canConvert(args[3])) || ((args[1].equalsIgnoreCase("player") && !canConvert(args[2]) && !canConvert(args[3]) && !canConvert(args[4])))) {
-                    player.sendMessage(ChatColor.RED + "Incorrect usage: Arguments must be a number!");
+                    player.sendMessage(ChatColor.RED + "Incorrect usage: Must be a number!");
+                    player.sendMessage(ChatColor.RED + "Usage: /vm create <type> <shopsize> [storagesize] [price] [hours]");
                     return true;
                 }
 
@@ -46,15 +48,18 @@ public class MainCommand implements org.bukkit.command.CommandExecutor {
                 int cost = (args.length == 4 ? Integer.parseInt(args[3]) : 0);
 
                 if (storageSize < 1 || storageSize > 6) {
-                    player.sendMessage(ChatColor.RED + "Incorrect usage: Size must be between 1 and 6!");
+                    player.sendMessage(ChatColor.RED + "Incorrect usage: Storage size must be between 1 and 6!");
+                    player.sendMessage(ChatColor.RED + "Usage: /vm create <type> <shopsize> [storagesize] [price] [hours]");
                     return true;
                 }
                 if (shopfrontSize < 1 || shopfrontSize > 6) {
-                    player.sendMessage(ChatColor.RED + "Incorrect usage: Size must be between 1 and 6!");
+                    player.sendMessage(ChatColor.RED + "Incorrect usage: Shop size must be between 1 and 6!");
+                    player.sendMessage(ChatColor.RED + "Usage: /vm create <type> <shopsize> [storagesize] [price] [hours]");
                     return true;
                 }
                 if (cost < 0) {
                     player.sendMessage(ChatColor.RED + "Incorrect usage: Cost can't be less than 0!");
+                    player.sendMessage(ChatColor.RED + "Usage: /vm create <type> <shopsize> [storagesize] [price] [hours]");
                     return true;
                 }
 
@@ -71,7 +76,8 @@ public class MainCommand implements org.bukkit.command.CommandExecutor {
 
                 String entityUUID = villager.getUniqueId().toString();
                 if (Bukkit.getEntity(UUID.fromString(entityUUID)) != null) {
-                    Config.newShopConfig(entityUUID, villager, storageSize, shopfrontSize, cost, type);
+                    Config.newShopConfig(entityUUID, storageSize, shopfrontSize, cost, type, );
+                    VMPlugin.getDataManager().getVillagerEntities().add(villager);
                 } else {
                     player.sendMessage(VMPlugin.getPrefix() + ChatColor.RED + "Unable to spawn Villager! Does WorldGuard deny mobspawn?");
                 }
@@ -93,14 +99,25 @@ public class MainCommand implements org.bukkit.command.CommandExecutor {
                 }
                 player.sendMessage(new Color.Builder().path("messages.remove_villager").addPrefix().build());
                 VMPlugin.getDataManager().getRemoveVillager().add(player);
+            } else if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
+                for (String text : help) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', text));
+                }
             }
             else {
-                player.sendMessage(ChatColor.RED + "Incorrect usage: /vm <create/reload/remove>");
+                player.sendMessage(ChatColor.RED + "Incorrect usage! Use /vm help!");
                 return true;
             }
         }
         return true;
     }
+    private String[] help = {
+            "&a&lVillager Market's commands:",
+            "",
+            "&7Create shop: &a/vm create <type> <shopsize> [storagesize] [price] [hours]",
+            "&7Remove shop: &a/vm remove",
+            "Reload configs: &a/vm reload"
+    };
     private Boolean canConvert(String string) {
         for (int i = 0; i < string.length(); i++) {
             char c = string.charAt(i);
