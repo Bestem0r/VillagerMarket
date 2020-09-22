@@ -48,7 +48,8 @@ public abstract class ShopfrontMenu {
 
         public Inventory build() {
             String title = (isEditor ? new Color.Builder().path("menus.edit_shopfront.title").build() : new Color.Builder().path("menus.shopfront.title").build());
-            title = (!isEditor && loreType == ShopItem.LoreType.ITEM ? title + " (details)" : title);
+            String detailSuffix = new Color.Builder().path("menus.shopfront.detail_suffix").build();
+            title = (!isEditor && loreType == ShopItem.LoreType.ITEM ? title + " " + detailSuffix : title);
             Inventory inventory = Bukkit.createInventory(null, size, ChatColor.DARK_GRAY + title);
 
             ItemStack[] inventoryItems = new ItemStack[size];

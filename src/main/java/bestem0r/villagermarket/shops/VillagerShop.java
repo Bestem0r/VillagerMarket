@@ -21,6 +21,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -49,7 +50,6 @@ public abstract class VillagerShop {
     protected String ownerName;
     protected String entityUUID;
 
-    protected int size;
     protected int cost;
 
     protected HashMap<Integer, ShopItem> itemList = new HashMap<>();
@@ -85,17 +85,19 @@ public abstract class VillagerShop {
         this.ownerName = config.getString("ownerName");
         this.entityUUID = file.getName().substring(0, file.getName().indexOf('.'));
 
-        this.size = config.getInt("size");
+
+        this.shopfrontSize = config.getInt("shopfrontSize") * 9;
+        this.storageSize = config.getInt("storageSize") * 9;
+
+        int size = config.getInt("size");
+        if (size != 0) {
+            this.shopfrontSize = size * 9;
+            this.storageSize = size * 18;
+        }
 
         this.cost = config.getInt("cost");
 
         buildItemList();
-
-        this.ownerUUID = "";
-        this.ownerName = "";
-
-        this.shopfrontSize = size * 9;
-        this.storageSize = size * 18;
 
         this.buyShopMenu = newBuyShopInventory();
         this.editShopMenu = newEditShopInventory();
@@ -178,6 +180,10 @@ public abstract class VillagerShop {
             event.getView().close();
             return true;
         } else if (slot < shopfrontSize) {
+            //Quick add
+            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                quickAdd(player.getInventory(), event.getRawSlot());
+            }
             //Back
             if (slot == shopfrontSize - 1) {
                 player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.menu_click")), 0.5f, 1);
@@ -201,6 +207,18 @@ public abstract class VillagerShop {
         }
         return false;
     }
+    /** Add everything from inventory to shop */
+    public void quickAdd(Inventory inventory, int slot) {
+        ShopItem shopItem = itemList.get(slot);
+        for (ItemStack inventoryStack : inventory.getContents()) {
+            if (shopItem.asItemStack(ShopItem.LoreType.ITEM).isSimilar(inventoryStack)) {
+                storageMenu.addItem(inventoryStack);
+                inventory.remove(inventoryStack);
+            }
+        }
+        updateShopInventories();
+    }
+
     /** Buy shop (This is only for Player Shops )*/
     public void buyShop(Player player, Entity villager) {
         Economy economy = VMPlugin.getEconomy();
@@ -226,14 +244,14 @@ public abstract class VillagerShop {
             villager.setCustomName(new Color.Builder().path("villager.name_available").build());
             dataManager.getVillagerEntities().remove(villager);
             dataManager.removeVillager(entityUUID);
-            Config.newShopConfig(entityUUID, (Villager) villager, getSize(), getCost(), "player");
+            Config.newShopConfig(entityUUID, (Villager) villager, storageSize / 9, shopfrontSize / 9, getCost(), "player");
 
             economy.depositPlayer(player, ((double) getCost() * (mainConfig.getDouble("refund_percent") / 100)));
 
             ArrayList<ItemStack> storage = new ArrayList<>(Arrays.asList(getInventory(ShopMenu.STORAGE).getContents()));
             for (ItemStack storageStack : storage) {
                 if (storageStack != null) {
-                    if (storage.indexOf(storageStack) == getSize() * 18 - 1) continue;
+                    if (storage.indexOf(storageStack) == storageSize - 1) continue;
                     player.getInventory().addItem(storageStack);
                 }
             }
@@ -380,8 +398,11 @@ public abstract class VillagerShop {
         return ownerUUID;
     }
 
-    public int getSize() {
-        return size;
+    public int getStorageSize() {
+        return storageSize;
+    }
+    public int getShopfrontSize() {
+        return shopfrontSize;
     }
 
     public int getCost() {

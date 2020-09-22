@@ -22,7 +22,7 @@ public class MainCommand implements org.bukkit.command.CommandExecutor {
 
 
             Player player = (Player) sender;
-            if ((args.length == 3 || args.length == 4) && args[0].equalsIgnoreCase("create")) {
+            if ((args.length == 4 || args.length == 5) && args[0].equalsIgnoreCase("create")) {
                 if (!player.hasPermission("villagermarket.create")) {
                     player.sendMessage(ChatColor.RED + "You do not have permission for this command!");
                     return true;
@@ -31,21 +31,26 @@ public class MainCommand implements org.bukkit.command.CommandExecutor {
                     player.sendMessage(ChatColor.RED + "Incorrect usage: Type must be Player or Admin!");
                     return true;
                 }
-                if (args[1].equalsIgnoreCase("player") && args.length != 4) {
+                if (args[1].equalsIgnoreCase("player") && args.length != 5) {
                     player.sendMessage(ChatColor.RED + "You need to specify a price for the villager!");
                     return true;
                 }
-                if (!canConvert(args[2]) || (args[1].equalsIgnoreCase("player") && !canConvert(args[3]))) {
+                if ((!canConvert(args[2]) && !canConvert(args[3])) || ((args[1].equalsIgnoreCase("player") && !canConvert(args[2]) && !canConvert(args[3]) && !canConvert(args[4])))) {
                     player.sendMessage(ChatColor.RED + "Incorrect usage: Arguments must be a number!");
                     return true;
                 }
 
                 String type = args[1];
-                int size = Integer.parseInt(args[2]);
+                int shopfrontSize = Integer.parseInt(args[2]);
+                int storageSize = Integer.parseInt(args[3]);
                 int cost = (args.length == 4 ? Integer.parseInt(args[3]) : 0);
 
-                if (size < 1 || size > 3) {
-                    player.sendMessage(ChatColor.RED + "Incorrect usage: Size must be between 1 and 3!");
+                if (storageSize < 1 || storageSize > 6) {
+                    player.sendMessage(ChatColor.RED + "Incorrect usage: Size must be between 1 and 6!");
+                    return true;
+                }
+                if (shopfrontSize < 1 || shopfrontSize > 6) {
+                    player.sendMessage(ChatColor.RED + "Incorrect usage: Size must be between 1 and 6!");
                     return true;
                 }
                 if (cost < 0) {
@@ -66,7 +71,7 @@ public class MainCommand implements org.bukkit.command.CommandExecutor {
 
                 String entityUUID = villager.getUniqueId().toString();
                 if (Bukkit.getEntity(UUID.fromString(entityUUID)) != null) {
-                    Config.newShopConfig(entityUUID, villager, size, cost, type);
+                    Config.newShopConfig(entityUUID, villager, storageSize, shopfrontSize, cost, type);
                 } else {
                     player.sendMessage(VMPlugin.getPrefix() + ChatColor.RED + "Unable to spawn Villager! Does WorldGuard deny mobspawn?");
                 }

@@ -6,6 +6,8 @@ plugin_prefix: '&8[&aMarket&8]&r'
 refund_percent: 50.0
 #How often should villager shops auto-save? (minutes)
 auto_save_interval: 10
+#How much (%) should be taken as tax?
+tax: 10
 
 
 #----------------------- Messages & Sounds -----------------------#
@@ -37,6 +39,8 @@ messages:
   change_name: '&bPlease type the name you want for your shop!'
   change_name_set: '&aSuccessfully set name to: &r%name%&a!'
   must_be_menulore: '&cPlease toggle back to &e&nmenu lore&c to sell/buy items!'
+  cannot_buy_from_yourself: '&cYou can not buy items from yourself!'
+  tax: '&a%tax%$ &7was taken as taxes!'
 
 sounds:
   open_shop: ENTITY_VILLAGER_TRADE
@@ -50,6 +54,7 @@ sounds:
   change_profession: ITEM_ARMOR_EQUIP_LEATHER
   sell_shop: ENTITY_EXPERIENCE_ORB_PICKUP
   remove_villager: BLOCK_LAVA_EXTINGUISH
+  quick_add: ENTITY_ITEM_PICKUP
 
 
 #----------------------- Villager settings -----------------------#
@@ -160,7 +165,10 @@ menus:
   #Edit shopfront menu. (Add/remove items)
   edit_shopfront:
     title: '&8Add items for sale'
-    item_name: '&f%item_name% &8[&a%mode%&8]' #Placeholders: %item_name%, %mode%
+    item_name: '&f%item_name% %mode%' #Placeholders: %item_name%, %mode%
+    modes:
+      buy: '&8[&aBUY&8]'
+      sell: '&8[&aSELL&8]'
     player:
       sell_lore: #Placeholders: %amount%, %price%, %stock%
         - ''
@@ -170,7 +178,9 @@ menus:
         - ''
         - '&7>> Right click &7to &cremove'
         - '&7>> Left click &7to toggle: '
-        - '&7Villager will &e&nsell&8 | &7buy'
+        - '&7 - Villager will &e&nsell&8 | &7buy'
+        - ''
+        - '&7>> Shift + right click to &bquick add&7!'
       buy_lore: #Placeholders: %amount%, %price%, %money%
         - ''
         - '&7Amount: &e%amount%'
@@ -179,8 +189,7 @@ menus:
         - ''
         - '&7>> Right click &7to &cremove'
         - '&7>> Left click &7to toggle: '
-        - '&7Villager will sell&8 | &e&nbuy'
-
+        - '&7 - Villager will sell&8 | &e&nbuy'
     admin:
       sell_lore:
         - ''
@@ -189,7 +198,7 @@ menus:
         - ''
         - '&7>> Right click &7to &cremove'
         - '&7>> Left click &7to toggle: '
-        - '&7Villager will &e&nsell&8 | &7buy'
+        - '&7 - Villager will &e&nsell&8 | &7buy'
       buy_lore:
         - ''
         - '&7Amount: &e%amount%'
@@ -197,11 +206,15 @@ menus:
         - ''
         - '&7>> Right click &7to &cremove'
         - '&7>> Left click &7to toggle: '
-        - '&7Villager will sell&8 | &e&nbuy'
+        - '&7 - Villager will sell&8 | &e&nbuy'
   #Buy/sell items menu (This is the menu for customers)
   shopfront:
     title: '&8Buy items'
-    item_name: '&f%item_name% &8[&a%mode%&8]' #Placeholders: %item_name%, %mode%
+    item_name: '&f%item_name% %mode%' #Placeholders: %item_name%, %mode%
+    detail_suffix: '&8(Details)'
+    modes:
+      buy: '&8[&aBUY&8]'
+      sell: '&8[&aSELL&8]'
     player:
       buy_lore: #Placeholders: %amount%, %price%, %stock%
         - ''

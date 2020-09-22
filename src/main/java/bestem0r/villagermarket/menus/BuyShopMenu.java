@@ -18,8 +18,8 @@ public abstract class BuyShopMenu {
         FileConfiguration mainConfig = VMPlugin.getInstance().getConfig();
 
         String cost = String.valueOf(villagerShop.getCost());
-        String shopAmount = String.valueOf(villagerShop.getSize() * 9 - 1);
-        String storageAmount = String.valueOf(villagerShop.getSize() * 18 - 1);
+        String shopAmount = String.valueOf(villagerShop.getShopfrontSize() - 1);
+        String storageAmount = String.valueOf(villagerShop.getStorageSize() - 1);
 
         String shopName = new Color.Builder()
                 .path("menus.buy_shop.items.shop_size.name")

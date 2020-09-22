@@ -153,10 +153,12 @@ public class ShopItem extends ItemStack {
                 .buildLore();
 
         String namePath = "menus" + inventoryPath + "item_name";
+        String name = (super.getItemMeta().hasDisplayName() ? super.getItemMeta().getDisplayName() : WordUtils.capitalizeFully(super.getType().name().replaceAll("_", " ")));
+        String mode = new Color.Builder().path("menus" + inventoryPath + "modes." + itemMode.toString().toLowerCase()).build();
         menuName = new Color.Builder()
                 .path(namePath)
-                .replace("%item_name%", WordUtils.capitalizeFully(this.getType().name().replace('_', ' ')))
-                .replace("%mode%", itemMode.toString().toUpperCase())
+                .replace("%item_name%", name)
+                .replace("%mode%", mode)
                 .build();
     }
 

@@ -75,11 +75,11 @@ public class InventoryClick implements Listener {
                 break;
             //Buy/sell items
             case 3:
-                if (!(event.getRawSlot() < villagerShop.getSize() * 9)) return;
+                if (!(event.getRawSlot() < villagerShop.getShopfrontSize())) return;
                 event.setCancelled(true);
                 if (event.getCurrentItem() == null) return;
 
-                if (event.getRawSlot() == villagerShop.getSize() * 9 - 1) {
+                if (event.getRawSlot() == villagerShop.getShopfrontSize() - 1) {
                     player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.menu_click")), 0.5f, 1);
                     player.openInventory(villagerShop.getInventory(VillagerShop.ShopMenu.SHOPFRONT_DETAILED));
                     break;
@@ -130,7 +130,7 @@ public class InventoryClick implements Listener {
                 break;
             //Storage
             case 5:
-                if (event.getRawSlot() == villagerShop.getSize() * 18 - 1) {
+                if (event.getRawSlot() == villagerShop.getStorageSize() - 1) {
                     player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.back")), 0.5f, 1);
                     event.getView().close();
                     player.openInventory(villagerShop.getInventory(VillagerShop.ShopMenu.EDIT_SHOP));
@@ -147,10 +147,10 @@ public class InventoryClick implements Listener {
                 break;
             //Details
             case 7:
-                if (!(event.getRawSlot() < villagerShop.getSize() * 9)) return;
+                if (!(event.getRawSlot() < villagerShop.getShopfrontSize())) return;
                 if (event.getCurrentItem() == null) return;
                 event.setCancelled(true);
-                if (event.getRawSlot() == villagerShop.getSize() * 9 - 1) {
+                if (event.getRawSlot() == villagerShop.getShopfrontSize() - 1) {
                     player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.menu_click")), 0.5f, 1);
                     player.openInventory(villagerShop.getInventory(VillagerShop.ShopMenu.SHOPFRONT));
                 } else {
@@ -179,6 +179,7 @@ public class InventoryClick implements Listener {
         menus.add(4, ChatColor.stripColor(new Color.Builder().path("menus.edit_villager.title").build()));
         menus.add(5, ChatColor.stripColor(new Color.Builder().path("menus.edit_storage.title").build()));
         menus.add(6, ChatColor.stripColor(new Color.Builder().path("menus.sell_shop.title").build()));
-        menus.add(7, ChatColor.stripColor(new Color.Builder().path("menus.shopfront.title").build()) + " (details)");
+        String detailSuffix = new Color.Builder().path("menus.shopfront.detail_suffix").build();
+        menus.add(7, ChatColor.stripColor(new Color.Builder().path("menus.shopfront.title").build()) + " " + ChatColor.stripColor(detailSuffix));
     }
 }

@@ -29,25 +29,6 @@ public class PlayerEvents implements Listener {
         this.dataManager = dataManager;
     }
 
-    /*@EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        String playerUUID = player.getUniqueId().toString();
-        if (Config.getPendingConfig().get(playerUUID) != null) {
-            int pendingAmount = (int) Config.getPendingConfig().get(playerUUID);
-            if (pendingAmount == 0) {
-                return;
-            }
-            Economy economy = VMPlugin.getEconomy();
-            economy.depositPlayer(player, pendingAmount);
-            player.sendMessage(VMPlugin.getPrefix() + new Color.Builder()
-                    .path("messages.received")
-                    .replace("%amount%", String.valueOf(pendingAmount))
-                    .build());
-            Config.getPendingConfig().set(playerUUID, 0);
-            Config.savePending();
-        }
-    }*/
     @EventHandler
     public void playerRightClick(PlayerInteractEntityEvent event) {
 

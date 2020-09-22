@@ -60,9 +60,12 @@ public class PlayerShop extends VillagerShop {
         ShopItem shopItem = itemList.get(slot);
         Economy economy = VMPlugin.getEconomy();
 
+        double tax = mainConfig.getInt("tax");
         int amount = shopItem.getAmount();
         int inStock = getItemAmount(shopItem.asItemStack(ShopItem.LoreType.ITEM));
         double price = shopItem.getPrice();
+
+        double taxAmount = tax / 100 * price;
 
         if ((inStock < amount)) {
             player.sendMessage(new Color.Builder().path("messages.not_enough_stock").addPrefix().build());
@@ -73,11 +76,14 @@ public class PlayerShop extends VillagerShop {
             return false;
         }
         OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
+        if (player.getUniqueId().equals(owner.getUniqueId())) {
+            player.sendMessage(new Color.Builder().path("messages.cannot_buy_from_yourself").addPrefix().build());
+            //return false;
+        }
 
-        economy.depositPlayer(owner, price);
+        economy.depositPlayer(owner, price - taxAmount);
         if (owner.isOnline()) {
             Player ownerOnline = owner.getPlayer();
-            economy.depositPlayer(owner, price);
             ownerOnline.sendMessage(new Color.Builder()
                     .path("messages.sold_item_as_owner")
                     .replace("%player%", player.getName())
@@ -86,6 +92,12 @@ public class PlayerShop extends VillagerShop {
                     .replace("%price%", String.valueOf(price))
                     .addPrefix()
                     .build());
+            ownerOnline.sendMessage(new Color.Builder()
+                    .path("messages.tax")
+                    .replace("%tax%", String.valueOf(taxAmount))
+                    .addPrefix()
+                    .build()
+            );
         }
         economy.withdrawPlayer(player, price);
 
@@ -107,10 +119,13 @@ public class PlayerShop extends VillagerShop {
         Economy economy = VMPlugin.getEconomy();
         OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
 
+        double tax = mainConfig.getInt("tax");
         int amount = shopItem.getAmount();
         double moneyLeft = economy.getBalance(owner);
         double price = shopItem.getPrice();
         int amountInInventory = getAmountInventory(shopItem.asItemStack(ShopItem.LoreType.ITEM), player.getInventory());
+
+        double taxAmount = tax / 100 * price;
 
         if (moneyLeft < price) {
             player.sendMessage(VMPlugin.getPrefix() + new Color.Builder().path("messages.owner_not_enough_money").build());
@@ -121,10 +136,15 @@ public class PlayerShop extends VillagerShop {
             return false;
         }
         player.getInventory().removeItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
-        economy.depositPlayer(player, price);
+        economy.depositPlayer(player, price - taxAmount);
         getInventory(ShopMenu.STORAGE).addItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
 
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_item")), 0.5f, 1);
+        player.sendMessage(new Color.Builder()
+                        .path("messages.tax")
+                        .replace("%tax%", String.valueOf(taxAmount))
+                        .addPrefix()
+                        .build());
 
         economy.withdrawPlayer(owner, price);
         if (owner.isOnline()) {
