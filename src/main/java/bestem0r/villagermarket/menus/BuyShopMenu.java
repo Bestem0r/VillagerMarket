@@ -21,6 +21,24 @@ public abstract class BuyShopMenu {
         String shopAmount = String.valueOf(villagerShop.getShopfrontSize() - 1);
         String storageAmount = String.valueOf(villagerShop.getStorageSize() - 1);
 
+        String time = "indefinitely";
+        String time_short = villagerShop.getDuration();
+        String unit = time_short.substring(time_short.length() - 1);
+        String amount = time_short.substring(0, time_short.length() - 1);
+        switch (unit) {
+            case "s":
+                time = amount + " seconds";
+                break;
+            case "m":
+                time = amount + " minutes";
+                break;
+            case "h":
+                time = amount + " hours";
+                break;
+            case "d":
+                time = amount + " days";
+        }
+
         String shopName = new Color.Builder()
                 .path("menus.buy_shop.items.shop_size.name")
                 .replace("%amount%", shopAmount)
@@ -45,7 +63,11 @@ public abstract class BuyShopMenu {
 
         MenuItem buyShop = new MenuItem.Builder(Material.valueOf(mainConfig.getString("menus.buy_shop.items.buy_shop.material")))
                 .nameFromPath("menus.buy_shop.items.buy_shop.name")
-                .lore(new Color.Builder().path("menus.buy_shop.items.buy_shop.lore").replace("%price%", cost).buildLore())
+                .lore(new Color.Builder()
+                        .path("menus.buy_shop.items.buy_shop.lore")
+                        .replace("%price%", cost)
+                        .replace("%time%", time)
+                        .buildLore())
                 .build();
 
         ItemStack[] items = {

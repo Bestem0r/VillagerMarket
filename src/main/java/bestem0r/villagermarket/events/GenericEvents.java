@@ -6,12 +6,15 @@ import bestem0r.villagermarket.shops.VillagerShop;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LightningStrike;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.weather.LightningStrikeEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldLoadEvent;
@@ -88,6 +91,18 @@ public class GenericEvents implements Listener {
                 if (!player.hasPermission("villagermarket.spy")) return;
                 VillagerShop villagerShop = dataManager.getVillagers().get(entityUUID);
                 player.openInventory(villagerShop.getInventory(VillagerShop.ShopMenu.STORAGE));
+            }
+        }
+    }
+
+    @EventHandler
+    public void onLightningStrike(EntitySpawnEvent event) {
+        Entity spawnedEntity = event.getEntity();
+        if (spawnedEntity instanceof LightningStrike) {
+            for (Entity entity : spawnedEntity.getNearbyEntities(2, 2, 2)) {
+                if (dataManager.getVillagers().containsKey(entity.getUniqueId().toString())) {
+                    event.setCancelled(true);
+                }
             }
         }
     }

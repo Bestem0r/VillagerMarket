@@ -4,8 +4,6 @@ import bestem0r.villagermarket.DataManager;
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
-import bestem0r.villagermarket.utilities.Config;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -18,10 +16,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.UUID;
 
 public class InventoryClick implements Listener {
@@ -141,7 +137,17 @@ public class InventoryClick implements Listener {
             case 6:
                 if (event.getRawSlot() > 8) return;
                 event.setCancelled(true);
-                if (villagerShop.sellShop(event.getRawSlot(), player, dataManager, villager)) {
+                if (event.getRawSlot() == 3) {
+                    player.sendMessage(new Color.Builder().path("messages.sold_shop").addPrefix().build());
+                    player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_shop")), 0.5f, 1);
+                    player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.menu_click")), 0.5f, 1);
+
+                    villagerShop.abandon();
+                    event.getView().close();
+                }
+                if (event.getRawSlot() == 5) {
+                    player.openInventory(villagerShop.getInventory(VillagerShop.ShopMenu.EDIT_SHOP));
+                    player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.back")), 0.5f, 1);
                     event.getView().close();
                 }
                 break;

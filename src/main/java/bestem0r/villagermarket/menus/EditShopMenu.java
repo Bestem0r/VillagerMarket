@@ -10,10 +10,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Date;
+
 
 public abstract class EditShopMenu {
 
-    public static Inventory create(VillagerShop.VillagerType villagerType) {
+    public static Inventory create(VillagerShop villagerShop) {
         Inventory inventory = Bukkit.createInventory(null, 9, new Color.Builder().path("menus.edit_shop.title").build());
 
         FileConfiguration mainConfig = VMPlugin.getInstance().getConfig();
@@ -43,9 +45,39 @@ public abstract class EditShopMenu {
                 .lore(new Color.Builder().path("menus.edit_shop.items.change_name.lore").buildLore())
                 .build();
 
-        MenuItem sellShop = new MenuItem.Builder(Material.EMERALD)
+        MenuItem sellShop = new MenuItem.Builder(Material.FEATHER)
                 .nameFromPath("menus.edit_shop.items.sell_shop.name")
                 .lore(new Color.Builder().path("menus.edit_shop.items.sell_shop.lore").buildLore())
+                .build();
+
+        Date date = new Date(villagerShop.getExpireDate().getTime());
+
+        String time = "never";
+        String time_short = villagerShop.getDuration();
+        String unit = time_short.substring(time_short.length() - 1);
+        String amount = time_short.substring(0, time_short.length() - 1);
+        switch (unit) {
+            case "s":
+                time = amount + " seconds";
+                break;
+            case "m":
+                time = amount + " minutes";
+                break;
+            case "h":
+                time = amount + " hours";
+                break;
+            case "d":
+                time = amount + " days";
+        }
+
+        MenuItem increaseTime = new MenuItem.Builder(Material.EMERALD)
+                .nameFromPath("menus.edit_shop.items.increase_time.name")
+                .lore(new Color.Builder()
+                        .path("menus.edit_shop.items.increase_time.lore")
+                        .replace("%expire%", String.valueOf(date))
+                        .replace("%time%", time)
+                        .replace("%price%", String.valueOf(villagerShop.getCost()))
+                        .buildLore())
                 .build();
 
         MenuItem back = new MenuItem.Builder(Material.valueOf(mainConfig.getString("items.back.material")))
@@ -53,7 +85,7 @@ public abstract class EditShopMenu {
                 .build();
 
         ItemStack[] inventoryItems;
-        if (villagerType == VillagerShop.VillagerType.ADMIN) {
+        if (villagerShop.getType() == VillagerShop.VillagerType.ADMIN) {
             inventoryItems = new ItemStack[] {
                     editShopfront,
                     previewShop,
@@ -77,6 +109,9 @@ public abstract class EditShopMenu {
                     null,
                     back
             };
+        }
+        if (villagerShop.getType() == VillagerShop.VillagerType.PLAYER && !time.equals("never")) {
+            inventoryItems[7] = increaseTime;
         }
         inventory.setContents(inventoryItems);
         return inventory;

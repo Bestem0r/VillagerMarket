@@ -16,7 +16,7 @@ import java.util.Collections;
 public class Config {
 
 
-    public static void newShopConfig(String entityUUID, int storageSize, int shopfrontSize, int cost, String type, int duration) {
+    public static void newShopConfig(String entityUUID, int storageSize, int shopfrontSize, int cost, String type, String duration) {
         File file = new File(Bukkit.getServer().getPluginManager().getPlugin("VillagerMarket").getDataFolder() + "/Shops/", entityUUID + ".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         config.set("ownerUUID", "null");
@@ -24,6 +24,8 @@ public class Config {
         config.set("storageSize", storageSize);
         config.set("shopfrontSize", shopfrontSize);
         config.set("type", type);
+        config.set("duration", duration);
+        config.set("expire", 0);
 
         config.set("cost", cost);
         ItemStack[] itemStackSelection = Bukkit.createInventory(null, shopfrontSize * 9).getContents();

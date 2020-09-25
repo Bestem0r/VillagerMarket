@@ -15,6 +15,8 @@ public class DataManager {
     private HashMap<String, String> clickMap = new HashMap<>();
 
     private ArrayList<Player> removeVillager = new ArrayList<>();
+    private ArrayList<Player> moveVillager = new ArrayList<>();
+    private HashMap<Player, Entity> moveTo = new HashMap<>();
 
     private HashMap<String, VillagerShop> villagers = new HashMap<>();
     private ArrayList<Entity> villagerEntities = new ArrayList<>();
@@ -23,14 +25,20 @@ public class DataManager {
     public void addVillager(String entityUUID, File file, VillagerShop.VillagerType type) {
         switch (type) {
             case ADMIN:
-                villagers.put(entityUUID, new AdminShop(file));
+                if (villagers.containsKey(entityUUID)) {
+                    villagers.replace(entityUUID, new AdminShop(file));
+                } else {
+                    villagers.put(entityUUID, new AdminShop(file));
+                }
                 break;
             case PLAYER:
-                villagers.put(entityUUID, new PlayerShop(file));
+                if (villagers.containsKey(entityUUID)) {
+                    villagers.replace(entityUUID, new PlayerShop(file));
+                } else {
+                    villagers.put(entityUUID, new PlayerShop(file));
+                }
+
         }
-    }
-    public void removeVillager(String entityUUID) {
-        villagers.remove(entityUUID);
     }
 
     public HashMap<String, VillagerShop> getVillagers() {
@@ -45,6 +53,14 @@ public class DataManager {
 
     public ArrayList<Player> getRemoveVillager() {
         return removeVillager;
+    }
+
+    public ArrayList<Player> getMoveVillager() {
+        return moveVillager;
+    }
+
+    public HashMap<Player, Entity> getMoveTo() {
+        return moveTo;
     }
 
     public HashMap<String, String> getClickMap() {

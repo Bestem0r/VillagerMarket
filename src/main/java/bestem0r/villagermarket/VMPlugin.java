@@ -59,6 +59,7 @@ public class VMPlugin extends JavaPlugin {
         for (String entityUUID : dataManager.getVillagers().keySet()) {
             dataManager.getVillagers().get(entityUUID).save();
         }
+        Bukkit.getScheduler().cancelTasks(this);
         super.onDisable();
     }
 
@@ -95,6 +96,7 @@ public class VMPlugin extends JavaPlugin {
     private void beginThreads() {
         AsyncThreads thread = new AsyncThreads();
         thread.beginSaveThread(dataManager);
+        thread.beginExpireThread(dataManager, getConfig());
     }
 
     private void loadVillagers() {

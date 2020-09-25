@@ -12,8 +12,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
@@ -51,6 +53,19 @@ public class PlayerEvents implements Listener {
                 player.sendMessage(new Color.Builder().path("messages.no_villager_shop").addPrefix().build());
             }
             dataManager.getRemoveVillager().remove(player);
+            event.setCancelled(true);
+            return;
+        }
+        if (dataManager.getMoveVillager().contains(player)) {
+            if (dataManager.getVillagers().containsKey(entityUUID)) {
+                player.sendMessage(new Color.Builder().path("messages.move_villager_to").addPrefix().build());
+                dataManager.getMoveTo().put(player, entity);
+            } else {
+                player.sendMessage(new Color.Builder().path("messages.no_villager_shop").addPrefix().build());
+            }
+            dataManager.getMoveVillager().remove(player);
+            event.setCancelled(true);
+            return;
         }
 
         if(dataManager.getVillagers().containsKey(entityUUID)) {
@@ -104,6 +119,17 @@ public class PlayerEvents implements Listener {
             if (entity.getNearbyEntities(5, 5, 5).contains(player)) {
                 entity.teleport(entity.getLocation().setDirection(player.getLocation().subtract(entity.getLocation()).toVector()));
             }
+        }
+    }
+
+    @EventHandler
+    public void onBlockClick(PlayerInteractEvent event) {
+        if (dataManager.getMoveTo().containsKey(event.getPlayer())) {
+            Entity entity = dataManager.getMoveTo().get(event.getPlayer());
+            if (event.getClickedBlock() == null) return;
+            entity.teleport(event.getPlayer().getLocation());
+            event.setCancelled(true);
+            dataManager.getMoveTo().remove(event.getPlayer());
         }
     }
 }

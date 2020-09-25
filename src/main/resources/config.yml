@@ -7,8 +7,9 @@ refund_percent: 50.0
 #How often should villager shops auto-save? (minutes)
 auto_save_interval: 10
 #How much (%) should be taken as tax?
-tax: 10
-
+tax: 0
+#How often should temporary shops be checked? (seconds)
+expire_check_interval: 10
 
 #----------------------- Messages & Sounds -----------------------#
 
@@ -24,11 +25,10 @@ messages:
   type_amount: '&bPlease type the amount you wish to sell in chat...'
   type_cancel: '&bOr type &ccancel &bto cancel'
   type_price_for_shop: '&bPlease type the price you wish to sell your shop for...'
-  sold_shop: '&bYou have successfully sold your shop!'
-  sold_shop_2: '&bIt is now available for purchase again!'
+  sold_shop: '&bShop sold! It is now available for purchase again!'
   not_enough_money: '&cYou do not have enough money to buy this!'
   not_enough_stock: '&cThere is not enough items in stock at the moment!'
-  remove_villager: '&cRight click&b the Villager Shop you want to &cremove!'
+  remove_villager: '&cRight click the &bVillager Shop &cyou want to remove!'
   no_villager_shop: '&cThis is not a Villager Shop! Aborting action!'
   villager_removed: '&cVillager Shop removed!'
   blacklisted: '&cThis item is blacklisted!'
@@ -41,6 +41,9 @@ messages:
   must_be_menulore: '&cPlease toggle back to &e&nmenu lore&c to sell/buy items!'
   cannot_buy_from_yourself: '&cYou can not buy items from yourself!'
   tax: '&a%tax%$ &7was taken as taxes!'
+  expired: '&cYour shop has expired, and it is now available for purchase!'
+  move_villager: '&7Right click the &bVillager Shop &7you want to move!'
+  move_villager_to: '&7Move yourself to a new position and click a block!'
 
 sounds:
   open_shop: ENTITY_VILLAGER_TRADE
@@ -55,6 +58,8 @@ sounds:
   sell_shop: ENTITY_EXPERIENCE_ORB_PICKUP
   remove_villager: BLOCK_LAVA_EXTINGUISH
   quick_add: ENTITY_ITEM_PICKUP
+  expired: BLOCK_ANVIL_DESTROY
+  increase_time: ENTITY_EXPERIENCE_ORB_PICKUP
 
 
 #----------------------- Villager settings -----------------------#
@@ -100,10 +105,12 @@ menus:
       buy_shop:
         material: EMERALD
         name: '&aBuy this shop!'
-        lore: #Placeholders: %price%
+        lore: #Placeholders: %price%, %time%
           - '&7Click to buy this'
           - '&7shop for &a%price%$&7!'
           - ''
+          - '&7The shop will be'
+          - '&7yours for &b%time%&7!'
   #Menu for shop editor
   edit_shop:
     title: '&8Edit shop'
@@ -112,7 +119,6 @@ menus:
       edit_shopfront:
         name: '&bEdit shopfront'
         lore:
-          - ''
           - '&7Click to edit'
           - '&7the items for'
           - '&7sale in your shop!'
@@ -121,7 +127,6 @@ menus:
       preview_shop:
         name: '&ePreview shop'
         lore:
-          - ''
           - '&7Click to preview'
           - '&7your shop (the menu'
           - '&7your &ncustomers&7 will see)'
@@ -130,7 +135,6 @@ menus:
       edit_storage:
         name: '&cEdit storage'
         lore:
-          - ''
           - '&7Click to edit'
           - '&7the storage'
           - '&7of your shop!'
@@ -139,7 +143,6 @@ menus:
       edit_villager:
         name: '&eEdit villager'
         lore:
-          - ''
           - '&7Click to edit'
           - '&7the profession'
           - '&7of your villager!'
@@ -148,7 +151,6 @@ menus:
       change_name:
         name: '&eChange villager name'
         lore:
-          - ''
           - '&7Click to change'
           - '&7the name of'
           - '&7you villager!'
@@ -157,11 +159,20 @@ menus:
       sell_shop:
         name: '&cSell shop'
         lore:
-          - ''
           - '&7Click to abandon this'
           - '&7villager and sell it'
           - '&7to someone else'
           - ''
+      #Add more time item
+      increase_time:
+        name: '&aIncrease rent time!'
+        lore: #Placeholders: %expire%, %time%, %price%
+          - '&7>> Shop will expire:'
+          - '&c%expire%'
+          - ''
+          - '&7Click to increase your rent'
+          - '&7time by &b%time%&7 for &a%price%$&7!'
+          -
   #Edit shopfront menu. (Add/remove items)
   edit_shopfront:
     title: '&8Add items for sale'
@@ -171,7 +182,6 @@ menus:
       sell: '&8[&aSELL&8]'
     player:
       sell_lore: #Placeholders: %amount%, %price%, %stock%
-        - ''
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%$'
         - '&7Currently &b%stock% &7in stock!'
@@ -180,9 +190,8 @@ menus:
         - '&7>> Left click &7to toggle: '
         - '&7 - Villager will &e&nsell&8 | &7buy'
         - ''
-        - '&7>> Shift + right click to &bquick add&7!'
+        - '&7>> Shift click to &bquick-add&7 items!'
       buy_lore: #Placeholders: %amount%, %price%, %money%
-        - ''
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%$'
         - '&7You have &a%money%$ &7left!'
@@ -192,7 +201,6 @@ menus:
         - '&7 - Villager will sell&8 | &e&nbuy'
     admin:
       sell_lore:
-        - ''
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%$'
         - ''
@@ -200,7 +208,6 @@ menus:
         - '&7>> Left click &7to toggle: '
         - '&7 - Villager will &e&nsell&8 | &7buy'
       buy_lore:
-        - ''
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%$'
         - ''
@@ -217,25 +224,21 @@ menus:
       sell: '&8[&aSELL&8]'
     player:
       buy_lore: #Placeholders: %amount%, %price%, %stock%
-        - ''
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%$'
         - '&7Currently &b%stock% &7in stock!'
         - ''
       sell_lore: #Placeholders: %amount%, %price%, %money%
-        - ''
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%$'
         - '&7Owner has &a%money%$ &7left!'
         - ''
     admin:
       buy_lore:
-        - ''
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%$'
         - ''
       sell_lore:
-        - ''
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%$'
         - ''
@@ -271,5 +274,6 @@ menus:
 
 #----------------------- Other settings -----------------------#
 
+#Blacklisted items
 item_blacklist:
   - DEAD_BUSH

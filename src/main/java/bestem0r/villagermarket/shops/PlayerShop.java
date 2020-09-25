@@ -78,7 +78,7 @@ public class PlayerShop extends VillagerShop {
         OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
         if (player.getUniqueId().equals(owner.getUniqueId())) {
             player.sendMessage(new Color.Builder().path("messages.cannot_buy_from_yourself").addPrefix().build());
-            //return false;
+            return false;
         }
 
         economy.depositPlayer(owner, price - taxAmount);
@@ -197,6 +197,12 @@ public class PlayerShop extends VillagerShop {
             case 5:
                 inventory = getInventory(ShopMenu.SELL_SHOP);
                 break;
+             //Increase time
+            case 7:
+                if (!super.duration.equalsIgnoreCase("infinite")) {
+                    increaseTime(player);
+                }
+                return true;
             //Back
             case 8:
                 inventory = null;
@@ -213,7 +219,7 @@ public class PlayerShop extends VillagerShop {
     /** Inventory methods */
     @Override
     protected Inventory newEditShopInventory() {
-        return EditShopMenu.create(VillagerType.PLAYER);
+        return EditShopMenu.create(this);
     }
 
     /** Create new inventory for items for sale editor, or shop front */

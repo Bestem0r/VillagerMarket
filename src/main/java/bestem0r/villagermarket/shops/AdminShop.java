@@ -136,7 +136,7 @@ public class AdminShop extends VillagerShop {
 
     @Override
     protected Inventory newEditShopInventory() {
-        return EditShopMenu.create(VillagerType.ADMIN);
+        return EditShopMenu.create(this);
     }
 
     @Override

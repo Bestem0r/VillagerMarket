@@ -7,6 +7,7 @@ import bestem0r.villagermarket.events.chat.AddAmount;
 import bestem0r.villagermarket.items.MenuItem;
 import bestem0r.villagermarket.items.ShopItem;
 import bestem0r.villagermarket.menus.BuyShopMenu;
+import bestem0r.villagermarket.menus.EditShopMenu;
 import bestem0r.villagermarket.menus.ProfessionMenu;
 import bestem0r.villagermarket.menus.SellShopMenu;
 import bestem0r.villagermarket.utilities.Color;
@@ -14,12 +15,12 @@ import bestem0r.villagermarket.utilities.Config;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -28,10 +29,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.*;
 
 public abstract class VillagerShop {
 
@@ -49,6 +49,10 @@ public abstract class VillagerShop {
     protected String ownerUUID;
     protected String ownerName;
     protected String entityUUID;
+
+    protected String duration;
+    protected int seconds;
+    protected Timestamp expireDate;
 
     protected int cost;
 
@@ -85,15 +89,19 @@ public abstract class VillagerShop {
         this.ownerName = config.getString("ownerName");
         this.entityUUID = file.getName().substring(0, file.getName().indexOf('.'));
 
-
         this.shopfrontSize = config.getInt("shopfrontSize") * 9;
         this.storageSize = config.getInt("storageSize") * 9;
+        this.expireDate = new Timestamp(config.getLong("expire"));
 
         int size = config.getInt("size");
         if (size != 0) {
             this.shopfrontSize = size * 9;
             this.storageSize = size * 18;
         }
+        this.duration = config.getString("duration");
+        this.duration = (duration == null ? "infinite" : duration);
+
+        this.seconds = secondsFromString(duration);
 
         this.cost = config.getInt("cost");
 
@@ -104,6 +112,27 @@ public abstract class VillagerShop {
         this.storageMenu = newStorageInventory();
         this.editVillagerMenu = newEditVillagerInventory();
         this.sellShopMenu = newSellShopInventory();
+    }
+
+    /** Convert duration string to seconds */
+    private int secondsFromString(String string) {
+        if (string.equalsIgnoreCase("infinite")) return 0;
+
+        String unit = string.substring(string.length() - 1);
+        int size = Integer.parseInt(string.substring(0, string.length() - 1));
+        switch (unit) {
+            case "s":
+                return size;
+            case "m":
+                return size * 60;
+            case "h":
+                return size * 3600;
+            case "d":
+                return size * 86400;
+            default:
+                Bukkit.getLogger().severe("Could not convert unit: " + unit);
+                return 0;
+        }
     }
 
     abstract void buildItemList();
@@ -232,39 +261,53 @@ public abstract class VillagerShop {
         villager.setCustomName(new Color.Builder().path("villager.name_taken").replace("%player%", player.getName()).build());
         this.ownerUUID = (player.getUniqueId().toString());
         this.ownerName = (player.getName());
-        player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.buy_shop")), 1, 1);
 
+        Date date = new Date();
+        this.expireDate = (seconds == 0 ? new Timestamp(0) : new Timestamp(date.getTime() + (seconds * 1000L)));
+        this.editShopMenu.setContents(EditShopMenu.create(this).getContents());
+
+        player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.buy_shop")), 1, 1);
         player.openInventory(editShopMenu);
     }
     
     /** Sell shop (This is only for Player Shops) */
-    public Boolean sellShop(int slot, Player player, DataManager dataManager, Entity villager) {
-        if (slot == 3) {
-            Economy economy = VMPlugin.getEconomy();
-            villager.setCustomName(new Color.Builder().path("villager.name_available").build());
-            dataManager.removeVillager(entityUUID);
-            Config.newShopConfig(entityUUID, (Villager) villager, storageSize / 9, shopfrontSize / 9, getCost(), "player");
+    public void abandon() {
 
-            economy.depositPlayer(player, ((double) getCost() * (mainConfig.getDouble("refund_percent") / 100)));
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
+        Economy economy = VMPlugin.getEconomy();
 
-            ArrayList<ItemStack> storage = new ArrayList<>(Arrays.asList(getInventory(ShopMenu.STORAGE).getContents()));
+        Entity villager = Bukkit.getEntity(UUID.fromString(entityUUID));
+        if (villager != null) villager.setCustomName(new Color.Builder().path("villager.name_available").build());
+
+        Config.newShopConfig(entityUUID, storageSize / 9, shopfrontSize / 9, getCost(), "player", duration);
+
+        economy.depositPlayer(offlinePlayer, ((double) getCost() * (mainConfig.getDouble("refund_percent") / 100)));
+
+        ArrayList<ItemStack> storage = new ArrayList<>(Arrays.asList(getInventory(ShopMenu.STORAGE).getContents()));
+
+        if (offlinePlayer.isOnline()) {
+            Player player = (Player) offlinePlayer;
             for (ItemStack storageStack : storage) {
                 if (storageStack != null) {
                     if (storage.indexOf(storageStack) == storageSize - 1) continue;
                     player.getInventory().addItem(storageStack);
                 }
             }
-            player.sendMessage(new Color.Builder().path("messages.sold_shop").addPrefix().build());
-            player.sendMessage(new Color.Builder().path("messages.sold_shop_2").addPrefix().build());
-            player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_shop")), 0.5f, 1);
-            player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.menu_click")), 0.5f, 1);
-            return true;
-        } else if (slot == 5) {
-            player.openInventory(getInventory(ShopMenu.EDIT_SHOP));
-            player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.back")), 0.5f, 1);
-            return false;
         }
-        return false;
+    }
+
+    /** Increase rent time */
+    public void increaseTime(Player player) {
+        Economy economy = VMPlugin.getEconomy();
+        if (economy.getBalance(player) < cost) {
+            player.sendMessage(new Color.Builder().path("messages.not_enough_money").addPrefix().build());
+            return;
+        }
+        economy.withdrawPlayer(player, cost);
+        expireDate = new Timestamp(expireDate.getTime() + (seconds * 1000L));
+        this.editShopMenu.setContents(EditShopMenu.create(this).getContents());
+
+        player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.increase_time")), 1, 1);
     }
 
     /** Create new buy shop inventory */
@@ -312,6 +355,7 @@ public abstract class VillagerShop {
     public void save() {
         config.set("ownerUUID", ownerUUID);
         config.set("ownerName", ownerName);
+        config.set("expire", expireDate.getTime());
 
         ItemStack[] storage = storageMenu.getContents();
         storage[storage.length - 1] = null;
@@ -396,12 +440,17 @@ public abstract class VillagerShop {
     public String getOwnerUUID() {
         return ownerUUID;
     }
-
     public int getStorageSize() {
         return storageSize;
     }
     public int getShopfrontSize() {
         return shopfrontSize;
+    }
+    public Timestamp getExpireDate() {
+        return expireDate;
+    }
+    public String getDuration() {
+        return duration;
     }
 
     public int getCost() {
@@ -414,12 +463,4 @@ public abstract class VillagerShop {
         return itemList;
     }
 
-    /** Setters */
-    public void setOwnerUUID(String ownerUUID) {
-        this.ownerUUID = ownerUUID;
-    }
-
-    public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
-    }
 }
