@@ -63,7 +63,7 @@ public class AddPrice implements Listener {
     private Boolean canConvert(String string) {
         for (int i = 0; i < string.length(); i++) {
             char c = string.charAt(i);
-            if (c < '0' || c > '9') {
+            if ((c < '0' || c > '9') && c != '.') {
                 return false;
             }
         }

@@ -1,6 +1,5 @@
 package bestem0r.villagermarket.shops;
 
-import bestem0r.villagermarket.DataManager;
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.events.ItemDrop;
 import bestem0r.villagermarket.events.chat.AddAmount;
@@ -29,7 +28,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -213,6 +211,17 @@ public abstract class VillagerShop {
             if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
                 quickAdd(player.getInventory(), event.getRawSlot());
             }
+            if (event.getClick() == ClickType.MIDDLE) {
+                player.sendMessage(new Color.Builder().path("messages.type_amount").addPrefix().build());
+                player.sendMessage(new Color.Builder().path("messages.type_cancel").addPrefix().build());
+
+                ShopItem.Builder builder = new ShopItem.Builder(cursorItem)
+                        .entityUUID(entityUUID)
+                        .villagerType(getType())
+                        .slot(slot);
+                Bukkit.getServer().getPluginManager().registerEvents(new AddAmount(player, builder), VMPlugin.getInstance());
+                event.getView().close();
+            }
             //Back
             if (slot == shopfrontSize - 1) {
                 player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.menu_click")), 0.5f, 1);
@@ -290,21 +299,35 @@ public abstract class VillagerShop {
             for (ItemStack storageStack : storage) {
                 if (storageStack != null) {
                     if (storage.indexOf(storageStack) == storageSize - 1) continue;
-                    player.getInventory().addItem(storageStack);
+                    HashMap<Integer, ItemStack> exceed = player.getInventory().addItem(storageStack);
+                    for (Integer i : exceed.keySet()) {
+                        player.getLocation().getWorld().dropItemNaturally(player.getLocation(), exceed.get(i));
+                    }
                 }
             }
+        } else {
+            VMPlugin.getDataManager().getAbandonOffline().put(offlinePlayer, storage);
         }
     }
 
     /** Increase rent time */
     public void increaseTime(Player player) {
+        Timestamp newExpire = new Timestamp(expireDate.getTime() + (seconds * 1000L));
+        Date date = new Date();
+        date.setTime(expireDate.getTime() + ((mainConfig.getInt("max_rent") / 86400) * 1000L));
+        Bukkit.getLogger().info(new Date(newExpire.getTime()).toString());
+        Bukkit.getLogger().info(date.toString());
+        if (newExpire.after(date)) {
+            player.sendMessage(new Color.Builder().path("messages.max_rent_time").addPrefix().build());
+            return;
+        }
         Economy economy = VMPlugin.getEconomy();
         if (economy.getBalance(player) < cost) {
             player.sendMessage(new Color.Builder().path("messages.not_enough_money").addPrefix().build());
             return;
         }
         economy.withdrawPlayer(player, cost);
-        expireDate = new Timestamp(expireDate.getTime() + (seconds * 1000L));
+        this.expireDate = newExpire;
         this.editShopMenu.setContents(EditShopMenu.create(this).getContents());
 
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.increase_time")), 1, 1);

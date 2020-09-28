@@ -12,15 +12,18 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class PlayerEvents implements Listener {
@@ -131,5 +134,24 @@ public class PlayerEvents implements Listener {
             event.setCancelled(true);
             dataManager.getMoveTo().remove(event.getPlayer());
         }
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        if (!dataManager.getAbandonOffline().containsKey(event.getPlayer())) return;
+
+        Player player = event.getPlayer();
+        ArrayList<ItemStack> storage = dataManager.getAbandonOffline().get(event.getPlayer());
+
+        for (ItemStack storageStack : storage) {
+            if (storageStack != null) {
+                if (storage.indexOf(storageStack) == storage.size() - 1) continue;
+                HashMap<Integer, ItemStack> exceed = player.getInventory().addItem(storageStack);
+                for (Integer i : exceed.keySet()) {
+                    player.getLocation().getWorld().dropItemNaturally(player.getLocation(), exceed.get(i));
+                }
+            }
+        }
+        dataManager.getAbandonOffline().remove(event.getPlayer());
     }
 }

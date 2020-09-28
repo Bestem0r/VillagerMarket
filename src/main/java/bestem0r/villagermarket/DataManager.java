@@ -3,8 +3,10 @@ package bestem0r.villagermarket;
 import bestem0r.villagermarket.shops.AdminShop;
 import bestem0r.villagermarket.shops.PlayerShop;
 import bestem0r.villagermarket.shops.VillagerShop;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ public class DataManager {
     private HashMap<String, VillagerShop> villagers = new HashMap<>();
     private ArrayList<Entity> villagerEntities = new ArrayList<>();
 
+    private HashMap<OfflinePlayer, ArrayList<ItemStack>> abandonOffline = new HashMap<>();
 
     public void addVillager(String entityUUID, File file, VillagerShop.VillagerType type) {
         switch (type) {
@@ -44,10 +47,12 @@ public class DataManager {
     public HashMap<String, VillagerShop> getVillagers() {
         return villagers;
     }
+
     public ArrayList<Entity> getVillagerEntities() {
         return villagerEntities;
     }
-     public void setVillagerEntities(ArrayList<Entity> list) {
+
+    public void setVillagerEntities(ArrayList<Entity> list) {
         this.villagerEntities = list;
      }
 
@@ -67,4 +72,7 @@ public class DataManager {
         return clickMap;
     }
 
+    public HashMap<OfflinePlayer, ArrayList<ItemStack>> getAbandonOffline() {
+        return abandonOffline;
+    }
 }

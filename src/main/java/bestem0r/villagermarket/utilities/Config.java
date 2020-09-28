@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class Config {
+public abstract class Config {
 
 
     public static void newShopConfig(String entityUUID, int storageSize, int shopfrontSize, int cost, String type, String duration) {
@@ -47,7 +47,7 @@ public class Config {
             VMPlugin.getDataManager().addVillager(entityUUID, file, VillagerShop.VillagerType.valueOf(type.toUpperCase()));
         } catch (IOException i) {
             Bukkit.getLogger().severe("Failed to save config!");
+            i.printStackTrace();
         }
-
     }
 }

@@ -4,7 +4,6 @@ import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
 import net.milkbowl.vault.economy.Economy;
-import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
@@ -153,7 +152,8 @@ public class ShopItem extends ItemStack {
                 .buildLore();
 
         String namePath = "menus" + inventoryPath + "item_name";
-        String name = (super.getItemMeta().hasDisplayName() ? super.getItemMeta().getDisplayName() : WordUtils.capitalizeFully(super.getType().name().replaceAll("_", " ")));
+        Bukkit.getLogger().info(getItemMeta().getLocalizedName());
+        String name = (super.getItemMeta().hasDisplayName() ? super.getItemMeta().getDisplayName() : getItemMeta().getLocalizedName());
         String mode = new Color.Builder().path("menus" + inventoryPath + "modes." + itemMode.toString().toLowerCase()).build();
         menuName = new Color.Builder()
                 .path(namePath)

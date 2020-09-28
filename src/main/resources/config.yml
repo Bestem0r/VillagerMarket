@@ -8,8 +8,6 @@ refund_percent: 50.0
 auto_save_interval: 10
 #How much (%) should be taken as tax?
 tax: 0
-#How often should temporary shops be checked? (seconds)
-expire_check_interval: 10
 
 #----------------------- Messages & Sounds -----------------------#
 
@@ -44,6 +42,7 @@ messages:
   expired: '&cYour shop has expired, and it is now available for purchase!'
   move_villager: '&7Right click the &bVillager Shop &7you want to move!'
   move_villager_to: '&7Move yourself to a new position and click a block!'
+  max_rent_time: '&cCan not increase time further. Maximum rent time is reached!'
 
 sounds:
   open_shop: ENTITY_VILLAGER_TRADE
@@ -70,6 +69,21 @@ villager:
   name_available: '&aAvailable shop!'
   name_taken: "&b%player%'s shop" #Placeholders: %player%
   default_profession: NONE
+
+
+#----------------------- Rent settings -----------------------#
+
+#Max limit for shop renting (days)
+max_rent: 30
+#How often should temporary shops be checked? (seconds)
+expire_check_interval: 10
+#Time localization
+time:
+  seconds: 'seconds'
+  minutes: 'minutes'
+  hours: 'hours'
+  days: 'days'
+  indefinitely: 'indefinitely'
 
 
 #----------------------- Items settings -----------------------#
@@ -187,8 +201,8 @@ menus:
         - '&7Currently &b%stock% &7in stock!'
         - ''
         - '&7>> Right click &7to &cremove'
-        - '&7>> Left click &7to toggle: '
-        - '&7 - Villager will &e&nsell&8 | &7buy'
+        - '&7>> Middle click to &aedit'
+        - '&7>> Left click &7to toggle: &e&nsell&8 | &7buy'
         - ''
         - '&7>> Shift click to &bquick-add&7 items!'
       buy_lore: #Placeholders: %amount%, %price%, %money%
@@ -197,23 +211,23 @@ menus:
         - '&7You have &a%money%$ &7left!'
         - ''
         - '&7>> Right click &7to &cremove'
-        - '&7>> Left click &7to toggle: '
-        - '&7 - Villager will sell&8 | &e&nbuy'
+        - '&7>> Middle click to &aedit'
+        - '&7>> Left click &7to toggle: sell&8 | &e&nbuy'
     admin:
       sell_lore:
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%$'
         - ''
         - '&7>> Right click &7to &cremove'
-        - '&7>> Left click &7to toggle: '
-        - '&7 - Villager will &e&nsell&8 | &7buy'
+        - '&7>> Middle click to &aedit'
+        - '&7>> Left click &7to toggle: &e&nsell&8 | &7buy'
       buy_lore:
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%$'
         - ''
         - '&7>> Right click &7to &cremove'
-        - '&7>> Left click &7to toggle: '
-        - '&7 - Villager will sell&8 | &e&nbuy'
+        - '&7>> Middle click to &aedit'
+        - '&7>> Left click &7to toggle: sell&8 | &e&nbuy'
   #Buy/sell items menu (This is the menu for customers)
   shopfront:
     title: '&8Buy items'

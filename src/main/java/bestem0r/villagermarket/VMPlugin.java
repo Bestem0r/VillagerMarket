@@ -34,6 +34,8 @@ public class VMPlugin extends JavaPlugin {
     public void onEnable() {
         setupEconomy();
 
+        MetricsLite metricsLite = new MetricsLite(this, 8922);
+
         instance = this;
         dataManager = new DataManager();
 
@@ -132,11 +134,9 @@ public class VMPlugin extends JavaPlugin {
         return instance;
     }
     public static String getPrefix() {return prefix;}
-
     public static DataManager getDataManager() {
         return dataManager;
     }
-
     public List<Material> getMaterialBlackList() {
         return materialBlackList;
     }

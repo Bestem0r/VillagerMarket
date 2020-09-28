@@ -52,22 +52,25 @@ public abstract class EditShopMenu {
 
         Date date = new Date(villagerShop.getExpireDate().getTime());
 
-        String time = "never";
+        String time;
         String time_short = villagerShop.getDuration();
         String unit = time_short.substring(time_short.length() - 1);
         String amount = time_short.substring(0, time_short.length() - 1);
         switch (unit) {
             case "s":
-                time = amount + " seconds";
+                time = amount + " " + mainConfig.getString("time.seconds");
                 break;
             case "m":
-                time = amount + " minutes";
+                time = amount + " " + mainConfig.getString("time.minutes");
                 break;
             case "h":
-                time = amount + " hours";
+                time = amount + " " + mainConfig.getString("time.hours");
                 break;
             case "d":
-                time = amount + " days";
+                time = amount + " " + mainConfig.getString("time.days");
+                break;
+            default:
+                time = "never";
         }
 
         MenuItem increaseTime = new MenuItem.Builder(Material.EMERALD)

@@ -21,22 +21,22 @@ public abstract class BuyShopMenu {
         String shopAmount = String.valueOf(villagerShop.getShopfrontSize() - 1);
         String storageAmount = String.valueOf(villagerShop.getStorageSize() - 1);
 
-        String time = "indefinitely";
+        String time = mainConfig.getString("time.indefinitely");
         String time_short = villagerShop.getDuration();
         String unit = time_short.substring(time_short.length() - 1);
         String amount = time_short.substring(0, time_short.length() - 1);
         switch (unit) {
             case "s":
-                time = amount + " seconds";
+                time = amount + " " + mainConfig.getString("time.seconds");
                 break;
             case "m":
-                time = amount + " minutes";
+                time = amount + " " + mainConfig.getString("time.minutes");
                 break;
             case "h":
-                time = amount + " hours";
+                time = amount + " " + mainConfig.getString("time.hours");
                 break;
             case "d":
-                time = amount + " days";
+                time = amount + " " + mainConfig.getString("time.days");
         }
 
         String shopName = new Color.Builder()
