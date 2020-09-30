@@ -211,11 +211,12 @@ public abstract class VillagerShop {
             if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
                 quickAdd(player.getInventory(), event.getRawSlot());
             }
+            //Edit
             if (event.getClick() == ClickType.MIDDLE) {
                 player.sendMessage(new Color.Builder().path("messages.type_amount").addPrefix().build());
                 player.sendMessage(new Color.Builder().path("messages.type_cancel").addPrefix().build());
 
-                ShopItem.Builder builder = new ShopItem.Builder(cursorItem)
+                ShopItem.Builder builder = new ShopItem.Builder(itemList.get(slot).asItemStack(ShopItem.LoreType.ITEM))
                         .entityUUID(entityUUID)
                         .villagerType(getType())
                         .slot(slot);
@@ -314,9 +315,7 @@ public abstract class VillagerShop {
     public void increaseTime(Player player) {
         Timestamp newExpire = new Timestamp(expireDate.getTime() + (seconds * 1000L));
         Date date = new Date();
-        date.setTime(expireDate.getTime() + ((mainConfig.getInt("max_rent") / 86400) * 1000L));
-        Bukkit.getLogger().info(new Date(newExpire.getTime()).toString());
-        Bukkit.getLogger().info(date.toString());
+        date.setTime(date.getTime() + ((mainConfig.getInt("max_rent") * 86400) * 1000L));
         if (newExpire.after(date)) {
             player.sendMessage(new Color.Builder().path("messages.max_rent_time").addPrefix().build());
             return;

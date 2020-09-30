@@ -37,7 +37,7 @@ public class AddPrice implements Listener {
         if (!canConvert(message)) {
             player.sendMessage(new Color.Builder().path("messages.not_number").addPrefix().build());
             return;
-        } else if (Integer.parseInt(message) < 1) {
+        } else if (Double.parseDouble(message) < 1) {
             player.sendMessage(new Color.Builder().path("messages.negative_price").addPrefix().build());
             return;
         }
