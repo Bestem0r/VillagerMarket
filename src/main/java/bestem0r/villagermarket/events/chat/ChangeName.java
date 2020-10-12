@@ -1,6 +1,5 @@
 package bestem0r.villagermarket.events.chat;
 
-import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.utilities.Color;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -27,13 +26,14 @@ public class ChangeName implements Listener {
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (event.getPlayer() == this.player) {
             if (event.getMessage().equalsIgnoreCase("cancel")) {
-                player.sendMessage(VMPlugin.getPrefix() + new Color.Builder().path("messages.cancelled").build());
+                player.sendMessage(new Color.Builder().path("messages.cancelled").addPrefix().build());
             } else {
                 String name = ChatColor.translateAlternateColorCodes('&', event.getMessage());
                 villager.setCustomName(name);
-                player.sendMessage(VMPlugin.getPrefix() + new Color.Builder()
+                player.sendMessage(new Color.Builder()
                         .path("messages.change_name_set")
                         .replace("%name%", name)
+                        .addPrefix()
                         .build());
             }
 

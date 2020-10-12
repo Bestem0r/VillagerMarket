@@ -1,17 +1,20 @@
 package bestem0r.villagermarket.events;
 
-import bestem0r.villagermarket.DataManager;
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.shops.AdminShop;
+import bestem0r.villagermarket.shops.ShopMenu;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
+import bestem0r.villagermarket.utilities.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -20,104 +23,68 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
+import java.util.UUID;
 
 public class PlayerEvents implements Listener {
-
-    DataManager dataManager;
-
-    public PlayerEvents(DataManager dataManager) {
-        this.dataManager = dataManager;
-    }
 
     @EventHandler
     public void playerRightClick(PlayerInteractEntityEvent event) {
 
         Player player = event.getPlayer();
-        Entity entity = event.getRightClicked();
-        String entityUUID = entity.getUniqueId().toString();
 
-        if (dataManager.getRemoveVillager().contains(player)) {
-            if (dataManager.getVillagers().containsKey(entityUUID)) {
-                player.sendMessage(new Color.Builder().path("messages.villager_removed").addPrefix().build());
-                player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.remove_villager")), 0.5f, 1);
-                File file = new File(Objects.requireNonNull(Bukkit.getServer().getPluginManager().getPlugin("VillagerMarket")).getDataFolder() + "/Shops/", entityUUID + ".yml");
-                if (file.exists()) {
-                    file.delete();
-                    dataManager.getVillagers().remove(entityUUID);
-                }
-                entity.remove();
-
-            } else {
-                player.sendMessage(new Color.Builder().path("messages.no_villager_shop").addPrefix().build());
-            }
-            dataManager.getRemoveVillager().remove(player);
-            event.setCancelled(true);
-            return;
-        }
-        if (dataManager.getMoveVillager().contains(player)) {
-            if (dataManager.getVillagers().containsKey(entityUUID)) {
-                player.sendMessage(new Color.Builder().path("messages.move_villager_to").addPrefix().build());
-                dataManager.getMoveTo().put(player, entity);
-            } else {
-                player.sendMessage(new Color.Builder().path("messages.no_villager_shop").addPrefix().build());
-            }
-            dataManager.getMoveVillager().remove(player);
-            event.setCancelled(true);
-            return;
-        }
-
-        if(dataManager.getVillagers().containsKey(entityUUID)) {
+        VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
+        if (villagerShop != null) {
             event.setCancelled(true);
             if(event.getHand() == EquipmentSlot.OFF_HAND) { return; }
-            VillagerShop villagerShop = dataManager.getVillagers().get(entityUUID);
+
             Inventory inventory;
 
             if (villagerShop instanceof AdminShop) {
                 if (player.hasPermission("villagermarket.admin")) {
-                    inventory = villagerShop.getInventory(VillagerShop.ShopMenu.EDIT_SHOP);
+                    inventory = villagerShop.getInventory(ShopMenu.EDIT_SHOP);
                 } else {
-                    inventory = villagerShop.getInventory(VillagerShop.ShopMenu.SHOPFRONT);
+                    inventory = villagerShop.getInventory(ShopMenu.SHOPFRONT);
                 }
             } else {
                 if (villagerShop.getOwnerUUID().equals("null")) {
-                    inventory = villagerShop.getInventory(VillagerShop.ShopMenu.BUY_SHOP);
+                    inventory = villagerShop.getInventory(ShopMenu.BUY_SHOP);
                 } else if (villagerShop.getOwnerUUID().equals(player.getUniqueId().toString())) {
-                    inventory = villagerShop.getInventory(VillagerShop.ShopMenu.EDIT_SHOP);
+                    inventory = villagerShop.getInventory(ShopMenu.EDIT_SHOP);
                 } else {
-                    inventory = villagerShop.getInventory(VillagerShop.ShopMenu.SHOPFRONT);
+                    inventory = villagerShop.getInventory(ShopMenu.SHOPFRONT);
                 }
             }
-
-            dataManager.getClickMap().put(player.getUniqueId().toString(), entityUUID);
+            VMPlugin.clickMap.put(player.getUniqueId().toString(), villagerShop);
 
             player.openInventory(inventory);
             player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.open_shop")), 0.5f, 1);
-
         }
     }
 
     @EventHandler
     public void onCloseInventory(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
-        if (!dataManager.getClickMap().containsKey(player.getUniqueId().toString())) { return; }
-        String entityUUID = dataManager.getClickMap().get(player.getUniqueId().toString());
+
+        if (VMPlugin.clickMap.containsKey(player.getUniqueId().toString())) { return; }
+        VillagerShop villagerShop = VMPlugin.clickMap.get(player.getUniqueId().toString());
 
         String title = ChatColor.stripColor(event.getView().getTitle());
         if (title.equalsIgnoreCase(ChatColor.stripColor(new Color.Builder().path("menus.edit_storage.title").build()))) {
-            dataManager.getVillagers().get(entityUUID).updateShopInventories();
+            villagerShop.updateShopInventories();
         }
     }
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (dataManager.getVillagerEntities() == null) return;
-        for (Entity entity : dataManager.getVillagerEntities()) {
+        for (VillagerShop villagerShop : VMPlugin.shops) {
+            Entity entity = Bukkit.getEntity(UUID.fromString(villagerShop.getEntityUUID()));
             if (entity == null) continue;
             if (entity.getNearbyEntities(5, 5, 5).contains(player)) {
                 entity.teleport(entity.getLocation().setDirection(player.getLocation().subtract(entity.getLocation()).toVector()));
@@ -126,22 +93,30 @@ public class PlayerEvents implements Listener {
     }
 
     @EventHandler
-    public void onBlockClick(PlayerInteractEvent event) {
-        if (dataManager.getMoveTo().containsKey(event.getPlayer())) {
-            Entity entity = dataManager.getMoveTo().get(event.getPlayer());
-            if (event.getClickedBlock() == null) return;
-            entity.teleport(event.getPlayer().getLocation());
-            event.setCancelled(true);
-            dataManager.getMoveTo().remove(event.getPlayer());
+    public void onItemClick(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack itemStack = player.getInventory().getItemInMainHand();
+        if (itemStack.getItemMeta() == null) return;
+
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+        if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
+        if (container.has(new NamespacedKey(VMPlugin.getInstance(), "vm-item"), PersistentDataType.STRING)) {
+            String data = container.get(new NamespacedKey(VMPlugin.getInstance(), "vm-item"), PersistentDataType.STRING);
+            int shopSize = Integer.parseInt(data.split("-")[0]);
+            int storageSize = Integer.parseInt(data.split("-")[1]);
+
+            Methods.spawnShop(event.getClickedBlock().getLocation(), "player", storageSize, shopSize, -1, "infinite");
         }
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (!dataManager.getAbandonOffline().containsKey(event.getPlayer())) return;
+        if (!VMPlugin.abandonOffline.containsKey(event.getPlayer())) return;
 
         Player player = event.getPlayer();
-        ArrayList<ItemStack> storage = dataManager.getAbandonOffline().get(event.getPlayer());
+        ArrayList<ItemStack> storage = VMPlugin.abandonOffline.get(event.getPlayer());
 
         for (ItemStack storageStack : storage) {
             if (storageStack != null) {
@@ -152,6 +127,6 @@ public class PlayerEvents implements Listener {
                 }
             }
         }
-        dataManager.getAbandonOffline().remove(event.getPlayer());
+        VMPlugin.abandonOffline.remove(event.getPlayer());
     }
 }

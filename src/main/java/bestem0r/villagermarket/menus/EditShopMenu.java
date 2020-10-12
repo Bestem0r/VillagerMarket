@@ -79,7 +79,7 @@ public abstract class EditShopMenu {
                         .path("menus.edit_shop.items.increase_time.lore")
                         .replace("%expire%", String.valueOf(date))
                         .replace("%time%", time)
-                        .replace("%price%", String.valueOf(villagerShop.getCost()))
+                        .replace("%price%", (villagerShop.getCost()) + VMPlugin.getCurrency())
                         .buildLore())
                 .build();
 

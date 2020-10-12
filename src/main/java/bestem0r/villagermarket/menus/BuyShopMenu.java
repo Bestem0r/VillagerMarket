@@ -65,7 +65,7 @@ public abstract class BuyShopMenu {
                 .nameFromPath("menus.buy_shop.items.buy_shop.name")
                 .lore(new Color.Builder()
                         .path("menus.buy_shop.items.buy_shop.lore")
-                        .replace("%price%", cost)
+                        .replace("%price%", cost + VMPlugin.getCurrency())
                         .replace("%time%", time)
                         .buildLore())
                 .build();

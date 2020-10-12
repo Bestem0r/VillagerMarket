@@ -2,8 +2,10 @@ package bestem0r.villagermarket.items;
 
 import bestem0r.villagermarket.utilities.Color;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 
@@ -16,6 +18,8 @@ public class MenuItem extends ItemStack {
         private String name = "";
         private ArrayList<String> lore = new ArrayList<>();
         private int amount = 1;
+        private NamespacedKey key = null;
+        private String persistentData;
 
         public Builder(Material material) {
             this.material = material;
@@ -40,6 +44,12 @@ public class MenuItem extends ItemStack {
             return this;
         }
 
+        public Builder persistentData(NamespacedKey key, String value) {
+            this.key = key;
+            this.persistentData = value;
+            return this;
+        }
+
         public MenuItem build() {
             MenuItem item = new MenuItem(material);
             item.setAmount(amount);
@@ -49,6 +59,7 @@ public class MenuItem extends ItemStack {
             if (itemMeta != null) {
                 if (!name.equals("")) itemMeta.setDisplayName(name);
                 itemMeta.setLore(lore);
+                if (key != null) itemMeta.getPersistentDataContainer().set(key, PersistentDataType.STRING, persistentData);
                 item.setItemMeta(itemMeta);
             }
             return item;

@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TabComplete implements TabCompleter {
+public class VMCompleter implements TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args){
         if(sender instanceof Player) {
@@ -21,6 +21,8 @@ public class TabComplete implements TabCompleter {
                     list.add("reload");
                     list.add("create");
                     list.add("remove");
+                    list.add("search");
+                    list.add("stats");
                     return list;
                 }
                 if (args[0].charAt(0) == 'c') {
@@ -32,10 +34,17 @@ public class TabComplete implements TabCompleter {
                 } else if (args[0].charAt(0) == 'r' && args[0].length() < 3) {
                     list.add("reload");
                     list.add("remove");
-                }else if (args[0].charAt(0) == 'r' && args[0].charAt(2) == 'l') {
+                } else if (args[0].charAt(0) == 'r' && args[0].charAt(2) == 'l') {
                     list.add("reload");
-                }else if (args[0].charAt(0) == 'r' && args[0].charAt(2) == 'm') {
+                } else if (args[0].charAt(0) == 'r' && args[0].charAt(2) == 'm') {
                     list.add("remove");
+                } else if (args[0].charAt(0) == 's' && args[0].length() < 2) {
+                    list.add("search");
+                    list.add("stats");
+                } else if (args[0].charAt(0) == 's' && args[0].charAt(1) == 'e') {
+                    list.add("search");
+                } else if (args[0].charAt(0) == 's' && args[0].charAt(1) == 't') {
+                    list.add("stats");
                 }
                 return list;
             }

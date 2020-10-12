@@ -27,7 +27,9 @@ public abstract class SellShopMenu {
                 .build();
         MenuItem confirm = new MenuItem.Builder(Material.LIME_TERRACOTTA)
                 .nameFromPath("menus.sell_shop.items.yes_confirm.name")
-                .lore(new Color.Builder().path("menus.sell_shop.items.yes_confirm.lore").replace("%amount%", priceHalved).buildLore())
+                .lore(new Color.Builder().path("menus.sell_shop.items.yes_confirm.lore")
+                        .replace("%amount%", priceHalved + VMPlugin.getCurrency())
+                        .buildLore())
                 .build();
 
 

@@ -1,4 +1,4 @@
-package bestem0r.villagermarket;
+package bestem0r.villagermarket.utilities;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

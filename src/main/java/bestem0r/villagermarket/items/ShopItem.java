@@ -29,6 +29,7 @@ public class ShopItem extends ItemStack {
 
     private double price;
     private int slot;
+    private int maxBuy = 0;
     private List<String> menuLore;
 
     private Mode mode;
@@ -39,6 +40,7 @@ public class ShopItem extends ItemStack {
         super(itemStack);
     }
 
+    /** Builder for new ShopItem */
     public static class Builder {
 
         private final ItemStack itemStack;
@@ -114,6 +116,7 @@ public class ShopItem extends ItemStack {
         isEditor = editor;
     }
 
+    /** Toggles between sell/buy mode */
     public void toggleMode() {
         switch (mode) {
             case BUY:
@@ -125,6 +128,7 @@ public class ShopItem extends ItemStack {
         }
     }
 
+    /** Refreshes Menu lore */
     public void refreshLore(VillagerShop villagerShop) {
         Economy economy = VMPlugin.getEconomy();
         double moneyLeft = 0;
@@ -147,9 +151,9 @@ public class ShopItem extends ItemStack {
         menuLore = new Color.Builder()
                 .path(lorePath)
                 .replace("%amount%", String.valueOf(super.getAmount()))
-                .replace("%price%", String.valueOf(price))
+                .replace("%price%", (price) + VMPlugin.getCurrency())
                 .replace("%stock%", String.valueOf(storageAmount))
-                .replace("%money%", String.valueOf(moneyLeft))
+                .replace("%money%", (moneyLeft) + VMPlugin.getCurrency())
                 .buildLore();
 
         String namePath = "menus" + inventoryPath + "item_name";
@@ -162,6 +166,7 @@ public class ShopItem extends ItemStack {
                 .build();
     }
 
+    /** Returns an ItemStack either as a menu item or as the original item */
     public ItemStack asItemStack(LoreType loreType) {
         ItemStack itemStack = new ItemStack(this);
 

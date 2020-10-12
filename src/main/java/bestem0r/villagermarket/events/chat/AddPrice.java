@@ -2,8 +2,10 @@ package bestem0r.villagermarket.events.chat;
 
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.items.ShopItem;
+import bestem0r.villagermarket.shops.ShopMenu;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
+import bestem0r.villagermarket.utilities.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -11,6 +13,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+
+import java.util.UUID;
 
 public class AddPrice implements Listener {
 
@@ -37,14 +41,14 @@ public class AddPrice implements Listener {
         if (!canConvert(message)) {
             player.sendMessage(new Color.Builder().path("messages.not_number").addPrefix().build());
             return;
-        } else if (Double.parseDouble(message) < 1) {
+        } else if (Double.parseDouble(message) < 0) {
             player.sendMessage(new Color.Builder().path("messages.negative_price").addPrefix().build());
             return;
         }
         builder.price(Double.parseDouble(message));
 
         String entityUUID = builder.getEntityUUID();
-        VillagerShop villagerShop = VMPlugin.getDataManager().getVillagers().get(entityUUID);
+        VillagerShop villagerShop = Methods.shopFromUUID(UUID.fromString(entityUUID));
 
         ShopItem shopItem = builder.build();
         shopItem.refreshLore(villagerShop);
@@ -55,7 +59,7 @@ public class AddPrice implements Listener {
         HandlerList.unregisterAll(this);
 
         Bukkit.getScheduler().runTask(VMPlugin.getInstance(), () -> {
-            player.openInventory(villagerShop.getInventory(VillagerShop.ShopMenu.EDIT_SHOPFRONT));
+            player.openInventory(villagerShop.getInventory(ShopMenu.EDIT_SHOPFRONT));
             player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.add_item")), 0.5f, 1);
         });
     }

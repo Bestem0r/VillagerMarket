@@ -15,7 +15,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 
 public class AdminShop extends VillagerShop {
@@ -58,6 +58,7 @@ public class AdminShop extends VillagerShop {
     protected Boolean buyItem(int slot, Player player) {
         ShopItem shopItem = itemList.get(slot);
         Economy economy = VMPlugin.getEconomy();
+        String currency = VMPlugin.getCurrency();
 
         double price = shopItem.getPrice();
 
@@ -66,13 +67,11 @@ public class AdminShop extends VillagerShop {
             return false;
         }
         economy.withdrawPlayer(player, price);
+        giveShopItem(player, shopItem);
 
-        ItemStack boughtStack = shopItem.asItemStack(ShopItem.LoreType.ITEM);
-        HashMap<Integer, ItemStack> itemsLeft = player.getInventory().addItem(boughtStack);
-        for (int i : itemsLeft.keySet()) {
-            player.getLocation().getWorld().dropItemNaturally(player.getLocation(), itemsLeft.get(i));
-        }
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.buy_item")), 1, 1);
+        VMPlugin.log.add(new Date().toString() + ": " + player.getName() + " bought " + shopItem.getAmount() + "x " + shopItem.getType() + " from Admin Shop " + "(" + price + currency + ")");
+
         return true;
     }
 
@@ -80,18 +79,22 @@ public class AdminShop extends VillagerShop {
     protected Boolean sellItem(int slot, Player player) {
         ShopItem shopItem = itemList.get(slot);
         Economy economy = VMPlugin.getEconomy();
+        String currency = VMPlugin.getCurrency();
 
         int amount = shopItem.getAmount();
-        double price = shopItem.getPrice();
         int amountInInventory = getAmountInventory(shopItem.asItemStack(ShopItem.LoreType.ITEM), player.getInventory());
+        double price = shopItem.getPrice();
 
         if (amountInInventory < amount) {
-            player.sendMessage(VMPlugin.getPrefix() + new Color.Builder().path("messages.not_enough_in_inventory").build());
+            player.sendMessage(new Color.Builder().path("messages.not_enough_in_inventory").addPrefix().build());
             return false;
         }
-        player.getInventory().removeItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
-        player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_item")), 0.5f, 1);
         economy.depositPlayer(player, price);
+        player.getInventory().removeItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
+
+        player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_item")), 0.5f, 1);
+        VMPlugin.log.add(new Date().toString() + ": " + player.getName() + " sold " + amount + "x " + shopItem.getType() + " to Admin Shop " + "(" + price + currency + ")");
+
         return true;
     }
 
@@ -119,8 +122,8 @@ public class AdminShop extends VillagerShop {
             case 3:
                 inventory = null;
                 Bukkit.getServer().getPluginManager().registerEvents(new ChangeName(player, entityUUID), VMPlugin.getInstance());
-                player.sendMessage(VMPlugin.getPrefix() + new Color.Builder().path("messages.change_name").build());
-                player.sendMessage(VMPlugin.getPrefix() + new Color.Builder().path("messages.type_cancel").build());
+                player.sendMessage(new Color.Builder().path("messages.change_name").addPrefix().build());
+                player.sendMessage(new Color.Builder().path("messages.type_cancel").addPrefix().build());
                 break;
             //Back
             case 8:

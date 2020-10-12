@@ -38,7 +38,8 @@ public abstract class Color {
                 text = text.replaceAll(replace, replaceList.get(replace));
             }
             if (addPredix) {
-                return VMPlugin.getPrefix() + ChatColor.translateAlternateColorCodes('&', text);
+                String prefix = ChatColor.translateAlternateColorCodes('&', mainConfig.getString("prefix"));
+                return prefix + " " + ChatColor.translateAlternateColorCodes('&', text);
             } else {
                 return ChatColor.translateAlternateColorCodes('&', text);
             }
@@ -49,7 +50,7 @@ public abstract class Color {
             ArrayList<String> returnLore = new ArrayList<>();
             for (String lore : loreList) {
                 for (String replace : replaceList.keySet()) {
-                    lore = lore.replaceAll(replace, replaceList.get(replace));
+                    lore = lore.replace(replace, replaceList.get(replace));
                 }
                 returnLore.add(ChatColor.translateAlternateColorCodes('&', lore));
             }
