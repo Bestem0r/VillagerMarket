@@ -7,6 +7,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -29,7 +30,7 @@ public class ShopItem extends ItemStack {
 
     private double price;
     private int slot;
-    private int maxBuy = 0;
+    private int buyLimit = 0;
     private List<String> menuLore;
 
     private Mode mode;
@@ -50,6 +51,7 @@ public class ShopItem extends ItemStack {
         private double price;
         private int slot;
         private int amount = 1;
+        private int buyLimit = 0;
 
         private Mode mode = Mode.SELL;
 
@@ -82,6 +84,10 @@ public class ShopItem extends ItemStack {
             this.mode = mode;
             return this;
         }
+        public Builder buyLimit(int amount) {
+            this.buyLimit = amount;
+            return this;
+        }
 
         public ShopItem build() {
             ShopItem shopItem = new ShopItem(itemStack);
@@ -90,6 +96,7 @@ public class ShopItem extends ItemStack {
             shopItem.price = price;
             shopItem.slot = slot;
             shopItem.setAmount(amount);
+            shopItem.buyLimit = buyLimit;
 
             shopItem.mode = mode;
 
@@ -111,9 +118,16 @@ public class ShopItem extends ItemStack {
     public Mode getMode() {
         return mode;
     }
-
     public void toggleEditor(boolean editor) {
         isEditor = editor;
+    }
+    public int getBuyLimit() {
+        return buyLimit;
+    }
+
+    /** Setters */
+    public void setBuyLimit(int buyLimit) {
+        this.buyLimit = buyLimit;
     }
 
     /** Toggles between sell/buy mode */
@@ -130,15 +144,10 @@ public class ShopItem extends ItemStack {
 
     /** Refreshes Menu lore */
     public void refreshLore(VillagerShop villagerShop) {
-        Economy economy = VMPlugin.getEconomy();
-        double moneyLeft = 0;
-
-        if (villagerType == VillagerShop.VillagerType.PLAYER) {
-            OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(villagerShop.getOwnerUUID()));
-            moneyLeft = economy.getBalance(owner);
-        }
+        FileConfiguration config = VMPlugin.getInstance().getConfig();
 
         int storageAmount = villagerShop.getItemAmount(asItemStack(LoreType.ITEM));
+        int available = (Math.max(buyLimit - storageAmount, 0));
 
         Mode itemMode = mode;
         if (!isEditor) itemMode = (mode == Mode.BUY ? Mode.SELL : Mode.BUY);
@@ -151,9 +160,10 @@ public class ShopItem extends ItemStack {
         menuLore = new Color.Builder()
                 .path(lorePath)
                 .replace("%amount%", String.valueOf(super.getAmount()))
-                .replace("%price%", (price) + VMPlugin.getCurrency())
+                .replaceWithCurrency("%price%", String.valueOf(price))
                 .replace("%stock%", String.valueOf(storageAmount))
-                .replace("%money%", (moneyLeft) + VMPlugin.getCurrency())
+                .replace("%available%", String.valueOf(available))
+                .replace("%limit%", (buyLimit == 0 ? config.getString("time.unlimited") : String.valueOf(buyLimit)))
                 .buildLore();
 
         String namePath = "menus" + inventoryPath + "item_name";

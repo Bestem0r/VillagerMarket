@@ -58,7 +58,6 @@ public class AdminShop extends VillagerShop {
     protected Boolean buyItem(int slot, Player player) {
         ShopItem shopItem = itemList.get(slot);
         Economy economy = VMPlugin.getEconomy();
-        String currency = VMPlugin.getCurrency();
 
         double price = shopItem.getPrice();
 
@@ -70,7 +69,9 @@ public class AdminShop extends VillagerShop {
         giveShopItem(player, shopItem);
 
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.buy_item")), 1, 1);
-        VMPlugin.log.add(new Date().toString() + ": " + player.getName() + " bought " + shopItem.getAmount() + "x " + shopItem.getType() + " from Admin Shop " + "(" + price + currency + ")");
+        String currency = config.getString("currency");
+        String valueCurrency = (config.getBoolean("currency_before") ? currency + price : price + currency);
+        VMPlugin.log.add(new Date().toString() + ": " + player.getName() + " bought " + shopItem.getAmount() + "x " + shopItem.getType() + " from Admin Shop " + "(" + valueCurrency + ")");
 
         return true;
     }
@@ -79,7 +80,6 @@ public class AdminShop extends VillagerShop {
     protected Boolean sellItem(int slot, Player player) {
         ShopItem shopItem = itemList.get(slot);
         Economy economy = VMPlugin.getEconomy();
-        String currency = VMPlugin.getCurrency();
 
         int amount = shopItem.getAmount();
         int amountInInventory = getAmountInventory(shopItem.asItemStack(ShopItem.LoreType.ITEM), player.getInventory());
@@ -93,8 +93,9 @@ public class AdminShop extends VillagerShop {
         player.getInventory().removeItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
 
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_item")), 0.5f, 1);
-        VMPlugin.log.add(new Date().toString() + ": " + player.getName() + " sold " + amount + "x " + shopItem.getType() + " to Admin Shop " + "(" + price + currency + ")");
-
+        String currency = config.getString("currency");
+        String valueCurrency = (config.getBoolean("currency_before") ? currency + price : price + currency);
+        VMPlugin.log.add(new Date().toString() + ": " + player.getName() + " sold " + amount + "x " + shopItem.getType() + " to Admin Shop " + "(" + valueCurrency + ")");
         return true;
     }
 

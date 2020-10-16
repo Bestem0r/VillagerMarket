@@ -1,9 +1,10 @@
 package bestem0r.villagermarket.shops;
 
+import bestem0r.villagermarket.events.chat.SetLimit;
 import bestem0r.villagermarket.utilities.ShopStats;
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.events.ItemDrop;
-import bestem0r.villagermarket.events.chat.AddAmount;
+import bestem0r.villagermarket.events.chat.SetAmount;
 import bestem0r.villagermarket.items.MenuItem;
 import bestem0r.villagermarket.items.ShopItem;
 import bestem0r.villagermarket.menus.BuyShopMenu;
@@ -180,8 +181,7 @@ public abstract class VillagerShop {
         if (slot < shopfrontSize && currentItem == null && cursorItem.getType() != Material.AIR) {
             //Add item
             if (slot == -1) return false;
-
-            if (isBlackListed(currentItem.getType())) {
+            if (isBlackListed(cursorItem.getType())) {
                 player.sendMessage(new Color.Builder().path("messages.blacklisted").addPrefix().build());
             } else {
                 player.sendMessage(new Color.Builder().path("messages.type_amount").addPrefix().build());
@@ -193,14 +193,31 @@ public abstract class VillagerShop {
                         .slot(slot);
 
                 Bukkit.getServer().getPluginManager().registerEvents(new ItemDrop(player), VMPlugin.getInstance());
-                Bukkit.getServer().getPluginManager().registerEvents(new AddAmount(player, builder), VMPlugin.getInstance());
+                Bukkit.getServer().getPluginManager().registerEvents(new SetAmount(player, builder), VMPlugin.getInstance());
             }
             event.getView().close();
             return true;
         } else if (slot < shopfrontSize) {
-            //Quick add
-            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-                quickAdd(player.getInventory(), event.getRawSlot());
+            event.setCancelled(true);
+            //Back
+            if (slot == shopfrontSize - 1) {
+                player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.menu_click")), 0.5f, 1);
+                player.openInventory(getInventory(ShopMenu.EDIT_SHOP));
+                return true;
+            }
+            //Quick add or change buy limit
+            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && this instanceof PlayerShop) {
+                switch (itemList.get(slot).getMode()) {
+                    case SELL:
+                        quickAdd(player.getInventory(), event.getRawSlot());
+                        break;
+                    case BUY:
+                        player.sendMessage(new Color.Builder().path("messages.type_max").addPrefix().build());
+                        player.sendMessage(new Color.Builder().path("messages.type_cancel").addPrefix().build());
+                        Bukkit.getPluginManager().registerEvents(new SetLimit(player, this, slot), VMPlugin.getInstance());
+                        Bukkit.getScheduler().runTaskLater(VMPlugin.getInstance(), () -> { event.getView().close(); }, 1L);
+                }
+                return true;
             }
             //Edit
             if (event.getClick() == ClickType.MIDDLE) {
@@ -211,28 +228,20 @@ public abstract class VillagerShop {
                         .entityUUID(entityUUID)
                         .villagerType(getType())
                         .slot(slot);
-                Bukkit.getServer().getPluginManager().registerEvents(new AddAmount(player, builder), VMPlugin.getInstance());
+                Bukkit.getServer().getPluginManager().registerEvents(new SetAmount(player, builder), VMPlugin.getInstance());
                 event.getView().close();
-            }
-            //Back
-            if (slot == shopfrontSize - 1) {
-                player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.menu_click")), 0.5f, 1);
-                player.openInventory(getInventory(ShopMenu.EDIT_SHOP));
-                return true;
             }
             //Delete item
             if (event.getClick() == ClickType.RIGHT && currentItem != null) {
                 player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.remove_item")), 0.5f, 1);
                 itemList.remove(slot);
                 updateShopInventories();
-                event.setCancelled(true);
             }
             //Change mode
             if (event.getClick() == ClickType.LEFT && currentItem != null) {
                 player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.menu_click")), 0.5f, 1);
-                getItemList().get(slot).toggleMode();
+                itemList.get(slot).toggleMode();
                 updateShopInventories();
-                event.setCancelled(true);
             }
         }
         return false;
@@ -248,8 +257,6 @@ public abstract class VillagerShop {
         }
         updateShopInventories();
     }
-
-
 
     /** Create new buy shop inventory */
     protected Inventory newBuyShopInventory() {
@@ -282,7 +289,6 @@ public abstract class VillagerShop {
         return SellShopMenu.create(this);
     }
 
-
     protected ItemStack[] stacksFromArray(ArrayList<ItemStack> arrayList) {
         ItemStack[] stacks = new ItemStack[arrayList.size()];
         for (int i = 0; i < arrayList.size(); i++) {
@@ -312,21 +318,25 @@ public abstract class VillagerShop {
         List<ItemStack> itemStackList = new ArrayList<>();
         List<Double> priceList = new ArrayList<>();
         List<String> modeList = new ArrayList<>();
+        List<Integer> maxList = new ArrayList<>();
 
         for (Integer slot : itemList.keySet()) {
             if (itemList.get(slot) == null) {
                 itemStackList.add(null);
                 priceList.add(0.0);
                 modeList.add("SELL");
+                maxList.add(0);
             } else {
                 itemStackList.add(itemList.get(slot).asItemStack(ShopItem.LoreType.ITEM));
                 priceList.add(itemList.get(slot).getPrice());
                 modeList.add(itemList.get(slot).getMode().toString());
+                maxList.add(itemList.get(slot).getBuyLimit());
             }
         }
         config.set("prices", priceList);
         config.set("for_sale", itemStackList);
         config.set("modes", modeList);
+        config.set("max_buy", maxList);
 
         config.set("stats.items_sold", shopStats.getItemsSold());
         config.set("stats.items_bought", shopStats.getItemsBought());
@@ -429,5 +439,8 @@ public abstract class VillagerShop {
     }
     public String getEntityUUID() {
         return entityUUID;
+    }
+    public int getTimesRented() {
+        return timesRented;
     }
 }

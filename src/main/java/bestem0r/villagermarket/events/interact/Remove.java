@@ -8,8 +8,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import java.io.File;
@@ -23,9 +25,10 @@ public class Remove implements Listener {
         this.player = player;
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.LOWEST)
     public void onInteract(PlayerInteractEntityEvent event) {
         if (event.getPlayer() != player) return;
+        event.setCancelled(true);
         VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
         if (villagerShop != null) {
             player.sendMessage(new Color.Builder().path("messages.villager_removed").addPrefix().build());
@@ -40,7 +43,6 @@ public class Remove implements Listener {
             player.sendMessage(new Color.Builder().path("messages.no_villager_shop").addPrefix().build());
         }
         HandlerList.unregisterAll(this);
-        event.setCancelled(true);
     }
 }
 

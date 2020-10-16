@@ -16,12 +16,12 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.UUID;
 
-public class AddPrice implements Listener {
+public class SetPrice implements Listener {
 
-    private Player player;
-    private ShopItem.Builder builder;
+    private final Player player;
+    private final ShopItem.Builder builder;
 
-    public AddPrice(Player player, ShopItem.Builder builder) {
+    public SetPrice(Player player, ShopItem.Builder builder) {
         this.player = player;
         this.builder = builder;
     }
@@ -40,6 +40,7 @@ public class AddPrice implements Listener {
         }
         if (!canConvert(message)) {
             player.sendMessage(new Color.Builder().path("messages.not_number").addPrefix().build());
+            player.sendMessage(new Color.Builder().path("messages.use_dot").addPrefix().build());
             return;
         } else if (Double.parseDouble(message) < 0) {
             player.sendMessage(new Color.Builder().path("messages.negative_price").addPrefix().build());

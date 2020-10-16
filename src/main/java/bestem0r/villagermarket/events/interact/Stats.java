@@ -1,12 +1,15 @@
 package bestem0r.villagermarket.events.interact;
 
+import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
 import bestem0r.villagermarket.utilities.Methods;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class Stats implements Listener {
@@ -17,9 +20,10 @@ public class Stats implements Listener {
         this.player = player;
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.LOWEST)
     public void onInteract(PlayerInteractEntityEvent event) {
         if (event.getPlayer() != player) return;
+        event.setCancelled(true);
         VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
 
         if (villagerShop != null) {

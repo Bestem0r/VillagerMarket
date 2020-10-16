@@ -38,11 +38,13 @@ public class InventoryClick implements Listener {
         Player player = (Player) event.getWhoClicked();
         String title = ChatColor.stripColor(event.getView().getTitle());
 
-        if (!menus.contains(title) || !VMPlugin.clickMap.containsKey(player.getUniqueId().toString())) return;
+        if (!menus.contains(title) || !VMPlugin.clickMap.containsKey(player)) {
+            return;
+        }
 
         int titleIndex = menus.indexOf(title);
 
-        VillagerShop villagerShop = VMPlugin.clickMap.get(player.getUniqueId().toString());
+        VillagerShop villagerShop = VMPlugin.clickMap.get(player);
         Entity villager = Bukkit.getEntity(UUID.fromString(villagerShop.getEntityUUID()));
 
         if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && titleIndex != 5) event.setCancelled(true);
@@ -51,12 +53,12 @@ public class InventoryClick implements Listener {
             //Buy available
             case 0:
                 if (event.getRawSlot() > 8) return;
-                if (!(villagerShop instanceof Player)) return;
+                if (!(villagerShop instanceof PlayerShop)) return;
                 event.setCancelled(true);
                 if (event.getRawSlot() == 4) {
                     event.getView().close();
                     PlayerShop playerShop = (PlayerShop) villagerShop;
-                    playerShop.buyShop(player, villager);
+                    playerShop.buyShop(player);
                 }
                 break;
             //Edit shop
@@ -139,12 +141,8 @@ public class InventoryClick implements Listener {
                 if (!(villagerShop instanceof PlayerShop)) return;
                 event.setCancelled(true);
                 if (event.getRawSlot() == 3) {
-                    player.sendMessage(new Color.Builder().path("messages.sold_shop").addPrefix().build());
-                    player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_shop")), 0.5f, 1);
-                    player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.menu_click")), 0.5f, 1);
-
                     PlayerShop playerShop = (PlayerShop) villagerShop;
-                    playerShop.abandon();
+                    playerShop.sell(player);
                     event.getView().close();
                 }
                 if (event.getRawSlot() == 5) {
@@ -170,7 +168,7 @@ public class InventoryClick implements Listener {
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (VMPlugin.clickMap.containsKey(player.getUniqueId().toString())) { return; }
+        if (VMPlugin.clickMap.containsKey(player)) { return; }
 
         String title = ChatColor.stripColor(event.getView().getTitle());
         if (menus.contains(title)) {

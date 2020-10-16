@@ -10,12 +10,12 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-public class AddAmount implements Listener {
+public class SetAmount implements Listener {
 
     private Player player;
     private ShopItem.Builder builder;
 
-    public AddAmount(Player player, ShopItem.Builder builder) {
+    public SetAmount(Player player, ShopItem.Builder builder) {
         this.player = player;
         this.builder = builder;
     }
@@ -45,7 +45,7 @@ public class AddAmount implements Listener {
         player.sendMessage(new Color.Builder().path("messages.type_price").addPrefix().build());
         player.sendMessage(new Color.Builder().path("messages.type_cancel").addPrefix().build());
 
-        Bukkit.getServer().getPluginManager().registerEvents(new AddPrice(player, builder), VMPlugin.getInstance());
+        Bukkit.getServer().getPluginManager().registerEvents(new SetPrice(player, builder), VMPlugin.getInstance());
         HandlerList.unregisterAll(this);
     }
 

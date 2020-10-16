@@ -2,6 +2,7 @@ package bestem0r.villagermarket.events;
 
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.shops.AdminShop;
+import bestem0r.villagermarket.shops.PlayerShop;
 import bestem0r.villagermarket.shops.ShopMenu;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
@@ -13,13 +14,11 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -33,11 +32,9 @@ import java.util.UUID;
 
 public class PlayerEvents implements Listener {
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void playerRightClick(PlayerInteractEntityEvent event) {
-
         Player player = event.getPlayer();
-
         VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
         if (villagerShop != null) {
             event.setCancelled(true);
@@ -60,7 +57,7 @@ public class PlayerEvents implements Listener {
                     inventory = villagerShop.getInventory(ShopMenu.SHOPFRONT);
                 }
             }
-            VMPlugin.clickMap.put(player.getUniqueId().toString(), villagerShop);
+            VMPlugin.clickMap.put(player, villagerShop);
 
             player.openInventory(inventory);
             player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.open_shop")), 0.5f, 1);
@@ -71,8 +68,8 @@ public class PlayerEvents implements Listener {
     public void onCloseInventory(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
 
-        if (VMPlugin.clickMap.containsKey(player.getUniqueId().toString())) { return; }
-        VillagerShop villagerShop = VMPlugin.clickMap.get(player.getUniqueId().toString());
+        if (VMPlugin.clickMap.containsKey(player)) { return; }
+        VillagerShop villagerShop = VMPlugin.clickMap.get(player);
 
         String title = ChatColor.stripColor(event.getView().getTitle());
         if (title.equalsIgnoreCase(ChatColor.stripColor(new Color.Builder().path("menus.edit_storage.title").build()))) {
@@ -107,7 +104,13 @@ public class PlayerEvents implements Listener {
             int shopSize = Integer.parseInt(data.split("-")[0]);
             int storageSize = Integer.parseInt(data.split("-")[1]);
 
-            Methods.spawnShop(event.getClickedBlock().getLocation(), "player", storageSize, shopSize, -1, "infinite");
+            UUID villagerUUID = Methods.spawnShop(player.getLocation(), "player", storageSize, shopSize, -1, "infinite");
+            PlayerShop playerShop = (PlayerShop) Methods.shopFromUUID(villagerUUID);
+            playerShop.setOwner(player);
+
+            player.playSound(event.getClickedBlock().getLocation().subtract(0.5, 0, 0.5), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.create_shop")), 1, 1);
+            itemStack.setAmount(itemStack.getAmount() - 1);
+            event.setCancelled(true);
         }
     }
 

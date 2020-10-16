@@ -72,7 +72,7 @@ public abstract class Methods {
     }
 
     /** Spawns new Villager Entity and sets its attributes to default values */
-    public static void spawnShop(Location location, String type, int storageSize, int shopSize, int cost, String duration) {
+    public static UUID spawnShop(Location location, String type, int storageSize, int shopSize, int cost, String duration) {
         World world = location.getWorld();
         Villager villager = (Villager) world.spawnEntity(location, EntityType.VILLAGER);
         villager.setAI(false);
@@ -87,7 +87,8 @@ public abstract class Methods {
         if (Bukkit.getEntity(villager.getUniqueId()) != null) {
             newShopConfig(villager.getUniqueId(), storageSize, shopSize, cost, VillagerShop.VillagerType.valueOf(type.toUpperCase()), duration);
         } else {
-            Bukkit.getLogger().info(ChatColor.RED + "Unable to spawn Villager! Does WorldGuard deny mobspawn?");
+            Bukkit.getLogger().info(ChatColor.RED + "Unable to spawn Villager! Does WorldGuard deny mobs pawn?");
         }
+        return villager.getUniqueId();
     }
 }

@@ -3,14 +3,12 @@ package bestem0r.villagermarket.commands;
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.events.interact.Move;
 import bestem0r.villagermarket.events.interact.Remove;
+import bestem0r.villagermarket.events.interact.Stats;
 import bestem0r.villagermarket.items.MenuItem;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
 import bestem0r.villagermarket.utilities.Methods;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -19,6 +17,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class VMExecutor implements org.bukkit.command.CommandExecutor {
 
@@ -80,7 +80,7 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
                     return true;
                 }
                 Methods.spawnShop(player.getLocation(), type, storageSize, shopSize, cost, duration);
-
+                player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.create_shop")), 1, 1);
             //Item
             } else if ((args.length == 5) || (args.length == 6) && args[0].equalsIgnoreCase("item")) {
                 if (!args[1].equalsIgnoreCase("give")) return false;
@@ -92,8 +92,8 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
                     player.sendMessage(ChatColor.RED + "Could not find player: " + args[2]);
                     return true;
                 }
-                if (canConvert(args[3]) || canConvert(args[4])) {
-                    player.sendMessage(ChatColor.RED + "Invalid size argument!");
+                if (!canConvert(args[3]) || !canConvert(args[4])) {
+                    player.sendMessage(ChatColor.RED + "Invalid size: " + args[3] + " or " + args[4]);
                     return false;
                 }
                 int amount = 1;
@@ -106,13 +106,14 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
                     return false;
                 }
                 if (args.length == 6) {
-                    if (canConvert(args[5])) {
+                    if (!canConvert(args[5])) {
                         player.sendMessage(ChatColor.RED + "Invalid amount: " + args[5]);
                         return true;
                     }
                     amount = Integer.parseInt(args[5]);
                 }
-                player.getInventory().addItem(shopItem(shopSize, storageSize, amount));
+                target.getInventory().addItem(villagerShopItem(shopSize, storageSize, amount));
+                target.playSound(target.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1);
             //Reload
             } else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
                 if (!player.hasPermission("villagermarket.reload")) {
@@ -120,7 +121,6 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
                     return true;
                 }
                 VMPlugin.getInstance().reloadConfig();
-                VMPlugin.getInstance().setupConfigValues();
                 VMPlugin.getInstance().saveLog();
                 player.sendMessage(new Color.Builder().path("messages.reloaded").addPrefix().build());
                 for (VillagerShop villagerShop : VMPlugin.shops) {
@@ -165,16 +165,22 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
                 }
                 double radius = Double.parseDouble(args[1]);
                 int result = 0;
+                List<String> shopInfo = new ArrayList<>();
                 for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                     if (Methods.shopFromUUID(entity.getUniqueId()) != null) {
+                        shopInfo.add(new Color.Builder().path("messages.search_shop_info")
+                                .replace("%name%", entity.getCustomName())
+                                .replace("%location%", entity.getLocation().toString())
+                                .build());
                         result ++;
                     }
                 }
                 player.sendMessage(new Color.Builder().path("messages.search_result").replace("%amount%", String.valueOf(result)).addPrefix().build());
+
             //Stats
             } else if (args[0].equalsIgnoreCase("stats")) {
                 player.sendMessage(new Color.Builder().path("messages.get_stats").addPrefix().build());
-                //STAT INIT
+                Bukkit.getPluginManager().registerEvents(new Stats(player), VMPlugin.getInstance());
             }
             else {
                 player.sendMessage(ChatColor.RED + "Incorrect usage! Use /vm help!");
@@ -195,10 +201,10 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
     }
 
     /** Returns new Villager Shop Item */
-    private ItemStack shopItem(int shopSize, int storageSize, int amount) {
+    private ItemStack villagerShopItem(int shopSize, int storageSize, int amount) {
         FileConfiguration mainConfig = VMPlugin.getInstance().getConfig();
 
-        amount = (Math.max(amount, 64));
+        amount = (Math.min(amount, 64));
         String storageString = String.valueOf(storageSize);
         String shopString = String.valueOf(shopSize);
 

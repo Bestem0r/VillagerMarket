@@ -16,7 +16,7 @@ public abstract class Color {
         private HashMap<String, String> replaceList = new HashMap<>();
         private boolean addPredix = false;
 
-        private final FileConfiguration mainConfig = VMPlugin.getInstance().getConfig();
+        private final FileConfiguration config = VMPlugin.getInstance().getConfig();
 
         public Builder path(String path) {
             this.path = path;
@@ -26,19 +26,25 @@ public abstract class Color {
             replaceList.put(replace, value);
             return this;
         }
+        public Builder replaceWithCurrency(String replace, String value) {
+            String currency = config.getString("currency");
+            String valueCurrency = (config.getBoolean("currency_before") ? currency + value : value + currency);
+            replaceList.put(replace, valueCurrency);
+            return this;
+        }
         public Builder addPrefix() {
             this.addPredix = true;
             return this;
         }
 
         public String build() {
-            String text = mainConfig.getString(path);
+            String text = config.getString(path);
             if (text == null) return path;
             for (String replace : replaceList.keySet()) {
-                text = text.replaceAll(replace, replaceList.get(replace));
+                text = text.replace(replace, replaceList.get(replace));
             }
             if (addPredix) {
-                String prefix = ChatColor.translateAlternateColorCodes('&', mainConfig.getString("prefix"));
+                String prefix = ChatColor.translateAlternateColorCodes('&', config.getString("plugin_prefix"));
                 return prefix + " " + ChatColor.translateAlternateColorCodes('&', text);
             } else {
                 return ChatColor.translateAlternateColorCodes('&', text);
@@ -46,7 +52,7 @@ public abstract class Color {
         }
 
         public ArrayList<String> buildLore() {
-            List<String> loreList = mainConfig.getStringList(path);
+            List<String> loreList = config.getStringList(path);
             ArrayList<String> returnLore = new ArrayList<>();
             for (String lore : loreList) {
                 for (String replace : replaceList.keySet()) {

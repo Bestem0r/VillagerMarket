@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -29,12 +30,11 @@ public class VMPlugin extends JavaPlugin {
 
     private static Economy econ = null;
     private static VMPlugin instance;
-    private static String currency;
 
     public static final List<String> log = new ArrayList<>();
     public static final List<VillagerShop> shops = new ArrayList<>();
 
-    public static final HashMap<String, VillagerShop> clickMap = new HashMap<>();
+    public static final HashMap<Player, VillagerShop> clickMap = new HashMap<>();
     public static final HashMap<OfflinePlayer, ArrayList<ItemStack>> abandonOffline = new HashMap<>();
 
     @Override
@@ -48,7 +48,6 @@ public class VMPlugin extends JavaPlugin {
         saveDefaultConfig();
         reloadConfig();
 
-        setupConfigValues();
         loadConfigs();
         registerEvents();
         beginThreads();
@@ -65,7 +64,8 @@ public class VMPlugin extends JavaPlugin {
             villagerShop.save();
         }
         Bukkit.getScheduler().cancelTasks(this);
-        saveLog();
+        if (getConfig().getBoolean("auto_log")) saveLog();
+
         super.onDisable();
     }
 
@@ -95,12 +95,6 @@ public class VMPlugin extends JavaPlugin {
                 shops.add(new PlayerShop(file));
         }
     }
-
-    /** Loads default values from config.yml */
-    public void setupConfigValues() {
-        currency = getConfig().getString("currency");
-    }
-
     /** Registers event listeners */
     private void registerEvents() {
         EntityEvents entityEvents = new EntityEvents(this);
@@ -156,8 +150,5 @@ public class VMPlugin extends JavaPlugin {
     }
     public static VMPlugin getInstance() {
         return instance;
-    }
-    public static String getCurrency() {
-        return currency;
     }
 }

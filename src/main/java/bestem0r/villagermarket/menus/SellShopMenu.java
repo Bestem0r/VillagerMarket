@@ -16,7 +16,9 @@ public abstract class SellShopMenu {
         Inventory inventory = Bukkit.createInventory(null, 9, new Color.Builder().path("menus.sell_shop.title").build());
 
         FileConfiguration mainConfig = VMPlugin.getInstance().getConfig();
-        String priceHalved = String.valueOf((double) villagerShop.getCost() * (mainConfig.getDouble("refund_percent") / 100));
+        String priceHalved = String.valueOf((double) villagerShop.getCost() * (mainConfig.getDouble("refund_percent") / 100) * villagerShop.getTimesRented());
+
+        String configPath = (villagerShop.getCost() == -1 ? "yes_remove" : "yes_sell");
 
         MenuItem cancel = new MenuItem.Builder(Material.RED_TERRACOTTA)
                 .nameFromPath("menus.sell_shop.items.no_cancel")
@@ -26,9 +28,9 @@ public abstract class SellShopMenu {
                 .name(" ")
                 .build();
         MenuItem confirm = new MenuItem.Builder(Material.LIME_TERRACOTTA)
-                .nameFromPath("menus.sell_shop.items.yes_confirm.name")
-                .lore(new Color.Builder().path("menus.sell_shop.items.yes_confirm.lore")
-                        .replace("%amount%", priceHalved + VMPlugin.getCurrency())
+                .nameFromPath("menus.sell_shop.items." + configPath + ".name")
+                .lore(new Color.Builder().path("menus.sell_shop.items." + configPath + ".lore")
+                        .replaceWithCurrency("%amount%", priceHalved)
                         .buildLore())
                 .build();
 

@@ -1,9 +1,11 @@
 package bestem0r.villagermarket.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ public class VMCompleter implements TabCompleter {
                 if (args[0].isEmpty()) {
                     list.add("help");
                     list.add("move");
+                    list.add("item");
                     list.add("reload");
                     list.add("create");
                     list.add("remove");
@@ -45,6 +48,18 @@ public class VMCompleter implements TabCompleter {
                     list.add("search");
                 } else if (args[0].charAt(0) == 's' && args[0].charAt(1) == 't') {
                     list.add("stats");
+                } else if (args[0].charAt(0) == 'i') {
+                    list.add("item");
+                }
+                return list;
+            }
+            if (args.length == 2 && args[0].equalsIgnoreCase("item")) {
+                list.add("give");
+                return list;
+            }
+            if (args.length == 3 && args[0].equalsIgnoreCase("item")) {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    list.add(player.getName());
                 }
                 return list;
             }
@@ -60,7 +75,7 @@ public class VMCompleter implements TabCompleter {
                 }
                 return list;
             }
-            if ((args.length == 3) && args[0].equalsIgnoreCase("create") || (args.length == 4) && args[1].equalsIgnoreCase("player")){
+            if ((args.length == 3 && args[0].equals("create") || args.length == 4 && args[1].equals("player")) || (args[0].equals("item") && args.length == 4 || args.length == 5)) {
                 list.add("1");
                 list.add("2");
                 list.add("3");
