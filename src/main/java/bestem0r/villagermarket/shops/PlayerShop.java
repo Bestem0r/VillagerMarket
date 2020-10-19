@@ -134,9 +134,9 @@ public class PlayerShop extends VillagerShop {
 
         if (player.getUniqueId().equals(owner.getUniqueId())) {
             player.sendMessage(new Color.Builder().path("messages.cannot_sell_to_yourself").addPrefix().build());
-            return false;
+            //return false;
         }
-        if (inStock + amount > shopItem.getBuyLimit() && shopItem.getBuyLimit() != 0) {
+        if (amount > getAvailable(shopItem)) {
             player.sendMessage(new Color.Builder().path("messages.reached_max_buy").addPrefix().build());
             return false;
         }
@@ -182,6 +182,7 @@ public class PlayerShop extends VillagerShop {
     @Override
     public Boolean editShopInteract(Player player, InventoryClickEvent event) {
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.menu_click")), 0.5f, 1);
+        String cancel = mainConfig.getString("cancel");
 
         int slot = event.getRawSlot();
         Inventory inventory;
@@ -208,7 +209,7 @@ public class PlayerShop extends VillagerShop {
                 inventory = null;
                 Bukkit.getServer().getPluginManager().registerEvents(new ChangeName(player, entityUUID), VMPlugin.getInstance());
                 player.sendMessage(new Color.Builder().path("messages.change_name").addPrefix().build());
-                player.sendMessage(new Color.Builder().path("messages.type_cancel").addPrefix().build());
+                player.sendMessage(new Color.Builder().path("messages.type_cancel").replace("%cancel%", cancel).addPrefix().build());
                 break;
             //Sell shop
             case 5:
@@ -231,6 +232,31 @@ public class PlayerShop extends VillagerShop {
         if (inventory != null) player.openInventory(inventory);
         return true;
     }
+    /** Returns how many more of an certain ShopItem the owner wants to buy */
+    public int getAvailable(ShopItem shopItem) {
+        Economy economy = VMPlugin.getEconomy();
+        OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
+
+        int inStorage = getItemAmount(shopItem.asItemStack(ShopItem.LoreType.ITEM));
+        int availableSlots = 0;
+        for (ItemStack itemStack : storageMenu.getContents()) {
+            if (itemStack == null) {
+                availableSlots ++;
+                continue;
+            }
+            if (itemStack.isSimilar(shopItem.asItemStack(ShopItem.LoreType.ITEM))) { availableSlots ++; }
+        }
+        int availableStorage = availableSlots * shopItem.getType().getMaxStackSize() - inStorage;
+        int available;
+        if (shopItem.getBuyLimit() == 0) {
+            available = (int) Math.ceil(economy.getBalance(owner) / shopItem.getPrice()) * shopItem.getAmount();
+        } else {
+            available = shopItem.getBuyLimit();
+        }
+        available = (Math.min(available, availableStorage));
+        return available;
+    }
+
 
     /** Buy shop */
     public void buyShop(Player player) {

@@ -68,7 +68,7 @@ public class PlayerEvents implements Listener {
     public void onCloseInventory(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
 
-        if (VMPlugin.clickMap.containsKey(player)) { return; }
+        if (!VMPlugin.clickMap.containsKey(player)) { return; }
         VillagerShop villagerShop = VMPlugin.clickMap.get(player);
 
         String title = ChatColor.stripColor(event.getView().getTitle());

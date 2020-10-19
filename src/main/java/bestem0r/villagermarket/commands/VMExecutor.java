@@ -18,19 +18,18 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class VMExecutor implements org.bukkit.command.CommandExecutor {
 
     private final String[] help = {
             "&a&lVillager Market's commands:",
-            "Create shop: &6/vm create <type> <shopsize> [storagesize] [price] [hours]",
-            "Remove shop: &6/vm remove",
-            "Move shop: &6/vm move",
-            "Give Shop Item: &6/vm item give <player> <shopsize> <storagesize> [amount]",
-            "Search for nearby shops: &6/vm search <radius>",
-            "Show Shop statistics: &6/vm stats",
-            "Reload configs: &6/vm reload",
+            "> Create shop: &6/vm create <type> <shopsize> [storagesize] [price] [hours]",
+            "> Remove shop: &6/vm remove",
+            "> Move shop: &6/vm move",
+            "> Give item: &6/vm item give <player> <shopsize> <storagesize> [amount]",
+            "> Search for nearby shops: &6/vm search <radius>",
+            "> Show Shop statistics: &6/vm stats",
+            "> Reload configs: &6/vm reload",
     };
 
     @Override
@@ -38,7 +37,7 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
         if (sender instanceof Player) {
 
             if (args.length == 0) {
-
+                return false;
             }
             Player player = (Player) sender;
             //Create
@@ -168,15 +167,16 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
                 List<String> shopInfo = new ArrayList<>();
                 for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                     if (Methods.shopFromUUID(entity.getUniqueId()) != null) {
+                        Location location = entity.getLocation();
                         shopInfo.add(new Color.Builder().path("messages.search_shop_info")
                                 .replace("%name%", entity.getCustomName())
-                                .replace("%location%", entity.getLocation().toString())
+                                .replace("%location%", location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ())
                                 .build());
                         result ++;
                     }
                 }
                 player.sendMessage(new Color.Builder().path("messages.search_result").replace("%amount%", String.valueOf(result)).addPrefix().build());
-
+                shopInfo.forEach(player::sendMessage);
             //Stats
             } else if (args[0].equalsIgnoreCase("stats")) {
                 player.sendMessage(new Color.Builder().path("messages.get_stats").addPrefix().build());

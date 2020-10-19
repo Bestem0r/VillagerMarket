@@ -1,6 +1,5 @@
 package bestem0r.villagermarket.utilities;
 
-import bestem0r.villagermarket.VMPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.ArrayList;
@@ -51,13 +50,12 @@ public class ShopStats {
     }
 
     public ArrayList<String> getStats() {
-        String currency = VMPlugin.getCurrency();
         return new Color.Builder()
                 .path("stats_message")
                 .replace("%items_sold%", String.valueOf(itemsSold))
                 .replace("%items_bought%", String.valueOf(itemsBought))
-                .replace("%money_earned%", moneyEarned + currency)
-                .replace("%money_spent%", moneySpent + currency)
+                .replaceWithCurrency("%money_earned%", String.valueOf(moneyEarned))
+                .replaceWithCurrency("%money_spent%", String.valueOf(moneySpent))
                 .buildLore();
     }
 }

@@ -24,9 +24,10 @@ public class SetAmount implements Listener {
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (event.getPlayer() != player) return;
         String message = event.getMessage();
+        String cancel = VMPlugin.getInstance().getConfig().getString("cancel");
 
         event.setCancelled(true);
-        if (message.equalsIgnoreCase("cancel")) {
+        if (message.equalsIgnoreCase(cancel)) {
             player.sendMessage(new Color.Builder().path("messages.cancelled").addPrefix().build());
             HandlerList.unregisterAll(this);
             return;
@@ -41,9 +42,8 @@ public class SetAmount implements Listener {
         builder.amount(Integer.parseInt(event.getMessage()));
 
         player.sendMessage(new Color.Builder().path("messages.amount_successful").addPrefix().build());
-        player.sendMessage(" ");
         player.sendMessage(new Color.Builder().path("messages.type_price").addPrefix().build());
-        player.sendMessage(new Color.Builder().path("messages.type_cancel").addPrefix().build());
+        player.sendMessage(new Color.Builder().path("messages.type_cancel").replace("%cancel%", cancel).addPrefix().build());
 
         Bukkit.getServer().getPluginManager().registerEvents(new SetPrice(player, builder), VMPlugin.getInstance());
         HandlerList.unregisterAll(this);

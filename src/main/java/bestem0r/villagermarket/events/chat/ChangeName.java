@@ -1,5 +1,6 @@
 package bestem0r.villagermarket.events.chat;
 
+import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.utilities.Color;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,7 +26,8 @@ public class ChangeName implements Listener {
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (event.getPlayer() == this.player) {
-            if (event.getMessage().equalsIgnoreCase("cancel")) {
+            String cancel = VMPlugin.getInstance().getConfig().getString("cancel");
+            if (event.getMessage().equalsIgnoreCase(cancel)) {
                 player.sendMessage(new Color.Builder().path("messages.cancelled").addPrefix().build());
             } else {
                 String name = ChatColor.translateAlternateColorCodes('&', event.getMessage());

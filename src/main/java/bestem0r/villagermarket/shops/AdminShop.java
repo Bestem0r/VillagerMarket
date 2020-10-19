@@ -102,6 +102,7 @@ public class AdminShop extends VillagerShop {
     @Override
     public Boolean editShopInteract(Player player, InventoryClickEvent event) {
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.menu_click")), 0.5f, 1);
+        String cancel = mainConfig.getString("cancel");
 
         int slot = event.getRawSlot();
         Inventory inventory;
@@ -124,7 +125,7 @@ public class AdminShop extends VillagerShop {
                 inventory = null;
                 Bukkit.getServer().getPluginManager().registerEvents(new ChangeName(player, entityUUID), VMPlugin.getInstance());
                 player.sendMessage(new Color.Builder().path("messages.change_name").addPrefix().build());
-                player.sendMessage(new Color.Builder().path("messages.type_cancel").addPrefix().build());
+                player.sendMessage(new Color.Builder().path("messages.type_cancel").replace("%cancel%", cancel).addPrefix().build());
                 break;
             //Back
             case 8:

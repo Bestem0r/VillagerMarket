@@ -5,7 +5,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +74,7 @@ public class VMCompleter implements TabCompleter {
                 }
                 return list;
             }
-            if ((args.length == 3 && args[0].equals("create") || args.length == 4 && args[1].equals("player")) || (args[0].equals("item") && args.length == 4 || args.length == 5)) {
+            if ((args.length == 3 && args[0].equals("create") || args.length == 4 && args[1].equals("player")) || (args[0].equals("item") && (args.length == 4 || args.length == 5))) {
                 list.add("1");
                 list.add("2");
                 list.add("3");

@@ -176,6 +176,7 @@ public abstract class VillagerShop {
     /** Change items for sale */
     public Boolean itemsInteract(Player player, InventoryClickEvent event) {
         int slot = event.getRawSlot();
+        String cancel = mainConfig.getString("cancel");
         ItemStack currentItem = event.getCurrentItem();
         ItemStack cursorItem = event.getCursor();
         if (slot < shopfrontSize && currentItem == null && cursorItem.getType() != Material.AIR) {
@@ -185,7 +186,7 @@ public abstract class VillagerShop {
                 player.sendMessage(new Color.Builder().path("messages.blacklisted").addPrefix().build());
             } else {
                 player.sendMessage(new Color.Builder().path("messages.type_amount").addPrefix().build());
-                player.sendMessage(new Color.Builder().path("messages.type_cancel").addPrefix().build());
+                player.sendMessage(new Color.Builder().path("messages.type_cancel").replace("%cancel%", cancel).addPrefix().build());
 
                 ShopItem.Builder builder = new ShopItem.Builder(cursorItem)
                         .entityUUID(entityUUID)
@@ -213,7 +214,7 @@ public abstract class VillagerShop {
                         break;
                     case BUY:
                         player.sendMessage(new Color.Builder().path("messages.type_max").addPrefix().build());
-                        player.sendMessage(new Color.Builder().path("messages.type_cancel").addPrefix().build());
+                        player.sendMessage(new Color.Builder().path("messages.type_cancel").replace("%cancel%", cancel).addPrefix().build());
                         Bukkit.getPluginManager().registerEvents(new SetLimit(player, this, slot), VMPlugin.getInstance());
                         Bukkit.getScheduler().runTaskLater(VMPlugin.getInstance(), () -> { event.getView().close(); }, 1L);
                 }
@@ -222,7 +223,7 @@ public abstract class VillagerShop {
             //Edit
             if (event.getClick() == ClickType.MIDDLE) {
                 player.sendMessage(new Color.Builder().path("messages.type_amount").addPrefix().build());
-                player.sendMessage(new Color.Builder().path("messages.type_cancel").addPrefix().build());
+                player.sendMessage(new Color.Builder().path("messages.type_cancel").replace("%cancel%", cancel).addPrefix().build());
 
                 ShopItem.Builder builder = new ShopItem.Builder(itemList.get(slot).asItemStack(ShopItem.LoreType.ITEM))
                         .entityUUID(entityUUID)
@@ -362,6 +363,7 @@ public abstract class VillagerShop {
 
     /** Reload all inventories */
     public void reload() {
+        this.mainConfig = VMPlugin.getInstance().getConfig();
         this.buyShopMenu.setContents(newBuyShopInventory().getContents());
         this.editShopMenu.setContents(newEditShopInventory().getContents());
         this.shopfrontMenu.setContents(newShopfrontMenu(false, ShopItem.LoreType.MENU).getContents());

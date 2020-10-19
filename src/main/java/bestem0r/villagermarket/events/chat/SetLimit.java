@@ -28,9 +28,10 @@ public class SetLimit implements Listener {
         if (event.getPlayer() != player) return;
 
         String message = event.getMessage();
+        String cancel = VMPlugin.getInstance().getConfig().getString("cancel");
 
         event.setCancelled(true);
-        if (message.equalsIgnoreCase("cancel")) {
+        if (message.equalsIgnoreCase(cancel)) {
             player.sendMessage(new Color.Builder().path("messages.cancelled").addPrefix().build());
             HandlerList.unregisterAll(this);
             return;

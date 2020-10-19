@@ -55,6 +55,13 @@ public class VMPlugin extends JavaPlugin {
         getCommand("vm").setTabCompleter(new VMCompleter());
         getCommand("vm").setExecutor(new VMExecutor());
 
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
+                Bukkit.getLogger().info("[VillagerMarket] Nice to see you Villager Bank!");
+                Bukkit.getLogger().info("[VillagerBank] You too Villager Market!");
+            }
+        }, 31);
+
         super.onEnable();
     }
 
@@ -130,6 +137,7 @@ public class VMPlugin extends JavaPlugin {
 
     /** Loads Villager Shops from /shops/ folder */
     private void loadConfigs() {
+        Long before = new Date().getTime();
         File shopsFile = new File(Bukkit.getServer().getPluginManager().getPlugin("VillagerMarket").getDataFolder() + "/Shops/");
         if (shopsFile.exists()) {
             for (File file : shopsFile.listFiles()) {
@@ -142,6 +150,8 @@ public class VMPlugin extends JavaPlugin {
                 addVillager(UUID.fromString(entityUUID), file, VillagerShop.VillagerType.valueOf(type.toUpperCase()));
             }
         }
+        Long after = new Date().getTime();
+        Bukkit.getLogger().info("[VillagerMarket] Loaded " + shops.size() + " shops in " + (after - before) + " ms!");
     }
 
     /** Getters */

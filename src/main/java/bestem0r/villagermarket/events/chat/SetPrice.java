@@ -31,16 +31,16 @@ public class SetPrice implements Listener {
         if (event.getPlayer() != player) return;
 
         String message = event.getMessage();
+        String cancel = VMPlugin.getInstance().getConfig().getString("cancel");
         event.setCancelled(true);
 
-        if (message.equalsIgnoreCase("cancel")) {
+        if (message.equalsIgnoreCase(cancel)) {
             player.sendMessage(new Color.Builder().path("messages.cancelled").addPrefix().build());
             HandlerList.unregisterAll(this);
             return;
         }
         if (!canConvert(message)) {
-            player.sendMessage(new Color.Builder().path("messages.not_number").addPrefix().build());
-            player.sendMessage(new Color.Builder().path("messages.use_dot").addPrefix().build());
+            player.sendMessage(hasComma(message) ? new Color.Builder().path("messages.use_dot").addPrefix().build() : new Color.Builder().path("messages.not_number").addPrefix().build());
             return;
         } else if (Double.parseDouble(message) < 0) {
             player.sendMessage(new Color.Builder().path("messages.negative_price").addPrefix().build());
@@ -73,5 +73,14 @@ public class SetPrice implements Listener {
             }
         }
         return true;
+    }
+    private Boolean hasComma(String string) {
+        for (int i = 0; i < string.length(); i++) {
+            char c = string.charAt(i);
+            if (c == ',') {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,18 +1,15 @@
 package bestem0r.villagermarket.items;
 
 import bestem0r.villagermarket.VMPlugin;
+import bestem0r.villagermarket.shops.PlayerShop;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
-import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
-import java.util.UUID;
 
 public class ShopItem extends ItemStack {
 
@@ -147,7 +144,11 @@ public class ShopItem extends ItemStack {
         FileConfiguration config = VMPlugin.getInstance().getConfig();
 
         int storageAmount = villagerShop.getItemAmount(asItemStack(LoreType.ITEM));
-        int available = (Math.max(buyLimit - storageAmount, 0));
+        int available = 0;
+        if (villagerShop instanceof PlayerShop) {
+            PlayerShop playerShop = (PlayerShop) villagerShop;
+            available = playerShop.getAvailable(this);
+        }
 
         Mode itemMode = mode;
         if (!isEditor) itemMode = (mode == Mode.BUY ? Mode.SELL : Mode.BUY);
@@ -163,7 +164,7 @@ public class ShopItem extends ItemStack {
                 .replaceWithCurrency("%price%", String.valueOf(price))
                 .replace("%stock%", String.valueOf(storageAmount))
                 .replace("%available%", String.valueOf(available))
-                .replace("%limit%", (buyLimit == 0 ? config.getString("time.unlimited") : String.valueOf(buyLimit)))
+                .replace("%limit%", (buyLimit == 0 ? config.getString("quantity.unlimited") : String.valueOf(buyLimit)))
                 .buildLore();
 
         String namePath = "menus" + inventoryPath + "item_name";
