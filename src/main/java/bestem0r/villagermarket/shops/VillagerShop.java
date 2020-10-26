@@ -231,18 +231,21 @@ public abstract class VillagerShop {
                         .slot(slot);
                 Bukkit.getServer().getPluginManager().registerEvents(new SetAmount(player, builder), VMPlugin.getInstance());
                 event.getView().close();
+                return true;
             }
             //Delete item
             if (event.getClick() == ClickType.RIGHT && currentItem != null) {
                 player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.remove_item")), 0.5f, 1);
                 itemList.remove(slot);
                 updateShopInventories();
+                return true;
             }
             //Change mode
             if (event.getClick() == ClickType.LEFT && currentItem != null) {
                 player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.menu_click")), 0.5f, 1);
                 itemList.get(slot).toggleMode();
                 updateShopInventories();
+                return true;
             }
         }
         return false;

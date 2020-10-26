@@ -59,8 +59,8 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
 
                 String type = args[1];
                 int shopSize = Integer.parseInt(args[2]);
-                int storageSize = (args.length == 6 ? Integer.parseInt(args[3]) : 1);
-                int cost = (args.length == 6 ? Integer.parseInt(args[4]) : 0);
+                int storageSize = (args.length == 6 || args.length == 5 ? Integer.parseInt(args[3]) : 1);
+                int cost = (args.length == 6 || args.length == 5 ? Integer.parseInt(args[4]) : 0);
                 String duration = (args.length == 6 ? args[5] : "infinite");
 
                 if (storageSize < 1 || storageSize > 6) {
@@ -100,7 +100,7 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
                 int storageSize = Integer.parseInt(args[4]);
                 Player target = Bukkit.getPlayer(args[2]);
 
-                if (storageSize < 1 || storageSize > 6 || shopSize < 1 || shopSize > 5) {
+                if (storageSize < 1 || storageSize > 6 || shopSize < 1 || shopSize > 6) {
                     player.sendMessage(ChatColor.RED + "Invalid shop/storage size!");
                     return false;
                 }
