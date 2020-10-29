@@ -7,6 +7,17 @@ import bestem0r.villagermarket.shops.ShopMenu;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
 import bestem0r.villagermarket.utilities.Methods;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.domains.DefaultDomain;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
@@ -96,11 +107,24 @@ public class PlayerEvents implements Listener {
         if (itemStack.getItemMeta() == null) return;
 
         ItemMeta itemMeta = itemStack.getItemMeta();
-        PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+        PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
         if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
-        if (container.has(new NamespacedKey(VMPlugin.getInstance(), "vm-item"), PersistentDataType.STRING)) {
-            String data = container.get(new NamespacedKey(VMPlugin.getInstance(), "vm-item"), PersistentDataType.STRING);
+        if (dataContainer.has(new NamespacedKey(VMPlugin.getInstance(), "vm-item"), PersistentDataType.STRING)) {
+
+            Location loc = BukkitAdapter.adapt(player.getLocation());
+            RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            RegionQuery query = container.createQuery();
+            ApplicableRegionSet set = query.getApplicableRegions(loc);
+
+            for (ProtectedRegion region : set) {
+                DefaultDomain domain = region.getOwners();
+                for (String uuid : domain.getPlayers()) {
+                    player.sendMessage(uuid);
+                }
+            }
+
+            String data = dataContainer.get(new NamespacedKey(VMPlugin.getInstance(), "vm-item"), PersistentDataType.STRING);
             int shopSize = Integer.parseInt(data.split("-")[0]);
             int storageSize = Integer.parseInt(data.split("-")[1]);
 
