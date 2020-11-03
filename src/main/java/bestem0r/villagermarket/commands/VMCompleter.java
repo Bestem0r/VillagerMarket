@@ -25,6 +25,7 @@ public class VMCompleter implements TabCompleter {
                     list.add("remove");
                     list.add("search");
                     list.add("stats");
+                    list.add("trusted");
                     return list;
                 }
                 if (args[0].charAt(0) == 'c') {
@@ -49,6 +50,8 @@ public class VMCompleter implements TabCompleter {
                     list.add("stats");
                 } else if (args[0].charAt(0) == 'i') {
                     list.add("item");
+                } else if (args[0].charAt(0) == 't') {
+                    list.add("trusted");
                 }
                 return list;
             }
@@ -56,7 +59,12 @@ public class VMCompleter implements TabCompleter {
                 list.add("give");
                 return list;
             }
-            if (args.length == 3 && args[0].equalsIgnoreCase("item")) {
+            if (args.length == 2 && args[0].equalsIgnoreCase("trusted")) {
+                list.add("add");
+                list.add("remove");
+                return list;
+            }
+            if (args.length == 3 && (args[0].equalsIgnoreCase("item") || args[0].equalsIgnoreCase("trusted"))) {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     list.add(player.getName());
                 }

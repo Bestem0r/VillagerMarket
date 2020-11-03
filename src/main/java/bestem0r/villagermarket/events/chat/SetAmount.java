@@ -2,25 +2,29 @@ package bestem0r.villagermarket.events.chat;
 
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.items.ShopItem;
+import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
+import bestem0r.villagermarket.utilities.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class SetAmount implements Listener {
 
-    private Player player;
-    private ShopItem.Builder builder;
+    private final Player player;
+    private final ShopItem.Builder builder;
 
     public SetAmount(Player player, ShopItem.Builder builder) {
         this.player = player;
         this.builder = builder;
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.LOWEST)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (event.getPlayer() != player) return;
         String message = event.getMessage();
@@ -48,6 +52,17 @@ public class SetAmount implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(new SetPrice(player, builder), VMPlugin.getInstance());
         HandlerList.unregisterAll(this);
     }
+
+    @EventHandler (priority = EventPriority.LOWEST)
+    public void onEntityInteract(PlayerInteractEntityEvent event) {
+        if (event.getPlayer() != player) { return; }
+        VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
+        if (villagerShop != null) {
+            player.sendMessage(new Color.Builder().path("messages.finish_process").addPrefix().build());
+            event.setCancelled(true);
+        }
+    }
+
 
     private Boolean canConvert(String string) {
         for (int i = 0; i < string.length(); i++) {

@@ -24,7 +24,7 @@ public class MoveTo implements Listener {
         if (event.getClickedBlock() == null) return;
         event.setCancelled(true);
 
-        entity.teleport(event.getClickedBlock().getLocation());
+        entity.teleport(event.getClickedBlock().getLocation().add(0.5, 1, 0.5));
         HandlerList.unregisterAll(this);
     }
 }

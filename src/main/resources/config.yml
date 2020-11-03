@@ -16,6 +16,8 @@ currency_before: false
 auto_log: false
 #Chat input used to cancel actions
 cancel: 'cancel'
+#Should players be required to collect the earned money in the edit shop GUI?
+require_collect: false
 
 #----------------------- Messages & Sounds -----------------------#
 
@@ -57,8 +59,21 @@ messages:
   search_shop_info: '&7>> %name% &7at location: &c%location%'
   get_stats: '&7Right click a &bVillager Shop &7to get the statistics!'
   not_owner: '&cYou are not the owner of this Villager Shop!'
-  type_max: '&bPlease type the maximum amount you want to buy in the chat (&c0 &bfor unlimited)...'
+  type_limit_player: '&bPlease type the maximum amount you want to buy in the chat (&c0 &bfor unlimited)...'
+  type_limit_admin: '&bPlease type the buy/sell limit for this item in the chat (&c0 &bfor unlimited)...'
   reached_sell_limit: '&cYou can not sell more of this item!'
+  reached_buy_limit: '&cYou can not buy more of this item!'
+  reached_command_limit: '&cYou have reached the buy limit for this command!'
+  money_left: '&aYou have %amount% money left!'
+  type_command: '&bPlease type in a command without "/" (%player% for placeholder)...'
+  finish_process: '&cPlease finish the shop item adding process first! (Type "cancel" to cancel)'
+  collected_money: '&bCollected &a%amount% &bmoney!'
+  not_playershop: '&cThis is not a Player Shop!'
+  add_trusted: '&7Click on a &bVillager Shop &7you own to &aadd &7trusted!'
+  remove_trusted: '&7Click on &bVillager Shop &7you own to &cremove &7trusted!'
+  trusted_added: '&aPlayer added!'
+  trusted_removed: '&cPlayer removed!'
+  region_no_access: '&cYou do not have access to this region!'
 
 stats_message:
   - '&bVillager Shop stats:'
@@ -83,6 +98,7 @@ sounds:
   quick_add: ENTITY_ITEM_PICKUP
   expired: BLOCK_ANVIL_DESTROY
   increase_time: ENTITY_EXPERIENCE_ORB_PICKUP
+  collect_money: ENTITY_EXPERIENCE_ORB_PICKUP
 
 
 #----------------------- Localization -----------------------#
@@ -102,12 +118,14 @@ quantity:
 
 #----------------------- Villager settings -----------------------#
 
-#These are the default settings for created Villager Shops
 villager:
+  #These are the default settings for created Villager Shops
   name_admin: '&cAdmin Shop'
   name_available: '&aAvailable shop!'
   name_taken: "&b%player%'s shop" #Placeholders: %player%
   default_profession: NONE
+  #The template for custom names:
+  custom_name: '&7[&b%player%&7] &r%custom_name%' #Placeholders: %player%, %custom_name%
 
 
 #----------------------- Rent settings -----------------------#
@@ -211,6 +229,13 @@ menus:
           - '&7Click to abandon this'
           - '&7Villager Shop!'
           - ''
+      #Collect money (this needs to be enabled in general settings)
+      collect_money:
+        name: '&aCollect money'
+        lore: #Placeholders: %worth%
+          - '&7Click to collect'
+          - '&a%worth% money!'
+          - ''
       #Add more time item
       increase_time:
         name: '&aIncrease rent time!'
@@ -230,6 +255,7 @@ menus:
     modes:
       buy: '&8[&aBUY&8]'
       sell: '&8[&aSELL&8]'
+      command: '&8[&eCOMMAND&8]'
     player:
       buy_lore: #Placeholders: %amount%, %price%, %stock%
         - '&7Amount: &e%amount%'
@@ -250,6 +276,10 @@ menus:
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%'
         - ''
+      command_lore:
+        - '&7----------------'
+        - '&7Price: &a%price%'
+        - ''
 
   #------------------ Edit Shop Front ------------------#
   #Edit shopfront menu. (Add/remove/edit items)
@@ -259,6 +289,7 @@ menus:
     modes:
       buy: '&8[&aBUY&8]'
       sell: '&8[&aSELL&8]'
+      command: '&8[&eCOMMAND&8]'
     player:
       sell_lore: #Placeholders: %amount%, %price%, %stock%
         - '&7Amount: &e%amount%'
@@ -279,22 +310,37 @@ menus:
         - '&7>> Middle click to &aedit'
         - '&7>> Left click &7to toggle: sell&8 | &e&nbuy'
         - ''
-        - '&7>> Shift click to set buy limit &7(Now: &b%limit%&7)'
+        - '&7>> Shift click to set buy limit (Now: &b%limit%&7)'
     admin:
       sell_lore:
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%'
+        - '&7Player limit: &a%limit%'
         - ''
         - '&7>> Right click &7to &cremove'
         - '&7>> Middle click to &aedit'
         - '&7>> Left click &7to toggle: &e&nsell&8 | &7buy'
+        - ''
+        - '&7>> Shift click to make &bcommand item'
       buy_lore:
         - '&7Amount: &e%amount%'
         - '&7Price: &a%price%'
+        - '&7Player limit: &a%limit%'
         - ''
         - '&7>> Right click &7to &cremove'
         - '&7>> Middle click to &aedit'
         - '&7>> Left click &7to toggle: sell&8 | &e&nbuy'
+        - ''
+        - '&7>> Shift click to make &bcommand item'
+      command_lore:
+        - '&7-------------------------'
+        - '&7Price: &a%price%'
+        - '&7Player limit: &a%limit%'
+        - ''
+        - '&7>> Right click &7to &cremove'
+        - '&7>> Middle click to &aedit'
+        - ''
+        - '&7>> Shift click to change &bcommand'
 
   #--------------------- Storage ---------------------#
   edit_storage:

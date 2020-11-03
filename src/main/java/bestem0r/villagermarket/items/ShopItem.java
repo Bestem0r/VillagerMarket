@@ -1,15 +1,21 @@
 package bestem0r.villagermarket.items;
 
 import bestem0r.villagermarket.VMPlugin;
-import bestem0r.villagermarket.shops.PlayerShop;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class ShopItem extends ItemStack {
 
@@ -19,7 +25,8 @@ public class ShopItem extends ItemStack {
     }
     public enum Mode {
         BUY,
-        SELL
+        SELL,
+        COMMAND
     }
 
     private VillagerShop.VillagerType villagerType;
@@ -27,12 +34,14 @@ public class ShopItem extends ItemStack {
 
     private double price;
     private int slot;
-    private int buyLimit = 0;
+    private int limit = 0;
     private List<String> menuLore;
+    private final HashMap<UUID, Integer> playerLimit = new HashMap<>();
 
     private Mode mode;
 
     private String menuName;
+    private String command;
 
     private ShopItem(ItemStack itemStack) {
         super(itemStack);
@@ -64,7 +73,6 @@ public class ShopItem extends ItemStack {
             this.entityUUID = entityUUID;
             return this;
         }
-
         public Builder price(double price) {
             this.price = price;
             return this;
@@ -93,13 +101,12 @@ public class ShopItem extends ItemStack {
             shopItem.price = price;
             shopItem.slot = slot;
             shopItem.setAmount(amount);
-            shopItem.buyLimit = buyLimit;
+            shopItem.limit = buyLimit;
 
             shopItem.mode = mode;
 
             return shopItem;
         }
-
         public String getEntityUUID() {
             return entityUUID;
         }
@@ -118,13 +125,25 @@ public class ShopItem extends ItemStack {
     public void toggleEditor(boolean editor) {
         isEditor = editor;
     }
-    public int getBuyLimit() {
-        return buyLimit;
+    public int getLimit() {
+        return limit;
+    }
+    public HashMap<UUID, Integer> getPlayerLimit() {
+        return playerLimit;
     }
 
     /** Setters */
-    public void setBuyLimit(int buyLimit) {
-        this.buyLimit = buyLimit;
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+    public void setCommand(String command) {
+        this.command = command;
+        this.mode = Mode.COMMAND;
+        NamespacedKey key = new NamespacedKey(VMPlugin.getInstance(), "villagermarket-command");
+        ItemMeta itemMeta = getItemMeta();
+        itemMeta.getPersistentDataContainer().set(key, PersistentDataType.STRING, command);
+        setItemMeta(itemMeta);
+
     }
 
     /** Toggles between sell/buy mode */
@@ -138,20 +157,39 @@ public class ShopItem extends ItemStack {
                 break;
         }
     }
+    /** Returns how many times the player has bought/sold this item */
+    public int getPlayerLimit(Player player) {
+        return playerLimit.getOrDefault(player.getUniqueId(), 0);
+    }
+    /** Increases the amount bought/sold for specified player by one */
+    public void increasePlayerLimit(Player player) {
+        if (playerLimit.containsKey(player.getUniqueId())) {
+            playerLimit.replace(player.getUniqueId(), playerLimit.get(player.getUniqueId()) + 1);
+        } else {
+            playerLimit.put(player.getUniqueId(), 1);
+        }
+    }
+
+    /** Runs command as console */
+    public void runCommand(Player player) {
+        ConsoleCommandSender sender = Bukkit.getConsoleSender();
+        Bukkit.dispatchCommand(sender, command.replaceAll("%player%", player.getName()));
+    }
+
+    /** Loads player limits from config section */
+    public void addPlayerLimit(UUID uuid, int amount) {
+        playerLimit.put(uuid, amount);
+    }
 
     /** Refreshes Menu lore */
     public void refreshLore(VillagerShop villagerShop) {
         FileConfiguration config = VMPlugin.getInstance().getConfig();
 
         int storageAmount = villagerShop.getItemAmount(asItemStack(LoreType.ITEM));
-        int available = 0;
-        if (villagerShop instanceof PlayerShop) {
-            PlayerShop playerShop = (PlayerShop) villagerShop;
-            available = playerShop.getAvailable(this);
-        }
+        int available = villagerShop.getAvailable(this);
 
         Mode itemMode = mode;
-        if (!isEditor) itemMode = (mode == Mode.BUY ? Mode.SELL : Mode.BUY);
+        if (!isEditor && mode != Mode.COMMAND) { itemMode = (mode == Mode.BUY ? Mode.SELL : Mode.BUY); }
 
         String inventoryPath = (isEditor ? ".edit_shopfront." : ".shopfront.");
         String typePath = (villagerType == VillagerShop.VillagerType.ADMIN ? "admin." : "player.");
@@ -164,7 +202,7 @@ public class ShopItem extends ItemStack {
                 .replaceWithCurrency("%price%", String.valueOf(price))
                 .replace("%stock%", String.valueOf(storageAmount))
                 .replace("%available%", String.valueOf(available))
-                .replace("%limit%", (buyLimit == 0 ? config.getString("quantity.unlimited") : String.valueOf(buyLimit)))
+                .replace("%limit%", (limit == 0 ? config.getString("quantity.unlimited") : String.valueOf(limit)))
                 .buildLore();
 
         String namePath = "menus" + inventoryPath + "item_name";
@@ -181,14 +219,25 @@ public class ShopItem extends ItemStack {
     public ItemStack asItemStack(LoreType loreType) {
         ItemStack itemStack = new ItemStack(this);
 
-        if (loreType == LoreType.MENU) {
-            ItemMeta itemMeta = itemStack.getItemMeta();
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (mode != Mode.COMMAND && loreType == LoreType.MENU) {
             itemMeta.setLore(menuLore);
             itemMeta.setDisplayName(menuName);
             itemStack.setItemMeta(itemMeta);
             return itemStack;
         }
-
+        if (mode == Mode.COMMAND && loreType == LoreType.MENU) {
+            List<String> currentLore = itemMeta.getLore();
+            if (menuLore == null) {
+            }
+            if (currentLore != null) {
+                currentLore.addAll(menuLore);
+                itemMeta.setLore(currentLore);
+            } else {
+                itemMeta.setLore(menuLore);
+            }
+        }
+        itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
 }

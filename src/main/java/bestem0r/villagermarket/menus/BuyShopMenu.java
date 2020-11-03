@@ -18,7 +18,7 @@ public abstract class BuyShopMenu {
         FileConfiguration mainConfig = VMPlugin.getInstance().getConfig();
 
         String cost = String.valueOf(villagerShop.getCost());
-        String shopAmount = String.valueOf(villagerShop.getShopfrontSize() - 1);
+        String shopAmount = String.valueOf(villagerShop.getShopSize() - 1);
         String storageAmount = String.valueOf(villagerShop.getStorageSize() - 1);
 
         String time = mainConfig.getString("time.indefinitely");

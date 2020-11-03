@@ -2,10 +2,7 @@ package bestem0r.villagermarket.utilities;
 
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.shops.VillagerShop;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
@@ -14,12 +11,20 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class Methods {
+
+    private static final List<Villager.Profession> professions = Arrays.asList(
+            Villager.Profession.ARMORER,
+            Villager.Profession.BUTCHER,
+            Villager.Profession.CARTOGRAPHER,
+            Villager.Profession.CLERIC,
+            Villager.Profession.FARMER,
+            Villager.Profession.FISHERMAN,
+            Villager.Profession.LEATHERWORKER,
+            Villager.Profession.LIBRARIAN
+    );
 
     /** Returns Villager Shop based on EntityUUID */
     public static VillagerShop shopFromUUID(UUID uuid) {
@@ -27,6 +32,11 @@ public abstract class Methods {
             if (villagerShop.getEntityUUID().equals(uuid.toString())) return villagerShop;
         }
         return null;
+    }
+
+    /** Returns list of professions */
+    public static List<Villager.Profession> getProfessions() {
+        return professions;
     }
 
     /** Saves/Resets Villager Config with default values */
@@ -48,27 +58,50 @@ public abstract class Methods {
         config.set("stats.money_spent", 0);
 
         config.set("cost", cost);
-        ItemStack[] itemStackSelection = Bukkit.createInventory(null, shopfrontSize * 9).getContents();
-        ItemStack[] itemStackStorage = Bukkit.createInventory(null, storageSize * 9).getContents();
-
-        config.set("storage", itemStackStorage);
-        config.set("for_sale", itemStackSelection);
-
-        ArrayList<Double> priceList = new ArrayList<>(Arrays.asList(new Double[shopfrontSize * 9]));
-        ArrayList<String> modeList = new ArrayList<>(Arrays.asList(new String[shopfrontSize * 9]));
-        Collections.fill(priceList, 0.0);
-        Collections.fill(modeList, "SELL");
-
-        config.set("prices", priceList);
-        config.set("modes", modeList);
 
         try {
             config.save(file);
             VMPlugin.getInstance().addVillager(entityUUID, file, villagerType);
         } catch (IOException i) {
-            Bukkit.getLogger().severe("Failed to save config!");
             i.printStackTrace();
         }
+    }
+
+    /** Convert duration string to seconds */
+    public static int secondsFromString(String string) {
+        if (string.equalsIgnoreCase("infinite")) return 0;
+
+        String unit = string.substring(string.length() - 1);
+        int size = Integer.parseInt(string.substring(0, string.length() - 1));
+        switch (unit) {
+            case "s":
+                return size;
+            case "m":
+                return size * 60;
+            case "h":
+                return size * 3600;
+            case "d":
+                return size * 86400;
+            default:
+                Bukkit.getLogger().severe("Could not convert unit: " + unit);
+                return 0;
+        }
+    }
+
+    /** Returns ItemStack[] from ItemStack ArrayList */
+    public static ItemStack[] stacksFromArray(ArrayList<ItemStack> arrayList) {
+        ItemStack[] stacks = new ItemStack[arrayList.size()];
+        for (int i = 0; i < arrayList.size(); i++) {
+            stacks[i] = arrayList.get(i);
+        }
+        return stacks;
+    }
+
+    /** Returns true if item is blacklisted, false if not */
+    public static boolean isBlackListed(Material material) {
+        FileConfiguration mainConfig = VMPlugin.getInstance().getConfig();
+        List<String> blackList = mainConfig.getStringList("item_blacklist");
+        return blackList.contains(material.toString());
     }
 
     /** Spawns new Villager Entity and sets its attributes to default values */

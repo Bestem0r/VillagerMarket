@@ -3,17 +3,17 @@ package bestem0r.villagermarket;
 import bestem0r.villagermarket.commands.VMCompleter;
 import bestem0r.villagermarket.commands.VMExecutor;
 import bestem0r.villagermarket.events.EntityEvents;
-import bestem0r.villagermarket.events.InventoryClick;
 import bestem0r.villagermarket.events.PlayerEvents;
 import bestem0r.villagermarket.shops.AdminShop;
 import bestem0r.villagermarket.shops.PlayerShop;
 import bestem0r.villagermarket.shops.VillagerShop;
-import bestem0r.villagermarket.utilities.Threads;
+import bestem0r.villagermarket.utilities.Color;
 import bestem0r.villagermarket.utilities.Methods;
 import bestem0r.villagermarket.utilities.MetricsLite;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -34,7 +34,6 @@ public class VMPlugin extends JavaPlugin {
     public static final List<String> log = new ArrayList<>();
     public static final List<VillagerShop> shops = new ArrayList<>();
 
-    public static final HashMap<Player, VillagerShop> clickMap = new HashMap<>();
     public static final HashMap<OfflinePlayer, ArrayList<ItemStack>> abandonOffline = new HashMap<>();
 
     @Override
@@ -50,7 +49,8 @@ public class VMPlugin extends JavaPlugin {
 
         loadConfigs();
         registerEvents();
-        beginThreads();
+        beginSaveThread();
+        beginExpireThread();
 
         getCommand("vm").setTabCompleter(new VMCompleter());
         getCommand("vm").setExecutor(new VMExecutor());
@@ -105,20 +105,45 @@ public class VMPlugin extends JavaPlugin {
     /** Registers event listeners */
     private void registerEvents() {
         EntityEvents entityEvents = new EntityEvents(this);
-        InventoryClick inventoryClick = new InventoryClick(this);
+        //InventoryClick inventoryClick = new InventoryClick(this);
         PlayerEvents playerEvents = new PlayerEvents();
 
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(entityEvents, this);
-        pluginManager.registerEvents(inventoryClick, this);
+        //pluginManager.registerEvents(inventoryClick, this);
         pluginManager.registerEvents(playerEvents, this);
     }
 
-    /** Starts async/sync Bukkit threads from AsyncThreads class */
-    private void beginThreads() {
-        Threads thread = new Threads();
-        thread.beginSaveThread();
-        thread.beginExpireThread();
+    /** Thread runs save() method for all Villager Shops */
+    private void beginSaveThread() {
+        long interval = 20 * 60 * VMPlugin.getInstance().getConfig().getLong("auto_save_interval");
+        Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(VMPlugin.getInstance(), () -> {
+            for (VillagerShop villagerShop : VMPlugin.shops) {
+                villagerShop.save();
+            }
+        }, 20L, interval);
+    }
+
+    /** Thread check if rent time has expired and runs abandon() method */
+    private void beginExpireThread() {
+        long interval = 20 * VMPlugin.getInstance().getConfig().getLong("expire_check_interval");
+        FileConfiguration config = VMPlugin.getInstance().getConfig();
+
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(VMPlugin.getInstance(), () -> {
+            for (VillagerShop villagerShop : VMPlugin.shops) {
+                if (!(villagerShop instanceof PlayerShop)) continue;
+                PlayerShop playerShop = (PlayerShop) villagerShop;
+
+                if (playerShop.hasExpired()) {
+                    Player player = Bukkit.getPlayer(UUID.fromString(villagerShop.getOwnerUUID()));
+                    if (player != null) {
+                        player.sendMessage(new Color.Builder().path("messages.expired").addPrefix().build());
+                        player.playSound(player.getLocation(), Sound.valueOf(config.getString("sounds.expired")), 1, 1);
+                    }
+                    playerShop.abandon();
+                }
+            }
+        }, 20L, interval);
     }
 
     /** Saves log to /log/ folder and clears log */

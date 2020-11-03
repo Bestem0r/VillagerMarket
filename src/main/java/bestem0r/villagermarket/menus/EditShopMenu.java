@@ -2,6 +2,8 @@ package bestem0r.villagermarket.menus;
 
 import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.items.MenuItem;
+import bestem0r.villagermarket.shops.AdminShop;
+import bestem0r.villagermarket.shops.PlayerShop;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
 import org.bukkit.Bukkit;
@@ -73,6 +75,14 @@ public abstract class EditShopMenu {
                 time = "never";
         }
 
+        MenuItem collectMoney = new MenuItem.Builder(Material.GOLD_INGOT)
+                .nameFromPath("menus.edit_shop.items.collect_money.name")
+                .lore(new Color.Builder()
+                        .path("menus.edit_shop.items.collect_money.lore")
+                        .replaceWithCurrency("%worth%", String.valueOf(villagerShop.getCollectedMoney()))
+                        .buildLore())
+                .build();
+
         MenuItem increaseTime = new MenuItem.Builder(Material.EMERALD)
                 .nameFromPath("menus.edit_shop.items.increase_time.name")
                 .lore(new Color.Builder()
@@ -88,7 +98,7 @@ public abstract class EditShopMenu {
                 .build();
 
         ItemStack[] inventoryItems;
-        if (villagerShop.getType() == VillagerShop.VillagerType.ADMIN) {
+        if (villagerShop instanceof AdminShop) {
             inventoryItems = new ItemStack[] {
                     editShopfront,
                     previewShop,
@@ -113,8 +123,11 @@ public abstract class EditShopMenu {
                     back
             };
         }
-        if (villagerShop.getType() == VillagerShop.VillagerType.PLAYER && !time.equals("never")) {
+        if (villagerShop instanceof PlayerShop && !time.equals("never")) {
             inventoryItems[7] = increaseTime;
+        }
+        if (villagerShop instanceof PlayerShop && mainConfig.getBoolean("require_collect")) {
+            inventoryItems[6] = collectMoney;
         }
         inventory.setContents(inventoryItems);
         return inventory;

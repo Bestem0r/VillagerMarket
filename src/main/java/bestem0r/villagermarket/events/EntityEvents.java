@@ -50,7 +50,7 @@ public class EntityEvents implements Listener {
                 if (!player.isSneaking()) return;
                 if (!player.hasPermission("villagermarket.spy")) return;
                 VillagerShop villagerShop = Methods.shopFromUUID(event.getEntity().getUniqueId());
-                player.openInventory(villagerShop.getInventory(ShopMenu.STORAGE));
+                villagerShop.openInventory(player, ShopMenu.EDIT_SHOP);
             }
         }
     }

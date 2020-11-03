@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 
 public class ItemDrop implements Listener {
 
-    private Player player;
+    private final Player player;
 
     public ItemDrop(Player player) {
         this.player = player;

@@ -4,6 +4,7 @@ import bestem0r.villagermarket.VMPlugin;
 import bestem0r.villagermarket.events.interact.Move;
 import bestem0r.villagermarket.events.interact.Remove;
 import bestem0r.villagermarket.events.interact.Stats;
+import bestem0r.villagermarket.events.interact.Trusted;
 import bestem0r.villagermarket.items.MenuItem;
 import bestem0r.villagermarket.shops.VillagerShop;
 import bestem0r.villagermarket.utilities.Color;
@@ -27,6 +28,8 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
             "> Remove shop: &6/vm remove",
             "> Move shop: &6/vm move",
             "> Give item: &6/vm item give <player> <shopsize> <storagesize> [amount]",
+            "> Add trusted: &6/vm trusted add <player>",
+            "> Remove trusted: &6/vm trusted remove <player>",
             "> Search for nearby shops: &6/vm search <radius>",
             "> Show Shop statistics: &6/vm stats",
             "> Reload configs: &6/vm reload",
@@ -172,13 +175,36 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
                                 .replace("%name%", entity.getCustomName())
                                 .replace("%location%", location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ())
                                 .build());
-                        result ++;
+                        result++;
                     }
                 }
                 player.sendMessage(new Color.Builder().path("messages.search_result").replace("%amount%", String.valueOf(result)).addPrefix().build());
                 shopInfo.forEach(player::sendMessage);
+            }
+            //Trusted
+            else if (args[0].equalsIgnoreCase("trusted") && args.length == 3) {
+                if (!args[1].equals("add") && !args[1].equals("remove")) {
+                    player.sendMessage(ChatColor.RED + "Unknown subcommand: " + args[1]);
+                    player.sendMessage(ChatColor.RED + "Usage: /vm trusted add/remove <player>");
+                    return false;
+                }
+                Player target = Bukkit.getPlayer(args[2]);
+                if (target == null) {
+                    player.sendMessage(ChatColor.RED + "Could not find player: " + args[2]);
+                    return true;
+                }
+                switch (args[1]) {
+                    case "add":
+                        player.sendMessage(new Color.Builder().path("messages.add_trusted").addPrefix().build());
+                        Bukkit.getPluginManager().registerEvents(new Trusted(player, target, Trusted.Action.ADD), VMPlugin.getInstance());
+                        break;
+                    case "remove":
+                        player.sendMessage(new Color.Builder().path("messages.remove_trusted").addPrefix().build());
+                        Bukkit.getPluginManager().registerEvents(new Trusted(player, target, Trusted.Action.REMOVE), VMPlugin.getInstance());
+                }
+            }
             //Stats
-            } else if (args[0].equalsIgnoreCase("stats")) {
+            else if (args[0].equalsIgnoreCase("stats")) {
                 player.sendMessage(new Color.Builder().path("messages.get_stats").addPrefix().build());
                 Bukkit.getPluginManager().registerEvents(new Stats(player), VMPlugin.getInstance());
             }
