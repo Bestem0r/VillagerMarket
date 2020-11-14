@@ -166,6 +166,10 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
                     return true;
                 }
                 double radius = Double.parseDouble(args[1]);
+                if (radius > 10000) {
+                    player.sendMessage(ChatColor.RED + "Radius can't be more than 10 000 blocks!");
+                    return true;
+                }
                 int result = 0;
                 List<String> shopInfo = new ArrayList<>();
                 for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {

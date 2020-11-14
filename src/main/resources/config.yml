@@ -147,13 +147,14 @@ items:
     material: BOOK
     lore:
       - ''
-      - '&7Click to toggle'
+      - '&bLeft click &7to toggle'
       - '&7between &eitem lore'
       - '&7and &emenu lore&7!'
       - ''
+      - '&7>> &bRight click &7to go back'
 
 
-#----------------------- Menus settings -----------------------#
+#----------------------- Menu settings -----------------------#
 
 menus:
   #-------------------- Buy Shop --------------------#

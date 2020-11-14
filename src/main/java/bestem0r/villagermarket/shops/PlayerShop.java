@@ -7,7 +7,7 @@ import bestem0r.villagermarket.items.ShopItem;
 import bestem0r.villagermarket.menus.EditShopMenu;
 import bestem0r.villagermarket.menus.ShopfrontMenu;
 import bestem0r.villagermarket.utilities.Color;
-import bestem0r.villagermarket.utilities.Methods;
+import bestem0r.villagermarket.utilities.ShopStats;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -313,25 +313,33 @@ public class PlayerShop extends VillagerShop {
         Entity villager = Bukkit.getEntity(UUID.fromString(entityUUID));
         if (villager != null) { villager.setCustomName(new Color.Builder().path("villager.name_available").build()); }
 
-        Methods.newShopConfig(UUID.fromString(entityUUID), storageSize / 9, shopSize / 9, getCost(), VillagerType.PLAYER, duration);
         if (cost != -1) { economy.depositPlayer(offlinePlayer, ((double) getCost() * (mainConfig.getDouble("refund_percent") / 100)) * timesRented); }
         economy.depositPlayer(offlinePlayer, collectedMoney);
 
-        ArrayList<ItemStack> storage = new ArrayList<>(Arrays.asList(storageMenu.getContents()));
+        List<ItemStack> storage = new ArrayList<>(Arrays.asList(storageMenu.getContents()));
         if (offlinePlayer.isOnline()) {
             Player player = (Player) offlinePlayer;
+            player.closeInventory();
             for (ItemStack storageStack : storage) {
                 if (storageStack != null) {
-                    if (storage.indexOf(storageStack) == storageSize - 1) continue;
+                    if (storage.indexOf(storageStack) == storageSize - 1) { continue; }
                     HashMap<Integer, ItemStack> exceed = player.getInventory().addItem(storageStack);
                     for (Integer i : exceed.keySet()) {
-                        player.getLocation().getWorld().dropItemNaturally(player.getLocation(), exceed.get(i));
+                        player.getWorld().dropItemNaturally(player.getLocation(), exceed.get(i));
                     }
                 }
             }
         } else {
             VMPlugin.abandonOffline.put(offlinePlayer, storage);
         }
+        config.set("storage", null);
+        super.ownerUUID = "null";
+        super.ownerName = "null";
+        super.shopStats = new ShopStats();
+        super.itemList = new HashMap<>();
+        super.storageMenu.setContents(newStorageInventory().getContents());
+        super.timesRented = 0;
+
         VMPlugin.log.add(new Date().toString() + ": " + offlinePlayer.getName() + " abandoned shop! ");
     }
 

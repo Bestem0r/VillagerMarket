@@ -31,8 +31,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class PlayerEvents implements Listener {
@@ -90,13 +90,16 @@ public class PlayerEvents implements Listener {
         if (dataContainer.has(new NamespacedKey(VMPlugin.getInstance(), "vm-item"), PersistentDataType.STRING)) {
             event.setCancelled(true);
             //Check if player does not have access to the region
-            RegionManager rm = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()));
-            ApplicableRegionSet set = rm.getApplicableRegions(BukkitAdapter.asBlockVector(player.getLocation()));
-            UUID uuid = player.getUniqueId();
-            for (ProtectedRegion region : set) {
-                if (!region.getOwners().getUniqueIds().contains(uuid) && !region.getMembers().getUniqueIds().contains(uuid)) {
-                    player.sendMessage(new Color.Builder().path("messages.region_no_access").addPrefix().build());
-                    return;
+
+            if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
+                RegionManager rm = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()));
+                ApplicableRegionSet set = rm.getApplicableRegions(BukkitAdapter.asBlockVector(player.getLocation()));
+                UUID uuid = player.getUniqueId();
+                for (ProtectedRegion region : set) {
+                    if (!region.getOwners().getUniqueIds().contains(uuid) && !region.getMembers().getUniqueIds().contains(uuid)) {
+                        player.sendMessage(new Color.Builder().path("messages.region_no_access").addPrefix().build());
+                        return;
+                    }
                 }
             }
 
@@ -118,7 +121,7 @@ public class PlayerEvents implements Listener {
         if (!VMPlugin.abandonOffline.containsKey(event.getPlayer())) return;
 
         Player player = event.getPlayer();
-        ArrayList<ItemStack> storage = VMPlugin.abandonOffline.get(event.getPlayer());
+        List<ItemStack> storage = VMPlugin.abandonOffline.get(event.getPlayer());
 
         for (ItemStack storageStack : storage) {
             if (storageStack != null) {

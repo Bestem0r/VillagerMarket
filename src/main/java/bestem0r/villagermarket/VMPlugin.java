@@ -34,7 +34,7 @@ public class VMPlugin extends JavaPlugin {
     public static final List<String> log = new ArrayList<>();
     public static final List<VillagerShop> shops = new ArrayList<>();
 
-    public static final HashMap<OfflinePlayer, ArrayList<ItemStack>> abandonOffline = new HashMap<>();
+    public static final HashMap<OfflinePlayer, List<ItemStack>> abandonOffline = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -105,12 +105,10 @@ public class VMPlugin extends JavaPlugin {
     /** Registers event listeners */
     private void registerEvents() {
         EntityEvents entityEvents = new EntityEvents(this);
-        //InventoryClick inventoryClick = new InventoryClick(this);
         PlayerEvents playerEvents = new PlayerEvents();
 
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(entityEvents, this);
-        //pluginManager.registerEvents(inventoryClick, this);
         pluginManager.registerEvents(playerEvents, this);
     }
 
@@ -131,10 +129,10 @@ public class VMPlugin extends JavaPlugin {
 
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(VMPlugin.getInstance(), () -> {
             for (VillagerShop villagerShop : VMPlugin.shops) {
-                if (!(villagerShop instanceof PlayerShop)) continue;
+                if (!(villagerShop instanceof PlayerShop)) { continue; }
                 PlayerShop playerShop = (PlayerShop) villagerShop;
 
-                if (playerShop.hasExpired()) {
+                if (playerShop.hasExpired() && !villagerShop.getOwnerUUID().equals("null")) {
                     Player player = Bukkit.getPlayer(UUID.fromString(villagerShop.getOwnerUUID()));
                     if (player != null) {
                         player.sendMessage(new Color.Builder().path("messages.expired").addPrefix().build());
@@ -164,7 +162,7 @@ public class VMPlugin extends JavaPlugin {
     private void loadConfigs() {
         Long before = new Date().getTime();
         File shopsFile = new File(Bukkit.getServer().getPluginManager().getPlugin("VillagerMarket").getDataFolder() + "/Shops/");
-        if (shopsFile.exists()) {
+        if (shopsFile.exists() && shopsFile.isDirectory()) {
             for (File file : shopsFile.listFiles()) {
                 String fileName = file.getName();
                 String entityUUID = fileName.substring(0, fileName.length() - 4);
@@ -172,7 +170,12 @@ public class VMPlugin extends JavaPlugin {
                 String type = config.getString("type");
                 type = (type == null ? "player" : type);
 
-                addVillager(UUID.fromString(entityUUID), file, VillagerShop.VillagerType.valueOf(type.toUpperCase()));
+                try {
+                    addVillager(UUID.fromString(entityUUID), file, VillagerShop.VillagerType.valueOf(type.toUpperCase()));
+                } catch (Exception e) {
+                    Bukkit.getLogger().severe("[VillagerMarket] " + file.toString() + " seems to be corrupt!");
+                    e.printStackTrace();
+                }
             }
         }
         Long after = new Date().getTime();

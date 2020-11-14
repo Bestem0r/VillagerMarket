@@ -215,11 +215,22 @@ public abstract class VillagerShop {
     }
 
     /** Runs when customer interacts with shopfront menu */
-    public void customerInteract(int slot, Player player) {
+    public void customerInteract(InventoryClickEvent event) {
+        int slot = event.getRawSlot();
+        Player player = (Player) event.getWhoClicked();
         ShopItem shopItem = itemList.get(slot);
         if (slot == shopSize - 1) {
             player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.menu_click")), 0.5f, 1);
-            openInventory(player, ShopMenu.SHOPFRONT_DETAILED);
+            switch (event.getClick()) {
+                case RIGHT:
+                    event.getView().close();
+                    if (player.getUniqueId().toString().equals(ownerUUID) || (player.hasPermission("villagermarket.admin") && this instanceof AdminShop)) {
+                        openInventory(player, ShopMenu.EDIT_SHOP);
+                    }
+                    break;
+                default:
+                    openInventory(player, ShopMenu.SHOPFRONT_DETAILED);
+            }
         }
         if (shopItem == null) { return; }
         switch (shopItem.getMode()) {
@@ -437,7 +448,7 @@ public abstract class VillagerShop {
     /** Returns amount of ItemStack in specified Inventory */
     protected int getAmountInventory(ItemStack itemStack, Inventory inventory) {
         int amount = 0;
-        for (ItemStack storageStack : inventory.getContents()) {
+        for (ItemStack storageStack : inventory.getStorageContents()) {
             if (storageStack == null) { continue; }
 
             if (storageStack.isSimilar(itemStack)) {

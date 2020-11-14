@@ -18,6 +18,12 @@ public class ShopStats {
         this.moneyEarned = config.getInt("stats.money_earned");
         this.moneySpent = config.getInt("stats.money_spent");
     }
+    public ShopStats() {
+        this.itemsBought = 0;
+        this.itemsSold = 0;
+        this.moneyEarned = 0;
+        this.moneySpent = 0;
+    }
 
     /** Adders */
     public void addSold(int amount) {

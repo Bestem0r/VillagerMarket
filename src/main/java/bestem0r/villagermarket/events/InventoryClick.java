@@ -1,6 +1,7 @@
 package bestem0r.villagermarket.events;
 
 import bestem0r.villagermarket.VMPlugin;
+import bestem0r.villagermarket.shops.AdminShop;
 import bestem0r.villagermarket.shops.PlayerShop;
 import bestem0r.villagermarket.shops.ShopMenu;
 import bestem0r.villagermarket.shops.VillagerShop;
@@ -11,10 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.*;
 
 public class InventoryClick implements Listener {
 
@@ -63,8 +61,7 @@ public class InventoryClick implements Listener {
                 if (!(event.getRawSlot() < villagerShop.getShopSize())) return;
                 event.setCancelled(true);
                 if (event.getCurrentItem() == null) return;
-
-                villagerShop.customerInteract(event.getSlot(), player);
+                villagerShop.customerInteract(event);
                 break;
             //Edit villager
             case EDIT_VILLAGER:
@@ -102,11 +99,17 @@ public class InventoryClick implements Listener {
                 event.setCancelled(true);
                 if (event.getRawSlot() == villagerShop.getShopSize() - 1) {
                     player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.menu_click")), 0.5f, 1);
-                    villagerShop.openInventory(player, ShopMenu.SHOPFRONT);
+                    if (event.getClick() == ClickType.RIGHT) {
+                        event.getView().close();
+                        if (villagerShop.getOwnerUUID().equals(player.getUniqueId().toString()) || (villagerShop instanceof AdminShop && player.hasPermission("villagermarket.admin"))) {
+                            villagerShop.openInventory(player, ShopMenu.EDIT_SHOP);
+                        }
+                    } else {
+                        villagerShop.openInventory(player, ShopMenu.SHOPFRONT);
+                    }
                 } else {
                     player.sendMessage(new Color.Builder().path("messages.must_be_menulore").addPrefix().build());
                 }
-                break;
         }
     }
     @EventHandler

@@ -58,6 +58,8 @@ public abstract class Methods {
         config.set("stats.money_spent", 0);
 
         config.set("cost", cost);
+        config.set("items_for_sale", null);
+        config.set("storage", null);
 
         try {
             config.save(file);
