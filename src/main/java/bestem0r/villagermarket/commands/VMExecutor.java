@@ -37,11 +37,65 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if (sender instanceof Player) {
 
-            if (args.length == 0) {
+        if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
+            Player player = null;
+            if (sender instanceof Player) {
+                player = (Player) sender;
+                if (!player.hasPermission("villagermarket.reload")) {
+                    player.sendMessage(ChatColor.RED + "You do not have permission for this command!");
+                    return true;
+                }
+            }
+
+            sendMessage(new Color.Builder().path("messages.reloaded").addPrefix().build(), player);
+            VMPlugin.getInstance().reloadConfig();
+            VMPlugin.getInstance().saveLog();
+            VMPlugin.shops.forEach((VillagerShop::reload));
+            return true;
+        }
+        if ((args.length == 5 || args.length == 6) && args[0].equalsIgnoreCase("item")) {
+            if (!args[1].equalsIgnoreCase("give")) { return false; }
+            Player player = null;
+            if (sender instanceof Player) {
+                player = (Player) sender;
+            }
+            if (player != null && !player.hasPermission("villagermarket.item.give")) {
+                player.sendMessage(ChatColor.RED + "You do not have permissions for this command!");
+                return true;
+            }
+            Player target = Bukkit.getPlayer(args[2]);
+            if (target == null) {
+                sendMessage(ChatColor.RED + "Could not find player: " + args[2], player);
+                return true;
+            }
+            if (!canConvert(args[3]) || !canConvert(args[4])) {
+                sendMessage(ChatColor.RED + "Invalid size: " + args[3] + " or " + args[4], player);
                 return false;
             }
+            int amount = 1;
+            int shopSize = Integer.parseInt(args[3]);
+            int storageSize = Integer.parseInt(args[4]);
+
+            if (storageSize < 1 || storageSize > 6 || shopSize < 1 || shopSize > 6) {
+                sendMessage(ChatColor.RED + "Invalid shop/storage size!", player);
+                return false;
+            }
+            if (args.length == 6) {
+                if (!canConvert(args[5])) {
+                    sendMessage(ChatColor.RED + "Invalid amount: " + args[5], player);
+                    return true;
+                }
+                amount = Integer.parseInt(args[5]);
+            }
+            target.getInventory().addItem(villagerShopItem(shopSize, storageSize, amount));
+            target.playSound(target.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1);
+            return true;
+        }
+
+        if (sender instanceof Player) {
+
+            if (args.length == 0) { return false; }
             Player player = (Player) sender;
             //Create
             if ((args.length == 3 || args.length == 5 || args.length == 6) && args[0].equalsIgnoreCase("create")) {
@@ -83,51 +137,6 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
                 }
                 Methods.spawnShop(player.getLocation(), type, storageSize, shopSize, cost, duration);
                 player.playSound(player.getLocation(), Sound.valueOf(VMPlugin.getInstance().getConfig().getString("sounds.create_shop")), 1, 1);
-            //Item
-            } else if ((args.length == 5) || (args.length == 6) && args[0].equalsIgnoreCase("item")) {
-                if (!args[1].equalsIgnoreCase("give")) return false;
-                if (!player.hasPermission("villagermarket.item.give")) {
-                    player.sendMessage(ChatColor.RED + "You do not have permissions for this command!");
-                    return true;
-                }
-                if (Bukkit.getPlayer(args[2]) == null) {
-                    player.sendMessage(ChatColor.RED + "Could not find player: " + args[2]);
-                    return true;
-                }
-                if (!canConvert(args[3]) || !canConvert(args[4])) {
-                    player.sendMessage(ChatColor.RED + "Invalid size: " + args[3] + " or " + args[4]);
-                    return false;
-                }
-                int amount = 1;
-                int shopSize = Integer.parseInt(args[3]);
-                int storageSize = Integer.parseInt(args[4]);
-                Player target = Bukkit.getPlayer(args[2]);
-
-                if (storageSize < 1 || storageSize > 6 || shopSize < 1 || shopSize > 6) {
-                    player.sendMessage(ChatColor.RED + "Invalid shop/storage size!");
-                    return false;
-                }
-                if (args.length == 6) {
-                    if (!canConvert(args[5])) {
-                        player.sendMessage(ChatColor.RED + "Invalid amount: " + args[5]);
-                        return true;
-                    }
-                    amount = Integer.parseInt(args[5]);
-                }
-                target.getInventory().addItem(villagerShopItem(shopSize, storageSize, amount));
-                target.playSound(target.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1);
-            //Reload
-            } else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-                if (!player.hasPermission("villagermarket.reload")) {
-                    player.sendMessage(ChatColor.RED + "You do not have permission for this command!");
-                    return true;
-                }
-                VMPlugin.getInstance().reloadConfig();
-                VMPlugin.getInstance().saveLog();
-                player.sendMessage(new Color.Builder().path("messages.reloaded").addPrefix().build());
-                for (VillagerShop villagerShop : VMPlugin.shops) {
-                    villagerShop.reload();
-                }
             //Remove
             } else if (args.length == 1 && args[0].equalsIgnoreCase("remove")) {
                 if (!player.hasPermission("villagermarket.remove")) {
@@ -228,6 +237,14 @@ public class VMExecutor implements org.bukkit.command.CommandExecutor {
             }
         }
         return true;
+    }
+
+    private void sendMessage(String message, Player player) {
+        if (player == null) {
+            Bukkit.getLogger().info(message);
+        } else {
+            player.sendMessage(message);
+        }
     }
 
     /** Returns new Villager Shop Item */

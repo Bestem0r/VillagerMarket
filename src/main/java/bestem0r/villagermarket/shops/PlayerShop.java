@@ -272,12 +272,13 @@ public class PlayerShop extends VillagerShop {
             if (itemStack.isSimilar(shopItem.asItemStack(ShopItem.LoreType.ITEM))) { availableSlots ++; }
         }
         int availableStorage = availableSlots * shopItem.getType().getMaxStackSize() - inStorage;
-        int available;
-        if (shopItem.getLimit() == 0) {
-            available = (int) Math.ceil(economy.getBalance(owner) / shopItem.getPrice()) * shopItem.getAmount();
-        } else {
-            available = shopItem.getLimit();
+
+        int available = 0;
+        if (shopItem.getLimit() != 0) {
+            available = shopItem.getLimit() - inStorage;
         }
+
+        available = (Math.min(available, (int) Math.ceil(economy.getBalance(owner) / shopItem.getPrice()) * shopItem.getAmount()));
         available = (Math.min(available, availableStorage));
         return available;
     }

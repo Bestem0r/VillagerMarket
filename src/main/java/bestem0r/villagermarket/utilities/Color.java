@@ -13,7 +13,7 @@ public abstract class Color {
     public static class Builder {
 
         private String path;
-        private HashMap<String, String> replaceList = new HashMap<>();
+        private final HashMap<String, String> replaceList = new HashMap<>();
         private boolean addPredix = false;
 
         private final FileConfiguration config = VMPlugin.getInstance().getConfig();
