@@ -26,6 +26,7 @@ public class Stats implements Listener {
         event.setCancelled(true);
         VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
 
+        HandlerList.unregisterAll(this);
         if (villagerShop != null) {
             if (!player.hasPermission("villagermarket.spy") && !villagerShop.getOwnerUUID().equals(player.getUniqueId().toString())) {
                 player.sendMessage(new Color.Builder().path("messages.not_owner").addPrefix().build());
@@ -35,7 +36,6 @@ public class Stats implements Listener {
         } else {
             player.sendMessage(new Color.Builder().path("messages.no_villager_shop").addPrefix().build());
         }
-        HandlerList.unregisterAll(this);
     }
 }
 

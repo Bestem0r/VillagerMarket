@@ -25,9 +25,12 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import scala.math.BigInt;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +49,7 @@ public abstract class VillagerShop {
     protected Timestamp expireDate;
 
     protected int cost;
-    protected double collectedMoney = 0;
+    protected BigDecimal collectedMoney = BigDecimal.valueOf(0);
     protected final List<String> trusted;
 
     protected HashMap<Integer, ShopItem> itemList = new HashMap<>();
@@ -221,15 +224,13 @@ public abstract class VillagerShop {
         ShopItem shopItem = itemList.get(slot);
         if (slot == shopSize - 1) {
             player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.menu_click")), 0.5f, 1);
-            switch (event.getClick()) {
-                case RIGHT:
-                    event.getView().close();
-                    if (player.getUniqueId().toString().equals(ownerUUID) || (player.hasPermission("villagermarket.admin") && this instanceof AdminShop)) {
-                        openInventory(player, ShopMenu.EDIT_SHOP);
-                    }
-                    break;
-                default:
-                    openInventory(player, ShopMenu.SHOPFRONT_DETAILED);
+            if (event.getClick() == ClickType.RIGHT) {
+                event.getView().close();
+                if (player.getUniqueId().toString().equals(ownerUUID) || (player.hasPermission("villagermarket.admin") && this instanceof AdminShop)) {
+                    openInventory(player, ShopMenu.EDIT_SHOP);
+                }
+            } else {
+                openInventory(player, ShopMenu.SHOPFRONT_DETAILED);
             }
         }
         if (shopItem == null) { return; }
@@ -496,7 +497,7 @@ public abstract class VillagerShop {
     public int getTimesRented() {
         return timesRented;
     }
-    public double getCollectedMoney() {
+    public BigDecimal getCollectedMoney() {
         return collectedMoney;
     }
 }

@@ -20,6 +20,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -27,7 +31,7 @@ public class PlayerShop extends VillagerShop {
 
     public PlayerShop(File file) {
         super(file);
-        super.collectedMoney = config.getDouble("collected_money");
+        super.collectedMoney = BigDecimal.valueOf(config.getDouble("collected_money"));
         super.editShopMenu.setContents(newEditShopInventory().getContents());
 
         super.ownerUUID = config.getString("ownerUUID");
@@ -40,31 +44,32 @@ public class PlayerShop extends VillagerShop {
         Economy economy = VMPlugin.getEconomy();
         ShopItem shopItem = itemList.get(slot);
 
-        double tax = mainConfig.getInt("tax");
-        double price = shopItem.getPrice();
+        BigDecimal tax = BigDecimal.valueOf(mainConfig.getDouble("tax"));
+        BigDecimal price = BigDecimal.valueOf(shopItem.getPrice());
         int amount = shopItem.getAmount();
         int inStock = getItemAmount(shopItem.asItemStack(ShopItem.LoreType.ITEM));
 
-        double taxAmount = tax / 100 * price;
+        BigDecimal taxAmount = tax.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        taxAmount = taxAmount.multiply(price);
 
         if ((inStock < amount)) {
             player.sendMessage(new Color.Builder().path("messages.not_enough_stock").addPrefix().build());
             return;
         }
-        if (economy.getBalance(player) < price) {
+        if (economy.getBalance(player) < price.doubleValue()) {
             player.sendMessage(new Color.Builder().path("messages.not_enough_money").addPrefix().build());
             return;
         }
         OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
         if (player.getUniqueId().equals(owner.getUniqueId())) {
             player.sendMessage(new Color.Builder().path("messages.cannot_buy_from_yourself").addPrefix().build());
-            return;
+           // return;
         }
 
-        depositOwner(price - taxAmount);
-        economy.withdrawPlayer(player, price);
+        depositOwner(price.subtract(taxAmount));
+        economy.withdrawPlayer(player, shopItem.getPrice());
         shopStats.addSold(amount);
-        shopStats.addEarned(price);
+        shopStats.addEarned(price.doubleValue());
 
         if (owner.isOnline()) {
             Player ownerOnline = owner.getPlayer();
@@ -76,12 +81,14 @@ public class PlayerShop extends VillagerShop {
                     .replaceWithCurrency("%price%", String.valueOf(price))
                     .addPrefix()
                     .build());
-            ownerOnline.sendMessage(new Color.Builder()
-                    .path("messages.tax")
-                    .replaceWithCurrency("%tax%", String.valueOf(taxAmount))
-                    .addPrefix()
-                    .build()
-            );
+            if (taxAmount.doubleValue() > 0) {
+                ownerOnline.sendMessage(new Color.Builder()
+                        .path("messages.tax")
+                        .replaceWithCurrency("%tax%", String.valueOf(taxAmount))
+                        .addPrefix()
+                        .build()
+                );
+            }
         }
         giveShopItem(player, shopItem);
         removeFromStock(shopItem.asItemStack(ShopItem.LoreType.ITEM));
@@ -100,22 +107,24 @@ public class PlayerShop extends VillagerShop {
         Economy economy = VMPlugin.getEconomy();
         OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
 
-        double tax = mainConfig.getInt("tax");
-        double moneyLeft = economy.getBalance(owner);
-        double price = shopItem.getPrice();
-        double taxAmount = tax / 100 * price;
+        BigDecimal tax = BigDecimal.valueOf(mainConfig.getDouble("tax"));
+        BigDecimal price = BigDecimal.valueOf(shopItem.getPrice());
+        BigDecimal moneyLeft = BigDecimal.valueOf(economy.getBalance(owner));
+        BigDecimal taxAmount = tax.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        taxAmount = taxAmount.multiply(price);
+
         int amount = shopItem.getAmount();
         int amountInInventory = getAmountInventory(shopItem.asItemStack(ShopItem.LoreType.ITEM), player.getInventory());
 
         if (player.getUniqueId().equals(UUID.fromString(ownerUUID))) {
             player.sendMessage(new Color.Builder().path("messages.cannot_sell_to_yourself").addPrefix().build());
-            return;
+            //return;
         }
         if (amount > getAvailable(shopItem)) {
-            player.sendMessage(new Color.Builder().path("messages.reached_max_buy").addPrefix().build());
+            player.sendMessage(new Color.Builder().path("messages.reached_buy_limit").addPrefix().build());
             return;
         }
-        if (moneyLeft < price) {
+        if (moneyLeft.compareTo(price) < 0) {
             player.sendMessage(new Color.Builder().path("messages.owner_not_enough_money").addPrefix().build());
             return;
         }
@@ -124,19 +133,22 @@ public class PlayerShop extends VillagerShop {
             return;
         }
         player.getInventory().removeItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
-        economy.depositPlayer(player, price - taxAmount);
+        economy.depositPlayer(player, price.subtract(taxAmount).doubleValue());
         storageMenu.addItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
         shopStats.addBought(amount);
-        shopStats.addSpent(price);
+        shopStats.addSpent(price.doubleValue());
 
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_item")), 0.5f, 1);
-        player.sendMessage(new Color.Builder()
-                        .path("messages.tax")
-                        .replaceWithCurrency("%tax%", String.valueOf(taxAmount))
-                        .addPrefix()
-                        .build());
+        if (taxAmount.doubleValue() > 0) {
+            player.sendMessage(new Color.Builder()
+                    .path("messages.tax")
+                    .replaceWithCurrency("%tax%", String.valueOf(taxAmount))
+                    .addPrefix()
+                    .build());
+        }
 
-        economy.withdrawPlayer(owner, price);
+
+        economy.withdrawPlayer(owner, price.doubleValue());
         if (owner.isOnline()) {
             Player ownerOnline = owner.getPlayer();
             ownerOnline.sendMessage(new Color.Builder()
@@ -220,7 +232,7 @@ public class PlayerShop extends VillagerShop {
             case 5:
                 event.getView().close();
                 openInventory(player, ShopMenu.SELL_SHOP);
-                break;
+
             //Collect money
             case 6:
                 if (mainConfig.getBoolean("require_collect")) {
@@ -232,27 +244,27 @@ public class PlayerShop extends VillagerShop {
                 if (!super.duration.equalsIgnoreCase("infinite")) {
                     increaseTime(player);
                 }
-                return;
         }
     }
     /** Collects money */
     private void collectMoney(Player player) {
         Economy economy = VMPlugin.getEconomy();
-        economy.depositPlayer(player, collectedMoney);
-        player.sendMessage(new Color.Builder().path("messages.collected_money").addPrefix().replaceWithCurrency("%amount%", String.valueOf(collectedMoney)).build());
+        economy.depositPlayer(player, collectedMoney.doubleValue());
+        player.sendMessage(new Color.Builder().path("messages.collected_money").addPrefix()
+                .replaceWithCurrency("%amount%", String.valueOf(collectedMoney.round(new MathContext(2)))).build());
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.collect_money")), 1, 1);
-        super.collectedMoney = 0;
+        super.collectedMoney = BigDecimal.valueOf(0);
         super.editShopMenu.setContents(EditShopMenu.create(this).getContents());
     }
 
     /** Deposits money to the Shop/Owner */
-    public void depositOwner(double amount) {
+    public void depositOwner(BigDecimal amount) {
         if (mainConfig.getBoolean("require_collect")) {
-            super.collectedMoney += amount;
+            super.collectedMoney = collectedMoney.add(amount);
             super.editShopMenu.setContents(newEditShopInventory().getContents());
         } else {
             Economy economy = VMPlugin.getEconomy();
-            economy.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID)), amount);
+            economy.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID)), amount.doubleValue());
         }
     }
 
@@ -271,15 +283,13 @@ public class PlayerShop extends VillagerShop {
             }
             if (itemStack.isSimilar(shopItem.asItemStack(ShopItem.LoreType.ITEM))) { availableSlots ++; }
         }
-        int availableStorage = availableSlots * shopItem.getType().getMaxStackSize() - inStorage;
 
-        int available = 0;
+        int available = availableSlots * shopItem.getType().getMaxStackSize() - inStorage;
         if (shopItem.getLimit() != 0) {
             available = shopItem.getLimit() - inStorage;
         }
 
         available = (Math.min(available, (int) Math.ceil(economy.getBalance(owner) / shopItem.getPrice()) * shopItem.getAmount()));
-        available = (Math.min(available, availableStorage));
         return available;
     }
 
@@ -315,7 +325,7 @@ public class PlayerShop extends VillagerShop {
         if (villager != null) { villager.setCustomName(new Color.Builder().path("villager.name_available").build()); }
 
         if (cost != -1) { economy.depositPlayer(offlinePlayer, ((double) getCost() * (mainConfig.getDouble("refund_percent") / 100)) * timesRented); }
-        economy.depositPlayer(offlinePlayer, collectedMoney);
+        economy.depositPlayer(offlinePlayer, collectedMoney.doubleValue());
 
         List<ItemStack> storage = new ArrayList<>(Arrays.asList(storageMenu.getContents()));
         if (offlinePlayer.isOnline()) {
@@ -334,12 +344,15 @@ public class PlayerShop extends VillagerShop {
             VMPlugin.abandonOffline.put(offlinePlayer, storage);
         }
         config.set("storage", null);
+        super.trusted.clear();
+        super.collectedMoney = BigDecimal.valueOf(0);
         super.ownerUUID = "null";
         super.ownerName = "null";
         super.shopStats = new ShopStats();
         super.itemList = new HashMap<>();
         super.storageMenu.setContents(newStorageInventory().getContents());
         super.timesRented = 0;
+        super.editShopMenu.setContents(EditShopMenu.create(this).getContents());
 
         VMPlugin.log.add(new Date().toString() + ": " + offlinePlayer.getName() + " abandoned shop! ");
     }

@@ -33,6 +33,8 @@ public class Trusted implements Listener {
         if (event.getPlayer() != sender) return;
         event.setCancelled(true);
 
+        HandlerList.unregisterAll(this);
+
         VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
         if (villagerShop != null) {
             if (villagerShop instanceof PlayerShop) {
@@ -57,6 +59,5 @@ public class Trusted implements Listener {
         } else {
             sender.sendMessage(new Color.Builder().path("messages.no_villager_shop").addPrefix().build());
         }
-        HandlerList.unregisterAll(this);
     }
 }

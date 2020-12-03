@@ -1,6 +1,6 @@
 name: VillagerMarket
 main: bestem0r.villagermarket.VMPlugin
-version: 1.7.4
+version: 1.7.5
 description: A plugin made by Bestem0r to create Villager Shops
 api-version: 1.13
 depend: [Vault]
@@ -11,3 +11,24 @@ commands:
     usage: /vm help
     aliases:
       - villagermarket
+permissions:
+  villagermarket:
+    children:
+      create:
+        description: Create Villager Shops
+      item.give:
+        description: Give Villager Shop item to other players
+      search:
+        description: Search for nearby Villager Shops
+      stats:
+        description: Get Villager Shop stats
+      remove:
+        description: Remove Villager Shops
+      move:
+        description: Move Villager Shops
+      reload:
+        description: Reload Villager Market
+      admin:
+        description: Edit Admin Shops
+      spy:
+        description: Open other player's shop editors
