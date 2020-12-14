@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class SetPrice implements Listener {
@@ -49,7 +50,7 @@ public class SetPrice implements Listener {
             player.sendMessage(new Color.Builder().path("messages.negative_price").addPrefix().build());
             return;
         }
-        builder.price(Double.parseDouble(message));
+        builder.price(new BigDecimal(message));
 
         String entityUUID = builder.getEntityUUID();
         VillagerShop villagerShop = Methods.shopFromUUID(UUID.fromString(entityUUID));

@@ -1,7 +1,7 @@
 #----------------------- General settings -----------------------#
 
 #Villager Market's message prefix
-plugin_prefix: '&8[&aVillagerMarket&8]&r'
+plugin_prefix: '&8[&aVM&8]&r'
 #How much (%) should shop owner get refunded when selling shop
 refund_percent: 50.0
 #How often should villager shops auto-save? (minutes)
@@ -64,7 +64,7 @@ messages:
   reached_sell_limit: '&cYou can not sell more of this item!'
   reached_buy_limit: '&cYou can not buy more of this item!'
   reached_command_limit: '&cYou have reached the buy limit for this command!'
-  money_left: '&aYou have %amount% money left!'
+  money_left: '&aYou have %amount% left!'
   type_command: '&bPlease type in a command without "/" (%player% for placeholder)...'
   finish_process: '&cPlease finish the shop item adding process first! (Type "cancel" to cancel)'
   collected_money: '&bCollected &a%amount% &bmoney!'

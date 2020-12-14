@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class ShopItem extends ItemStack {
     private VillagerShop.VillagerType villagerType;
     boolean isEditor = false;
 
-    private double price;
+    private BigDecimal price;
     private int slot;
     private int limit = 0;
     private List<String> menuLore;
@@ -54,7 +55,7 @@ public class ShopItem extends ItemStack {
         private VillagerShop.VillagerType villagerType;
         private String entityUUID;
 
-        private double price;
+        private BigDecimal price;
         private int slot;
         private int amount = 1;
         private int buyLimit = 0;
@@ -73,7 +74,7 @@ public class ShopItem extends ItemStack {
             this.entityUUID = entityUUID;
             return this;
         }
-        public Builder price(double price) {
+        public Builder price(BigDecimal price) {
             this.price = price;
             return this;
         }
@@ -113,7 +114,7 @@ public class ShopItem extends ItemStack {
     }
 
     /** Getters */
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
     public int getSlot() {
@@ -199,7 +200,7 @@ public class ShopItem extends ItemStack {
         menuLore = new Color.Builder()
                 .path(lorePath)
                 .replace("%amount%", String.valueOf(super.getAmount()))
-                .replaceWithCurrency("%price%", String.valueOf(price))
+                .replaceWithCurrency("%price%", price.stripTrailingZeros().toPlainString())
                 .replace("%stock%", String.valueOf(storageAmount))
                 .replace("%available%", String.valueOf(available))
                 .replace("%limit%", (limit == 0 ? config.getString("quantity.unlimited") : String.valueOf(limit)))

@@ -25,12 +25,10 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import scala.math.BigInt;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -136,7 +134,7 @@ public abstract class VillagerShop {
             ItemStack itemStack = config.getItemStack("items_for_sale." + slot + ".item");
             if (itemStack == null) { continue; }
             ShopItem shopItem = new ShopItem.Builder(itemStack)
-                    .price(config.getDouble("items_for_sale." + slot + ".price"))
+                    .price(new BigDecimal(config.getString("items_for_sale." + slot + ".price")))
                     .villagerType(type)
                     .mode(ShopItem.Mode.valueOf(config.getString("items_for_sale." + slot + ".mode")))
                     .buyLimit(config.getInt("items_for_sale." + slot + ".buy_limit"))
@@ -168,7 +166,7 @@ public abstract class VillagerShop {
             ShopItem shopItem = null;
             if (itemList.get(i) != null) {
                 shopItem = new ShopItem.Builder(itemList.get(i))
-                        .price(price)
+                        .price(BigDecimal.valueOf(price))
                         .villagerType(type)
                         .amount(itemList.get(i).getAmount())
                         .mode(mode)

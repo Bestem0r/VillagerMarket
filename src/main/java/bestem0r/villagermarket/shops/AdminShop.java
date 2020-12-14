@@ -18,6 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class AdminShop extends VillagerShop {
@@ -46,9 +47,9 @@ public class AdminShop extends VillagerShop {
         ShopItem shopItem = itemList.get(slot);
         Economy economy = VMPlugin.getEconomy();
 
-        double price = shopItem.getPrice();
+        BigDecimal price = shopItem.getPrice();
 
-        if (economy.getBalance(player) < price) {
+        if (economy.getBalance(player) < price.doubleValue()) {
             player.sendMessage(new Color.Builder().path("messages.not_enough_money").addPrefix().build());
             return;
         }
@@ -56,7 +57,7 @@ public class AdminShop extends VillagerShop {
             player.sendMessage(new Color.Builder().path("messages.reached_buy_limit").addPrefix().build());
             return;
         }
-        economy.withdrawPlayer(player, price);
+        economy.withdrawPlayer(player, price.doubleValue());
         giveShopItem(player, shopItem);
         shopItem.increasePlayerLimit(player);
 
@@ -76,7 +77,7 @@ public class AdminShop extends VillagerShop {
 
         int amount = shopItem.getAmount();
         int amountInInventory = getAmountInventory(shopItem.asItemStack(ShopItem.LoreType.ITEM), player.getInventory());
-        double price = shopItem.getPrice();
+        BigDecimal price = shopItem.getPrice();
 
         if (amountInInventory < amount) {
             player.sendMessage(new Color.Builder().path("messages.not_enough_in_inventory").addPrefix().build());
@@ -86,7 +87,7 @@ public class AdminShop extends VillagerShop {
             player.sendMessage(new Color.Builder().path("messages.reached_sell_limit").addPrefix().build());
             return;
         }
-        economy.depositPlayer(player, price);
+        economy.depositPlayer(player, price.doubleValue());
         player.getInventory().removeItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
         shopItem.increasePlayerLimit(player);
 
@@ -117,8 +118,8 @@ public class AdminShop extends VillagerShop {
     public void buyCommand(Player player, ShopItem shopItem) {
         Economy economy = VMPlugin.getEconomy();
 
-        double price = shopItem.getPrice();
-        if (economy.getBalance(player) < price) {
+        BigDecimal price = shopItem.getPrice();
+        if (economy.getBalance(player) < price.doubleValue()) {
             player.sendMessage(new Color.Builder().path("messages.not_enough_money").addPrefix().build());
             return;
         }
@@ -126,7 +127,7 @@ public class AdminShop extends VillagerShop {
             player.sendMessage(new Color.Builder().path("messages.reached_command_limit").addPrefix().build());
             return;
         }
-        economy.withdrawPlayer(player, price);
+        economy.withdrawPlayer(player, price.doubleValue());
         shopItem.runCommand(player);
         shopItem.increasePlayerLimit(player);
     }

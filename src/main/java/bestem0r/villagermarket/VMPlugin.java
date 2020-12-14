@@ -67,7 +67,7 @@ public class VMPlugin extends JavaPlugin {
             String currentVersion = this.getDescription().getVersion();
             if (!currentVersion.equalsIgnoreCase(version)) {
                 String foundVersion = ChatColor.translateAlternateColorCodes('&', "&bA new version of VillagerMarket was found!");
-                String latestVersion = ChatColor.translateAlternateColorCodes('&',"&bLatest version: &a" + version + "&b");
+                String latestVersion = ChatColor.translateAlternateColorCodes('&',"&bLatest version: &a" + version + "&b.");
                 String yourVersion = ChatColor.translateAlternateColorCodes('&', "&bYour version &c" + currentVersion + "&b.");
                 String downloadVersion = ChatColor.translateAlternateColorCodes('&', "&bGet it here for the latest features and bug fixes: &ehttps://www.spigotmc.org/resources/villager-market.82965/");
 
@@ -76,7 +76,7 @@ public class VMPlugin extends JavaPlugin {
                 getLogger().warning(yourVersion);
                 getLogger().warning(downloadVersion);
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (player.isOp()) {
+                    if (player.hasPermission("villagermarket.admin")) {
                         player.sendMessage(new Color.Builder().path("plugin_prefix").build() + " " + foundVersion);
                         player.sendMessage(new Color.Builder().path("plugin_prefix").build() + " " + downloadVersion);
                     }

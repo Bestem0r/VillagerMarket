@@ -21,8 +21,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.*;
@@ -45,7 +43,7 @@ public class PlayerShop extends VillagerShop {
         ShopItem shopItem = itemList.get(slot);
 
         BigDecimal tax = BigDecimal.valueOf(mainConfig.getDouble("tax"));
-        BigDecimal price = BigDecimal.valueOf(shopItem.getPrice());
+        BigDecimal price = shopItem.getPrice();
         int amount = shopItem.getAmount();
         int inStock = getItemAmount(shopItem.asItemStack(ShopItem.LoreType.ITEM));
 
@@ -63,11 +61,11 @@ public class PlayerShop extends VillagerShop {
         OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
         if (player.getUniqueId().equals(owner.getUniqueId())) {
             player.sendMessage(new Color.Builder().path("messages.cannot_buy_from_yourself").addPrefix().build());
-           // return;
+            return;
         }
 
         depositOwner(price.subtract(taxAmount));
-        economy.withdrawPlayer(player, shopItem.getPrice());
+        economy.withdrawPlayer(player, shopItem.getPrice().doubleValue());
         shopStats.addSold(amount);
         shopStats.addEarned(price.doubleValue());
 
@@ -78,13 +76,13 @@ public class PlayerShop extends VillagerShop {
                     .replace("%player%", player.getName())
                     .replace("%amount%", String.valueOf(amount))
                     .replace("%item%", shopItem.getType().name().toLowerCase())
-                    .replaceWithCurrency("%price%", String.valueOf(price))
+                    .replaceWithCurrency("%price%", price.stripTrailingZeros().toPlainString())
                     .addPrefix()
                     .build());
             if (taxAmount.doubleValue() > 0) {
                 ownerOnline.sendMessage(new Color.Builder()
                         .path("messages.tax")
-                        .replaceWithCurrency("%tax%", String.valueOf(taxAmount))
+                        .replaceWithCurrency("%tax%", taxAmount.stripTrailingZeros().toPlainString())
                         .addPrefix()
                         .build()
                 );
@@ -92,8 +90,11 @@ public class PlayerShop extends VillagerShop {
         }
         giveShopItem(player, shopItem);
         removeFromStock(shopItem.asItemStack(ShopItem.LoreType.ITEM));
+
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.buy_item")), 1, 1);
-        player.sendMessage(new Color.Builder().path("messages.money_left").addPrefix().replace("%amount%", String.valueOf(economy.getBalance(player))).build());
+        double moneyLeft = economy.getBalance(player);
+        player.sendMessage(new Color.Builder().path("messages.money_left").addPrefix()
+                .replaceWithCurrency("%amount%", BigDecimal.valueOf(moneyLeft).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString()).build());
 
         String currency = config.getString("currency");
         String valueCurrency = (config.getBoolean("currency_before") ? currency + price : price + currency);
@@ -108,7 +109,7 @@ public class PlayerShop extends VillagerShop {
         OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
 
         BigDecimal tax = BigDecimal.valueOf(mainConfig.getDouble("tax"));
-        BigDecimal price = BigDecimal.valueOf(shopItem.getPrice());
+        BigDecimal price = shopItem.getPrice();
         BigDecimal moneyLeft = BigDecimal.valueOf(economy.getBalance(owner));
         BigDecimal taxAmount = tax.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
         taxAmount = taxAmount.multiply(price);
@@ -118,7 +119,7 @@ public class PlayerShop extends VillagerShop {
 
         if (player.getUniqueId().equals(UUID.fromString(ownerUUID))) {
             player.sendMessage(new Color.Builder().path("messages.cannot_sell_to_yourself").addPrefix().build());
-            //return;
+            return;
         }
         if (amount > getAvailable(shopItem)) {
             player.sendMessage(new Color.Builder().path("messages.reached_buy_limit").addPrefix().build());
@@ -142,7 +143,7 @@ public class PlayerShop extends VillagerShop {
         if (taxAmount.doubleValue() > 0) {
             player.sendMessage(new Color.Builder()
                     .path("messages.tax")
-                    .replaceWithCurrency("%tax%", String.valueOf(taxAmount))
+                    .replaceWithCurrency("%tax%", taxAmount.stripTrailingZeros().toPlainString())
                     .addPrefix()
                     .build());
         }
@@ -156,7 +157,7 @@ public class PlayerShop extends VillagerShop {
                     .replace("%player%", player.getName())
                     .replace("%amount%", String.valueOf(amount))
                     .replace("%item%", shopItem.getType().name().replaceAll("_", " ").toLowerCase())
-                    .replaceWithCurrency("%price%", String.valueOf(price))
+                    .replaceWithCurrency("%price%", price.stripTrailingZeros().toPlainString())
                     .addPrefix()
                     .build());
         }
@@ -251,7 +252,7 @@ public class PlayerShop extends VillagerShop {
         Economy economy = VMPlugin.getEconomy();
         economy.depositPlayer(player, collectedMoney.doubleValue());
         player.sendMessage(new Color.Builder().path("messages.collected_money").addPrefix()
-                .replaceWithCurrency("%amount%", String.valueOf(collectedMoney.round(new MathContext(2)))).build());
+                .replaceWithCurrency("%amount%", collectedMoney.stripTrailingZeros().toPlainString()).build());
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.collect_money")), 1, 1);
         super.collectedMoney = BigDecimal.valueOf(0);
         super.editShopMenu.setContents(EditShopMenu.create(this).getContents());
@@ -289,7 +290,7 @@ public class PlayerShop extends VillagerShop {
             available = shopItem.getLimit() - inStorage;
         }
 
-        available = (Math.min(available, (int) Math.ceil(economy.getBalance(owner) / shopItem.getPrice()) * shopItem.getAmount()));
+        available = (Math.min(available, (int) Math.ceil(economy.getBalance(owner) / shopItem.getPrice().doubleValue()) * shopItem.getAmount()));
         return available;
     }
 

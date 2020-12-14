@@ -79,7 +79,7 @@ public abstract class EditShopMenu {
                 .nameFromPath("menus.edit_shop.items.collect_money.name")
                 .lore(new Color.Builder()
                         .path("menus.edit_shop.items.collect_money.lore")
-                        .replaceWithCurrency("%worth%", String.valueOf(villagerShop.getCollectedMoney()))
+                        .replaceWithCurrency("%worth%", villagerShop.getCollectedMoney().stripTrailingZeros().toPlainString())
                         .buildLore())
                 .build();
 
