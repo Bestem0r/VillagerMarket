@@ -6,6 +6,12 @@ plugin_prefix: '&8[&aVM&8]&r'
 refund_percent: 50.0
 #How often should villager shops auto-save? (minutes)
 auto_save_interval: 10
+#Enabling this will change all blocks two blocks beneath
+#all buyable playershops to a redstone block if the shop has an
+#owner, and to air if the shop is available for purchase
+enable_redstone_output: false
+#How often should redstone output from bought villagers update? (seconds)
+redstone_update_interval: 20
 #How much (%) should be taken as tax?
 tax: 0
 #Set currency symbol
@@ -18,6 +24,11 @@ auto_log: false
 cancel: 'cancel'
 #Should players be required to collect the earned money in the edit shop GUI?
 require_collect: false
+#Enable per-adminshop permission requirements. The required
+#permission will be based on the UUID of the shop:
+#e.g. villagermarket.adminshop.01b0be53-aa98-471c-86c7-a12fbf4e7482
+#You can retrieve a shop's UUID with /vm getid
+per_adminshop_permissions: false
 
 #----------------------- Messages & Sounds -----------------------#
 
@@ -30,8 +41,8 @@ messages:
   amount_successful: '&aAmount set successfully!'
   negative_price: '&cPrice can not be negative!'
   add_successful: '&aItem added successfully!'
-  type_price: '&bPlease type the price in chat...'
-  type_amount: '&bPlease type the amount in chat...'
+  type_price: '&bPlease type the item price in the chat...'
+  type_amount: '&bPlease type the amount you wish to sell/buy in the chat...'
   type_cancel: '&bOr type &c%cancel% &bto cancel' #Placeholder: %cancel% (see cancel option above)
   type_price_for_shop: '&bPlease type the price you wish to sell your shop for...'
   sold_shop: '&bShop sold! It is now available for purchase again!'
@@ -74,6 +85,11 @@ messages:
   trusted_added: '&aPlayer added!'
   trusted_removed: '&cPlayer removed!'
   region_no_access: '&cYou do not have access to this region!'
+  no_permission_adminshop: '&cYou do not have permission to use this Admin Shop!'
+  no_permission_change_name: '&cYou do not have permission to change name!'
+  no_permission_command: '&cYou do not have permission to use this command!'
+  get_id: "&7Right click a &bVillager Shop &7to get it's ID!"
+  id: '&7ShopID: &b%id%' #Placeholders: %id%
 
 stats_message:
   - '&bVillager Shop stats:'
@@ -123,6 +139,9 @@ villager:
   name_admin: '&cAdmin Shop'
   name_available: '&aAvailable shop!'
   name_taken: "&b%player%'s shop" #Placeholders: %player%
+  #Enabling this will make the villagers move around like normal
+  #villagers and enable gravity.
+  ai: false
   default_profession: NONE
   #The template for custom names:
   custom_name: '&7[&b%player%&7] &r%custom_name%' #Placeholders: %player%, %custom_name%
@@ -142,17 +161,20 @@ items:
   back:
     name: '&c&lBack'
     material: ARROW
+    lore: ''
   toggle_details:
     name: '&eToggle details'
     material: BOOK
     lore:
-      - ''
       - '&bLeft click &7to toggle'
       - '&7between &eitem lore'
       - '&7and &emenu lore&7!'
       - ''
       - '&7>> &bRight click &7to go back'
-
+  filler:
+    name: ''
+    material: BLUE_STAINED_GLASS_PANE
+    lore: ''
 
 #----------------------- Menu settings -----------------------#
 
@@ -185,6 +207,7 @@ menus:
     items:
       #Edit items for sale item
       edit_shopfront:
+        material: WRITABLE_BOOK
         name: '&bEdit shopfront'
         lore:
           - '&7Click to edit'
@@ -193,6 +216,7 @@ menus:
           - ''
       #Preview shop item
       preview_shop:
+        material: BOOK
         name: '&ePreview shop'
         lore:
           - '&7Click to preview'
@@ -201,6 +225,7 @@ menus:
           - ''
       #Edit storage item
       edit_storage:
+        material: CHEST
         name: '&cEdit storage'
         lore:
           - '&7Click to edit'
@@ -209,6 +234,7 @@ menus:
           - ''
       #Edit villager item
       edit_villager:
+        material: VILLAGER_SPAWN_EGG
         name: '&eEdit villager'
         lore:
           - '&7Click to edit'
@@ -217,6 +243,7 @@ menus:
           - ''
       #Change villager name item
       change_name:
+        material: NAME_TAG
         name: '&eChange villager name'
         lore:
           - '&7Click to change'
@@ -225,6 +252,7 @@ menus:
           - ''
       #Sell shop item
       sell_shop:
+        material: FEATHER
         name: '&cSell/abandon shop'
         lore:
           - '&7Click to abandon this'
@@ -232,6 +260,7 @@ menus:
           - ''
       #Collect money (this needs to be enabled in general settings)
       collect_money:
+        material: GOLD_INGOT
         name: '&aCollect money'
         lore: #Placeholders: %worth%
           - '&7Click to collect'
@@ -239,6 +268,7 @@ menus:
           - ''
       #Add more time item
       increase_time:
+        material: EMERALD
         name: '&aIncrease rent time!'
         lore: #Placeholders: %expire%, %time%, %price%
           - '&7>> Shop will expire:'
@@ -279,6 +309,7 @@ menus:
         - ''
       command_lore:
         - '&7----------------'
+        - '&7> (&bcommand&7)'
         - '&7Price: &a%price%'
         - ''
 
@@ -344,30 +375,68 @@ menus:
         - '&7>> Shift click to change &bcommand'
 
   #--------------------- Storage ---------------------#
-  edit_storage:
-    title: '&8Edit storage'
+  storage:
+    title: '&8Shop Storage'
+    items:
+      next:
+        name: '&eNext'
+        material: STONE_BUTTON
+        lore:
+          - '&7Next page'
+      previous:
+        name: '&ePrevious'
+        material: STONE_BUTTON
+        lore:
+          - '&7Previous page'
 
   #------------------ Edit Villager ------------------#
   #Edit villager menu
   edit_villager:
     title: '&8Edit villager'
     items:
-      smith: '&7Smith'
-      butcher: '&cButcher'
-      cartographer: '&bCartographer'
-      cleric: '&dCleric'
-      farmer: '&eFarmer'
-      fisherman: '&bFisherman'
-      leatherworker: '&cLeatherworker'
-      librarian: '&6Librarian'
+      smith:
+        material: IRON_CHESTPLATE
+        name: '&7Smith'
+        lore: ''
+      butcher:
+        material: PORKCHOP
+        name: '&cButcher'
+        lore: ''
+      cartographer:
+        material: MAP
+        name: '&bCartographer'
+        lore: ''
+      cleric:
+        material: POTION
+        name: '&dCleric'
+        lore: ''
+      farmer:
+        material: WHEAT
+        name: '&eFarmer'
+        lore: ''
+      fisherman:
+        material: COD
+        name: '&bFisherman'
+        lore: ''
+      leatherworker:
+        material: LEATHER
+        name: '&cLeatherworker'
+        lore: ''
+      librarian:
+        material: BOOK
+        name: '&6Librarian'
+        lore: ''
 
   #-------------------- Sell Shop --------------------#
   #Sell shop menu
   sell_shop:
     title: '&8Are you sure?'
     items:
-      no_cancel: '&cNo, cancel'
+      no_cancel:
+        material: RED_TERRACOTTA
+        name: '&cNo, cancel'
       yes_sell: #If the Shop is reusable (it was created by command)
+        material: LIME_TERRACOTTA
         name: '&aYes, sell shop'
         lore: #Placeholders: %amount%
           - '&7You will receive &a50%'
@@ -375,6 +444,7 @@ menus:
           - '&7when you abandon/sell this shop'
           - ''
       yes_remove: #If the Shop isn't reusable (it was created with a Villager Shop item)
+        material: LIME_TERRACOTTA
         name: '&aYes, remove shop'
         lore:
           - '&7This will &cremove'
