@@ -425,7 +425,7 @@ public abstract class VillagerShop {
         for (ItemStack storageStack : inventory.getStorageContents()) {
             if (storageStack == null) { continue; }
 
-            if (storageStack.isSimilar(itemStack)) {
+            if (Methods.compareItems(storageStack, itemStack)) {
                 amount = amount + storageStack.getAmount();
             }
         }

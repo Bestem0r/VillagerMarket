@@ -44,7 +44,7 @@ public class PlayerEvents implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler (ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler (ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void playerRightClick(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
         VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());

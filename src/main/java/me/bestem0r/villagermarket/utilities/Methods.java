@@ -116,6 +116,17 @@ public class Methods {
         return blackList.contains(material.toString());
     }
 
+    /** Properly checks if the two ItemStacks are equal  */
+    public static boolean compareItems(ItemStack item1, ItemStack item2) {
+        ItemStack item1clone = item1.clone();
+        ItemStack item2clone = item2.clone();
+
+        item1clone.setAmount(1);
+        item2clone.setAmount(1);
+
+        return  item1clone.toString().equals(item2clone.toString());
+    }
+
     /** Spawns new Villager Entity and sets its attributes to default values */
     public static UUID spawnShop(VMPlugin plugin, Location location, String type, int storageSize, int shopSize, int cost, String duration) {
         World world = location.getWorld();

@@ -9,6 +9,7 @@ import me.bestem0r.villagermarket.inventories.Shopfront;
 import me.bestem0r.villagermarket.inventories.StorageBuilder;
 import me.bestem0r.villagermarket.items.ShopItem;
 import me.bestem0r.villagermarket.utilities.ColorBuilder;
+import me.bestem0r.villagermarket.utilities.Methods;
 import me.bestem0r.villagermarket.utilities.ShopStats;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
@@ -47,9 +48,12 @@ public class PlayerShop extends VillagerShop {
         if (entity == null) { return; }
 
         Location location = entity.getLocation();
-        Block block = location.subtract(0, 2, 0).getBlock();
+        Material standingOn = entity.getLocation().clone().subtract(0, 1, 0).getBlock().getType();
+        boolean isOnPiston = (standingOn == Material.PISTON_HEAD || standingOn == Material.MOVING_PISTON);
 
-        block.setType(ownerUUID.equals("null") || forceOff ? Material.AIR : Material.REDSTONE_BLOCK);
+        Block replace = location.subtract(0, (isOnPiston ? 3 : 2), 0).getBlock();
+
+        replace.setType(ownerUUID.equals("null") || forceOff ? Material.AIR : Material.REDSTONE_BLOCK);
     }
 
     /** Buy item from the shop as the customer */
@@ -212,7 +216,7 @@ public class PlayerShop extends VillagerShop {
     /** Add everything from inventory to shop */
     public void quickAdd(Inventory inventory, ShopItem shopItem) {
         for (ItemStack inventoryStack : inventory.getContents()) {
-            if (shopItem.asItemStack(ShopItem.LoreType.ITEM).isSimilar(inventoryStack)) {
+            if (Methods.compareItems(shopItem.asItemStack(ShopItem.LoreType.ITEM), inventoryStack)) {
                 addToStorage(inventoryStack);
                 inventory.remove(inventoryStack);
             }
@@ -347,7 +351,7 @@ public class PlayerShop extends VillagerShop {
                 availableSlots ++;
                 continue;
             }
-            if (storageItem.isSimilar(itemStack)) { availableSlots ++; }
+            if (Methods.compareItems(storageItem, itemStack)) { availableSlots ++; }
         }
 
         return availableSlots * itemStack.getType().getMaxStackSize() - inStorage;

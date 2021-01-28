@@ -229,6 +229,7 @@ public class VMPlugin extends JavaPlugin {
                 }
             }
         }
+
         Long after = new Date().getTime();
         Bukkit.getLogger().info("[VillagerMarket] Loaded " + shops.size() + " shops in " + (after - before) + " ms!");
     }

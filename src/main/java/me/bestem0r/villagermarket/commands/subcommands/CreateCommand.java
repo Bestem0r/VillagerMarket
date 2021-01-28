@@ -76,6 +76,11 @@ public class CreateCommand implements SubCommand {
             return;
         }
         Player player = (Player) sender;
+        if (args.length < 2) {
+            player.sendMessage(ChatColor.RED + "Incorrect usage: Please specify shop type!");
+            player.sendMessage(ChatColor.RED + "Use /vm help for command description");
+            return;
+        }
         if (!args[1].equals("player") && !args[1].equals("admin")) {
             player.sendMessage(ChatColor.RED + "Incorrect usage: Type must be Player or Admin!");
             player.sendMessage(ChatColor.RED + "/vm create <type> <shopsize> [storagesize] [price] [time]");
