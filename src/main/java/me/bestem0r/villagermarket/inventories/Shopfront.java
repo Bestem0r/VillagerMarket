@@ -14,10 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -268,6 +265,13 @@ public class Shopfront {
                 }
             }
         }
+
+        @EventHandler
+        public void onDrag(InventoryDragEvent event) {
+            if ((Player) event.getWhoClicked() != this.player) { return; }
+            event.setCancelled(true);
+        }
+
         @EventHandler
         public void onClose(InventoryCloseEvent event) {
             if (this.player != event.getPlayer()) { return; }

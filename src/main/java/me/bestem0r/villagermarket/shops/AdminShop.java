@@ -57,6 +57,8 @@ public class AdminShop extends VillagerShop {
             return;
         }
         economy.withdrawPlayer(player, price.doubleValue());
+        shopStats.addSold(shopItem.getAmount());
+        shopStats.addEarned(price.doubleValue());
         giveShopItem(player, shopItem);
         shopItem.increasePlayerLimit(player);
 
@@ -95,6 +97,8 @@ public class AdminShop extends VillagerShop {
         economy.depositPlayer(player, price.doubleValue());
         player.getInventory().removeItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
         shopItem.increasePlayerLimit(player);
+        shopStats.addBought(amount);
+        shopStats.addSpent(price.doubleValue());
 
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_item")), 0.5f, 1);
 

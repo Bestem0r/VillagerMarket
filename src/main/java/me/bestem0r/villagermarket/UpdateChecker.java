@@ -10,8 +10,8 @@ import java.util.function.Consumer;
 
 public class UpdateChecker {
 
-    private VMPlugin plugin;
-    private int resourceId;
+    private final VMPlugin plugin;
+    private final int resourceId;
 
     public UpdateChecker(VMPlugin plugin, int resourceId) {
         this.plugin = plugin;

@@ -22,6 +22,10 @@ currency_before: false
 auto_log: false
 #Chat input used to cancel actions
 cancel: 'cancel'
+#If you enable this, Villager Market will attempt to regenerate lost
+#villagers when the plugin restarts.
+#Caution: This may affect performance!
+villager_regen: true
 #Should players be required to collect the earned money in the edit shop GUI?
 require_collect: false
 #Enable per-adminshop permission requirements. The required

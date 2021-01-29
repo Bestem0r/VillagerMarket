@@ -1,5 +1,6 @@
 package me.bestem0r.villagermarket.shops;
 
+import me.bestem0r.villagermarket.EntityInfo;
 import me.bestem0r.villagermarket.VMPlugin;
 import me.bestem0r.villagermarket.events.InventoryClick;
 import me.bestem0r.villagermarket.events.ItemDrop;
@@ -41,6 +42,7 @@ public abstract class VillagerShop {
     protected String ownerUUID;
     protected String ownerName;
     protected String entityUUID;
+    private final EntityInfo entityInfo;
 
     protected String duration;
     protected int seconds;
@@ -83,10 +85,11 @@ public abstract class VillagerShop {
         this.mainConfig = plugin.getConfig();
         this.file = file;
         this.config = YamlConfiguration.loadConfiguration(file);
+        this.entityUUID = file.getName().substring(0, file.getName().indexOf('.'));
+        this.entityInfo = new EntityInfo(plugin, config, UUID.fromString(entityUUID));
 
         this.ownerUUID = config.getString("ownerUUID");
         this.ownerName = config.getString("ownerName");
-        this.entityUUID = file.getName().substring(0, file.getName().indexOf('.'));
 
         this.shopSize = config.getInt("shopfrontSize") * 9;
         this.storageSize = config.getInt("storageSize") * 9;
@@ -183,6 +186,12 @@ public abstract class VillagerShop {
             }
             this.itemList.put(i, shopItem);
         }
+    }
+
+    public void changeUUID(UUID uuid) {
+        entityUUID = uuid.toString();
+        file.renameTo(new File(plugin.getDataFolder() + "/Shops/" + uuid + ".yml"));
+        this.file = (new File(plugin.getDataFolder() + "/Shops/" + uuid + ".yml"));
     }
 
     /** Abstract Methods */
@@ -367,6 +376,7 @@ public abstract class VillagerShop {
         config.set("stats.items_bought", shopStats.getItemsBought());
         config.set("stats.money_earned", shopStats.getMoneyEarned());
         config.set("stats.money_spent", shopStats.getMoneySpent());
+        entityInfo.save();
 
         config.set("storage", filteredStorage());
 
@@ -473,5 +483,8 @@ public abstract class VillagerShop {
     }
     public ShopfrontHolder getShopfrontHolder() {
         return shopfrontHolder;
+    }
+    public EntityInfo getEntityInfo() {
+        return entityInfo;
     }
 }

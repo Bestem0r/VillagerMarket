@@ -3,7 +3,9 @@ package me.bestem0r.villagermarket.commands.subcommands;
 import me.bestem0r.villagermarket.VMPlugin;
 import me.bestem0r.villagermarket.commands.CommandModule;
 import me.bestem0r.villagermarket.commands.SubCommand;
+import me.bestem0r.villagermarket.shops.VillagerShop;
 import me.bestem0r.villagermarket.utilities.Methods;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -11,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class CreateCommand implements SubCommand {
 
@@ -133,7 +136,12 @@ public class CreateCommand implements SubCommand {
             player.sendMessage(ChatColor.RED + "/vm create player <shopsize> [storagesize] [price] [time]");
             return;
         }
-        Methods.spawnShop(plugin, player.getLocation(), type, storageSize, shopSize, cost, duration);
+        UUID entityUUID = Methods.spawnShop(plugin, player.getLocation(), type);
+        if (Bukkit.getEntity(entityUUID) != null) {
+            Methods.newShopConfig(plugin, entityUUID, storageSize, shopSize, cost, VillagerShop.VillagerType.valueOf(type.toUpperCase()), duration);
+        } else {
+            Bukkit.getLogger().severe(ChatColor.RED + "Unable to spawn Villager! Does WorldGuard deny mobs pawn?");
+        }
         player.playSound(player.getLocation(), Sound.valueOf(plugin.getConfig().getString("sounds.create_shop")), 1, 1);
     }
 

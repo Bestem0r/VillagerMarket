@@ -2,6 +2,7 @@ package me.bestem0r.villagermarket;
 
 import me.bestem0r.villagermarket.commands.CommandModule;
 import me.bestem0r.villagermarket.commands.subcommands.*;
+import me.bestem0r.villagermarket.events.ChunkLoad;
 import me.bestem0r.villagermarket.events.EntityEvents;
 import me.bestem0r.villagermarket.events.PlayerEvents;
 import me.bestem0r.villagermarket.shops.AdminShop;
@@ -11,10 +12,7 @@ import me.bestem0r.villagermarket.utilities.ColorBuilder;
 import me.bestem0r.villagermarket.utilities.Methods;
 import me.bestem0r.villagermarket.utilities.MetricsLite;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -35,6 +33,7 @@ public class VMPlugin extends JavaPlugin {
     public static final List<VillagerShop> shops = new ArrayList<>();
 
     private boolean redstoneEnabled;
+    private boolean regenVillagers;
 
     public static final HashMap<OfflinePlayer, List<ItemStack>> abandonOffline = new HashMap<>();
 
@@ -96,6 +95,14 @@ public class VMPlugin extends JavaPlugin {
             }
         });
 
+        if (regenVillagers) {
+            for (World world : Bukkit.getWorlds()) {
+                for (Chunk chunk : world.getLoadedChunks()) {
+                    checkChunk(chunk);
+                }
+            }
+        }
+
         super.onEnable();
     }
 
@@ -112,6 +119,7 @@ public class VMPlugin extends JavaPlugin {
 
     public void reload() {
         reloadConfig();
+        this.regenVillagers =getConfig().getBoolean("villager_regen");
         this.redstoneEnabled = getConfig().getBoolean("enable_redstone_output");
     }
 
@@ -140,6 +148,29 @@ public class VMPlugin extends JavaPlugin {
                 shops.add(new PlayerShop(this, file));
         }
     }
+
+    public void checkChunk(Chunk chunk) {
+        if (regenVillagers) {
+            for (VillagerShop villagerShop : VMPlugin.shops) {
+                EntityInfo entityInfo = villagerShop.getEntityInfo();
+                if (!entityInfo.hasStoredData()) {
+                    continue;
+                }
+                if (entityInfo.isInChunk(chunk)) {
+                    Bukkit.getLogger().info("Checking chunk: " + chunk.getX() + "_" + chunk.getZ());
+                    if (entityInfo.exists()) {
+                        Bukkit.getLogger().info("Appending: " + entityInfo.getEntityUUID());
+                        entityInfo.appendToExisting();
+                    } else {
+                        Bukkit.getLogger().info("Regenerating: " + entityInfo.getEntityUUID());
+                        entityInfo.reCreate();
+                        Bukkit.getLogger().info("New entityUUID: " + entityInfo.getEntityUUID());
+                    }
+                }
+            }
+        }
+    }
+
     /** Registers event listeners */
     private void registerEvents() {
         EntityEvents entityEvents = new EntityEvents(this);
@@ -148,6 +179,7 @@ public class VMPlugin extends JavaPlugin {
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(entityEvents, this);
         pluginManager.registerEvents(playerEvents, this);
+        pluginManager.registerEvents(new ChunkLoad(this), this);
     }
 
     /** Thread runs save() method for all Villager Shops */

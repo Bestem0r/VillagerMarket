@@ -14,6 +14,7 @@ import me.bestem0r.villagermarket.shops.VillagerShop;
 import me.bestem0r.villagermarket.utilities.ColorBuilder;
 import me.bestem0r.villagermarket.utilities.Methods;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
@@ -44,7 +45,7 @@ public class PlayerEvents implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler (ignoreCancelled = true, priority = EventPriority.LOWEST)
+    @EventHandler (ignoreCancelled = true, priority = EventPriority.HIGH)
     public void playerRightClick(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
         VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
@@ -118,9 +119,14 @@ public class PlayerEvents implements Listener {
             int shopSize = Integer.parseInt(data.split("-")[0]);
             int storageSize = Integer.parseInt(data.split("-")[1]);
 
-            UUID villagerUUID = Methods.spawnShop(plugin, player.getLocation(), "player", storageSize, shopSize, -1, "infinite");
-            PlayerShop playerShop = (PlayerShop) Methods.shopFromUUID(villagerUUID);
-            playerShop.setOwner(player);
+            UUID villagerUUID = Methods.spawnShop(plugin, player.getLocation(), "player");
+            if (Bukkit.getEntity(villagerUUID) != null) {
+                Methods.newShopConfig(plugin, villagerUUID, storageSize, shopSize, -1, VillagerShop.VillagerType.PLAYER, "infinite");
+                PlayerShop playerShop = (PlayerShop) Methods.shopFromUUID(villagerUUID);
+                playerShop.setOwner(player);
+            } else {
+                Bukkit.getLogger().severe(ChatColor.RED + "Unable to spawn Villager! Does WorldGuard deny mobs pawn?");
+            }
 
             player.playSound(event.getClickedBlock().getLocation().subtract(0.5, 0, 0.5), Sound.valueOf(plugin.getConfig().getString("sounds.create_shop")), 1, 1);
             itemStack.setAmount(itemStack.getAmount() - 1);

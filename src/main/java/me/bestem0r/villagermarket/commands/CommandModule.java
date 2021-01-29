@@ -2,6 +2,7 @@ package me.bestem0r.villagermarket.commands;
 
 import me.bestem0r.villagermarket.utilities.ColorBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -53,7 +54,7 @@ public class CommandModule implements CommandExecutor, TabCompleter {
             List<String> help = new ArrayList<>();
             help.add("§bVillagerMarket Commands:");
             commandModule.subCommands.forEach((k, v) -> {
-                help.add("> " + "§e" + v.getDescription());
+                help.add("> " + "§e" + ChatColor.translateAlternateColorCodes('&', v.getDescription()));
             });
             help.forEach(s -> commandModule.commandOutput(sender, s));
         }

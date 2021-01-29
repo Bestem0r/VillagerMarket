@@ -1,6 +1,6 @@
 name: VillagerMarket
 main: me.bestem0r.villagermarket.VMPlugin
-version: 1.8.1
+version: 1.8.2
 description: A plugin made by Bestem0r to create Villager Shops
 api-version: 1.13
 depend: [Vault]

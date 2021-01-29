@@ -128,7 +128,7 @@ public class Methods {
     }
 
     /** Spawns new Villager Entity and sets its attributes to default values */
-    public static UUID spawnShop(VMPlugin plugin, Location location, String type, int storageSize, int shopSize, int cost, String duration) {
+    public static UUID spawnShop(VMPlugin plugin, Location location, String type) {
         World world = location.getWorld();
         Villager villager = (Villager) world.spawnEntity(location, EntityType.VILLAGER);
 
@@ -141,11 +141,6 @@ public class Methods {
         villager.setCustomName(new ColorBuilder(plugin).path("villager." + namePath).build());
 
         //Check if Villager is spawned correctly
-        if (Bukkit.getEntity(villager.getUniqueId()) != null) {
-            newShopConfig(plugin, villager.getUniqueId(), storageSize, shopSize, cost, VillagerShop.VillagerType.valueOf(type.toUpperCase()), duration);
-        } else {
-            Bukkit.getLogger().info(ChatColor.RED + "Unable to spawn Villager! Does WorldGuard deny mobs pawn?");
-        }
         return villager.getUniqueId();
     }
 }
