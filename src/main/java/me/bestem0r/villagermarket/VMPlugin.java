@@ -86,12 +86,6 @@ public class VMPlugin extends JavaPlugin {
                 getLogger().warning(latestVersion);
                 getLogger().warning(yourVersion);
                 getLogger().warning(downloadVersion);
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (player.hasPermission("villagermarket.admin")) {
-                        player.sendMessage(new ColorBuilder(this).path("plugin_prefix").build() + " " + foundVersion);
-                        player.sendMessage(new ColorBuilder(this).path("plugin_prefix").build() + " " + downloadVersion);
-                    }
-                }
             }
         });
 

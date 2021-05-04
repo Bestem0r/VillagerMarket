@@ -118,6 +118,7 @@ public class Methods {
 
     /** Properly checks if the two ItemStacks are equal  */
     public static boolean compareItems(ItemStack item1, ItemStack item2) {
+        if (item1 == null || item2 == null) { return false; }
         ItemStack item1clone = item1.clone();
         ItemStack item2clone = item2.clone();
 

@@ -153,7 +153,8 @@ public class PlayerShop extends VillagerShop {
             player.sendMessage(new ColorBuilder(plugin).path("messages.not_enough_in_inventory").addPrefix().build());
             return;
         }
-        player.getInventory().removeItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
+        removeItems(player.getInventory(), shopItem.asItemStack(ShopItem.LoreType.ITEM));
+        //player.getInventory().removeItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
         economy.depositPlayer(player, price.subtract(taxAmount).doubleValue());
         addToStorage(shopItem.asItemStack(ShopItem.LoreType.ITEM));
         shopStats.addBought(amount);
@@ -216,6 +217,7 @@ public class PlayerShop extends VillagerShop {
     /** Add everything from inventory to shop */
     public void quickAdd(Inventory inventory, ShopItem shopItem) {
         for (ItemStack inventoryStack : inventory.getContents()) {
+            if (inventoryStack == null) { continue; }
             if (Methods.compareItems(shopItem.asItemStack(ShopItem.LoreType.ITEM), inventoryStack)) {
                 addToStorage(inventoryStack);
                 inventory.remove(inventoryStack);

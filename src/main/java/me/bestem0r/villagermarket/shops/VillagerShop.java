@@ -129,6 +129,7 @@ public abstract class VillagerShop {
     /** Populates ItemList of shop items */
     private void buildItemList() {
         if (config.getList("for_sale") != null) {
+            Bukkit.getLogger().warning("[VillagerMarket] Old shop file detected! Converting: " + entityUUID);
             buildItemList_old();
             config.set("for_sale", null);
             config.set("prices", null);
@@ -173,9 +174,8 @@ public abstract class VillagerShop {
             double price = (priceList.size() > i ? priceList.get(i) : 0.0);
             int max = (maxList.size() > i ? maxList.get(i) : 0);
             ShopItem.Mode mode = (modeList.size() > i ? ShopItem.Mode.valueOf(modeList.get(i)) : ShopItem.Mode.SELL);
-            ShopItem shopItem = null;
             if (itemList.get(i) != null) {
-                shopItem = new ShopItem.Builder(plugin, itemList.get(i))
+                ShopItem shopItem = new ShopItem.Builder(plugin, itemList.get(i))
                         .price(BigDecimal.valueOf(price))
                         .villagerType(type)
                         .amount(itemList.get(i).getAmount())
@@ -183,8 +183,8 @@ public abstract class VillagerShop {
                         .buyLimit(max)
                         .amount(itemList.get(i).getAmount())
                         .build();
+                this.itemList.put(i, shopItem);
             }
-            this.itemList.put(i, shopItem);
         }
     }
 
@@ -269,6 +269,21 @@ public abstract class VillagerShop {
         }
         return storage;
     }
+    protected void removeItems(Inventory inventory, ItemStack item) {
+        int count = item.getAmount();
+        for (int i = 0; i < inventory.getContents().length; i ++) {
+            ItemStack stored = inventory.getItem(i);
+            if (Methods.compareItems(stored, item)) {
+                if (stored.getAmount() > count) {
+                    stored.setAmount(stored.getAmount() - count);
+                    break;
+                } else {
+                    count -= stored.getAmount();
+                    inventory.setItem(i, null);
+                }
+            }
+        }
+    }
 
     /** Runs when owner interacts with edit shop menu */
     public abstract void editShopInteract(InventoryClickEvent event);
@@ -299,8 +314,6 @@ public abstract class VillagerShop {
             }
             event.getView().close();
         } else {
-
-            event.setCancelled(true);
             if (shopItem == null) { return; }
 
             //Quick add or change buy limit
@@ -396,7 +409,9 @@ public abstract class VillagerShop {
         }
         try {
             config.save(file);
-        } catch (IOException i) {}
+        } catch (IOException i) {
+            i.printStackTrace();
+        }
     }
 
     /** Remove ItemStack from stock method */
@@ -432,7 +447,7 @@ public abstract class VillagerShop {
     /** Returns amount of ItemStack in specified Inventory */
     protected int getAmountInventory(ItemStack itemStack, Inventory inventory) {
         int amount = 0;
-        for (ItemStack storageStack : inventory.getStorageContents()) {
+        for (ItemStack storageStack : inventory.getContents()) {
             if (storageStack == null) { continue; }
 
             if (Methods.compareItems(storageStack, itemStack)) {

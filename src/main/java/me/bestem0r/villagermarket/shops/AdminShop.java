@@ -95,7 +95,8 @@ public class AdminShop extends VillagerShop {
             return;
         }
         economy.depositPlayer(player, price.doubleValue());
-        player.getInventory().removeItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
+        removeItems(player.getInventory(), shopItem.asItemStack(ShopItem.LoreType.ITEM));
+        //player.getInventory().removeItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
         shopItem.increasePlayerLimit(player);
         shopStats.addBought(amount);
         shopStats.addSpent(price.doubleValue());

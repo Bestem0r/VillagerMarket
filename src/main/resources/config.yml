@@ -25,7 +25,7 @@ cancel: 'cancel'
 #If you enable this, Villager Market will attempt to regenerate lost
 #villagers when the plugin restarts.
 #Caution: This may affect performance!
-villager_regen: true
+villager_regen: false
 #Should players be required to collect the earned money in the edit shop GUI?
 require_collect: false
 #Enable per-adminshop permission requirements. The required
@@ -33,6 +33,8 @@ require_collect: false
 #e.g. villagermarket.adminshop.01b0be53-aa98-471c-86c7-a12fbf4e7482
 #You can retrieve a shop's UUID with /vm getid
 per_adminshop_permissions: false
+#Allow shop egg placing only in regions where the player is a member or owner
+world_guard: false
 
 #----------------------- Messages & Sounds -----------------------#
 

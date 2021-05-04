@@ -5,6 +5,7 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import me.bestem0r.villagermarket.UpdateChecker;
 import me.bestem0r.villagermarket.VMPlugin;
 import me.bestem0r.villagermarket.inventories.Shopfront;
 import me.bestem0r.villagermarket.shops.AdminShop;
@@ -45,7 +46,7 @@ public class PlayerEvents implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler (ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler (ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void playerRightClick(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
         VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
@@ -103,7 +104,7 @@ public class PlayerEvents implements Listener {
             event.setCancelled(true);
             //Check if player does not have access to the region
 
-            if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
+            if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard") && plugin.getConfig().getBoolean("world_guard")) {
                 RegionManager rm = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()));
                 ApplicableRegionSet set = rm.getApplicableRegions(BukkitAdapter.asBlockVector(player.getLocation()));
                 UUID uuid = player.getUniqueId();
@@ -135,9 +136,23 @@ public class PlayerEvents implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (!VMPlugin.abandonOffline.containsKey(event.getPlayer())) return;
 
         Player player = event.getPlayer();
+        if (player.hasPermission("villagermarket.admin")) {
+            new UpdateChecker(plugin, 82965).getVersion(version -> {
+                String currentVersion = plugin.getDescription().getVersion();
+                if (!currentVersion.equalsIgnoreCase(version)) {
+                    String foundVersion = ChatColor.translateAlternateColorCodes('&', "&bA new version of VillagerMarket was found!");
+                    String downloadVersion = ChatColor.translateAlternateColorCodes('&', "&bGet it here for the latest features and bug fixes: &ehttps://www.spigotmc.org/resources/villager-market.82965/");
+
+                    player.sendMessage(new ColorBuilder(plugin).path("plugin_prefix").build() + " " + foundVersion);
+                    player.sendMessage(new ColorBuilder(plugin).path("plugin_prefix").build() + " " + downloadVersion);
+                }
+            });
+        }
+
+        if (!VMPlugin.abandonOffline.containsKey(event.getPlayer())) return;
+
         List<ItemStack> storage = VMPlugin.abandonOffline.get(event.getPlayer());
 
         for (ItemStack storageStack : storage) {
@@ -149,6 +164,8 @@ public class PlayerEvents implements Listener {
                 }
             }
         }
+
+
         VMPlugin.abandonOffline.remove(event.getPlayer());
     }
 }

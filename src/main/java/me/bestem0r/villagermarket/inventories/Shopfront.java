@@ -249,7 +249,7 @@ public class Shopfront {
             if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
                 event.setCancelled(true);
             }
-            if (event.getRawSlot() < event.getView().getTopInventory().getSize()) {
+            if (event.getRawSlot() > -1 && event.getRawSlot() < event.getView().getTopInventory().getSize()) {
                 event.setCancelled(true);
                 switch (type) {
                     case EDITOR:
