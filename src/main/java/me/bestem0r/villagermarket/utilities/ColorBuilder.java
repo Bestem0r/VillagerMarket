@@ -2,6 +2,7 @@ package me.bestem0r.villagermarket.utilities;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class ColorBuilder {
 
     private final FileConfiguration config;
 
-    public ColorBuilder(JavaPlugin plugin) {
+    public ColorBuilder(Plugin plugin) {
         this.config = plugin.getConfig();
     }
 

@@ -29,11 +29,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -74,6 +76,7 @@ public class PlayerEvents implements Listener {
                     villagerShop.getShopfrontHolder().open(player, Shopfront.Type.CUSTOMER);
                 }
             }
+
             player.playSound(player.getLocation(), Sound.valueOf(plugin.getConfig().getString("sounds.open_shop")), 0.5f, 1);
         }
     }
@@ -126,7 +129,7 @@ public class PlayerEvents implements Listener {
                 PlayerShop playerShop = (PlayerShop) Methods.shopFromUUID(villagerUUID);
                 playerShop.setOwner(player);
             } else {
-                Bukkit.getLogger().severe(ChatColor.RED + "Unable to spawn Villager! Does WorldGuard deny mobs pawn?");
+                Bukkit.getLogger().severe(ChatColor.RED + "[VillagerMarket] Unable to spawn Villager! Does WorldGuard deny mobs pawn?");
             }
 
             player.playSound(event.getClickedBlock().getLocation().subtract(0.5, 0, 0.5), Sound.valueOf(plugin.getConfig().getString("sounds.create_shop")), 1, 1);
@@ -151,21 +154,13 @@ public class PlayerEvents implements Listener {
             });
         }
 
-        if (!VMPlugin.abandonOffline.containsKey(event.getPlayer())) return;
+        if (VMPlugin.abandonOffline.containsKey(player.getUniqueId())) {
+            Inventory inventory = Bukkit.createInventory(null, 54, new ColorBuilder(plugin).path("menus.expired_shop.title").build());
+            List<ItemStack> items = VMPlugin.abandonOffline.get(player.getUniqueId());
 
-        List<ItemStack> storage = VMPlugin.abandonOffline.get(event.getPlayer());
-
-        for (ItemStack storageStack : storage) {
-            if (storageStack != null) {
-                if (storage.indexOf(storageStack) == storage.size() - 1) continue;
-                HashMap<Integer, ItemStack> exceed = player.getInventory().addItem(storageStack);
-                for (Integer i : exceed.keySet()) {
-                    player.getLocation().getWorld().dropItemNaturally(player.getLocation(), exceed.get(i));
-                }
-            }
+            inventory.setContents(items.toArray(new ItemStack[0]));
+            player.openInventory(inventory);
+            VMPlugin.abandonOffline.remove(player.getUniqueId());
         }
-
-
-        VMPlugin.abandonOffline.remove(event.getPlayer());
     }
 }

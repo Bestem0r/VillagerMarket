@@ -354,17 +354,18 @@ public abstract class VillagerShop {
         Villager villagerObject = (Villager) Bukkit.getEntity(UUID.fromString(entityUUID));
         Player player = (Player) event.getWhoClicked();
 
-        if (event.getRawSlot() > 8) return;
+        if (event.getRawSlot() > 17) return;
         event.setCancelled(true);
 
-        if (event.getRawSlot() == 8) {
+        if (event.getRawSlot() == 17) {
             player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.back")), 0.5f, 1);
             openInventory(player, ShopMenu.EDIT_SHOP);
             return;
         }
 
         assert villagerObject != null;
-        villagerObject.setProfession(Methods.getProfessions().get(event.getRawSlot()));
+        event.getView().close();
+        villagerObject.setProfession(Villager.Profession.values()[event.getRawSlot()]);
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.change_profession")), 0.5f, 1);
     }
 
@@ -466,6 +467,14 @@ public abstract class VillagerShop {
         }
     }
 
+    public void setCitizensSkin(String skin) {
+        Citize
+    }
+
+    public boolean hasOwner() {
+        return !(this instanceof AdminShop) && !ownerUUID.equals("null");
+    }
+
     public String getOwnerUUID() {
         return ownerUUID;
     }
@@ -501,5 +510,8 @@ public abstract class VillagerShop {
     }
     public EntityInfo getEntityInfo() {
         return entityInfo;
+    }
+    public String getOwnerName() {
+        return ownerName;
     }
 }

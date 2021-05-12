@@ -26,6 +26,7 @@ public class EntityInfo {
     public EntityInfo(VMPlugin plugin, FileConfiguration config, UUID entityUUID) {
         this.plugin = plugin;
         this.config = config;
+
         this.entityUUID = entityUUID;
 
         if (config.getString("villager.name") != null) {

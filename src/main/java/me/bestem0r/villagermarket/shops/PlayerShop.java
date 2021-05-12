@@ -118,7 +118,7 @@ public class PlayerShop extends VillagerShop {
 
         String currency = config.getString("currency");
         String valueCurrency = (config.getBoolean("currency_before") ? currency + price : price + currency);
-        VMPlugin.log.add(new Date().toString() + ": " + player.getName() + " bought " + amount + "x " + shopItem.getType() + " from " + ownerName + " (" + valueCurrency + ")");
+        VMPlugin.log.add(new Date() + ": " + player.getName() + " bought " + amount + "x " + shopItem.getType() + " from " + ownerName + " (" + valueCurrency + ")");
     }
 
     /** Sell item to the shop as the customer */
@@ -154,13 +154,17 @@ public class PlayerShop extends VillagerShop {
             return;
         }
         removeItems(player.getInventory(), shopItem.asItemStack(ShopItem.LoreType.ITEM));
-        //player.getInventory().removeItem(shopItem.asItemStack(ShopItem.LoreType.ITEM));
         economy.depositPlayer(player, price.subtract(taxAmount).doubleValue());
+        moneyLeft = BigDecimal.valueOf(economy.getBalance(owner));
         addToStorage(shopItem.asItemStack(ShopItem.LoreType.ITEM));
         shopStats.addBought(amount);
         shopStats.addSpent(price.doubleValue());
 
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_item")), 0.5f, 1);
+        player.sendMessage(new ColorBuilder(plugin)
+                .path("messages.money_currently")
+                .replaceWithCurrency("%amount%", moneyLeft.setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString()).build());
+
         if (taxAmount.doubleValue() > 0) {
             player.sendMessage(new ColorBuilder(plugin)
                     .path("messages.tax")
@@ -168,7 +172,6 @@ public class PlayerShop extends VillagerShop {
                     .addPrefix()
                     .build());
         }
-
 
         economy.withdrawPlayer(owner, price.doubleValue());
         if (owner.isOnline()) {
@@ -235,23 +238,23 @@ public class PlayerShop extends VillagerShop {
         int slot = event.getRawSlot();
         switch (slot) {
             //Edit for sale
-            case 0:
+            case 9:
                 shopfrontHolder.open(player, Shopfront.Type.EDITOR);
                 break;
             //Preview shop
-            case 1:
+            case 10:
                 shopfrontHolder.open(player, Shopfront.Type.CUSTOMER);
                 break;
             //Storage
-            case 2:
+            case 11:
                 openInventory(player, ShopMenu.STORAGE);
                 break;
             //Edit villager
-            case 3:
+            case 12:
                 openInventory(player, ShopMenu.EDIT_VILLAGER);
                 break;
             //Change name
-            case 4:
+            case 13:
                 if (player.hasPermission("villagermarket.change_name")) {
                     event.getView().close();
                     Bukkit.getServer().getPluginManager().registerEvents(new ChangeName(plugin, player, entityUUID), plugin);
@@ -262,17 +265,17 @@ public class PlayerShop extends VillagerShop {
                 }
                 break;
             //Sell shop
-            case 5:
+            case 14:
                 openInventory(player, ShopMenu.SELL_SHOP);
                 break;
             //Collect money
-            case 6:
+            case 15:
                 if (mainConfig.getBoolean("require_collect")) {
                     collectMoney(player);
                 }
                 break;
              //Increase time
-            case 7:
+            case 16:
                 if (!super.duration.equalsIgnoreCase("infinite")) {
                     increaseTime(player);
                 }
@@ -362,6 +365,10 @@ public class PlayerShop extends VillagerShop {
     /** Buy shop */
     public void buyShop(Player player) {
         Economy economy = plugin.getEconomy();
+        if (plugin.getConfig().getBoolean("buy_shop_permission") && !player.hasPermission("villagermarket.buy_shop")) {
+            player.sendMessage(new ColorBuilder(plugin).path("messages.no_permission_buy_shop").addPrefix().build());
+            return;
+        }
         if (economy.getBalance(player) < cost) {
             player.sendMessage(new ColorBuilder(plugin).path("messages.not_enough_money").addPrefix().build());
             return;
@@ -398,17 +405,13 @@ public class PlayerShop extends VillagerShop {
         List<ItemStack> storage = filteredStorage();
         if (offlinePlayer.isOnline()) {
             Player player = (Player) offlinePlayer;
-            player.closeInventory();
-            for (ItemStack storageStack : storage) {
-                if (storageStack != null) {
-                    HashMap<Integer, ItemStack> exceed = player.getInventory().addItem(storageStack);
-                    for (Integer i : exceed.keySet()) {
-                        player.getWorld().dropItemNaturally(player.getLocation(), exceed.get(i));
-                    }
-                }
-            }
+            Inventory inventory = Bukkit.createInventory(null, 54, new ColorBuilder(plugin).path("menus.expired_shop.title").build());
+            List<ItemStack> items = VMPlugin.abandonOffline.get(player.getUniqueId());
+
+            inventory.setContents(items.toArray(new ItemStack[0]));
+            player.openInventory(inventory);
         } else {
-            VMPlugin.abandonOffline.put(offlinePlayer, storage);
+            VMPlugin.abandonOffline.put(offlinePlayer.getUniqueId(), storage);
         }
 
         config.set("storage", null);
@@ -429,12 +432,15 @@ public class PlayerShop extends VillagerShop {
     /** Sells/Removes the Player Shop */
     public void sell(Player player) {
         abandon();
+
+        player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_shop")), 0.5f, 1);
+        player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.menu_click")), 0.5f, 1);
         if (cost != -1) {
             player.sendMessage(new ColorBuilder(plugin).path("messages.sold_shop").addPrefix().build());
-            player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.sell_shop")), 0.5f, 1);
-            player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.menu_click")), 0.5f, 1);
         } else {
-            Bukkit.getEntity(UUID.fromString(entityUUID)).remove();
+            Entity villager = Bukkit.getEntity(UUID.fromString(entityUUID));
+            villager.getWorld().dropItemNaturally(villager.getLocation(), Methods.villagerShopItem(plugin, shopSize / 9, storageSize / 9, 1));
+            villager.remove();
             file.delete();
             VMPlugin.shops.remove(this);
         }

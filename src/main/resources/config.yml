@@ -1,7 +1,7 @@
 #----------------------- General settings -----------------------#
 
-#Villager Market's message prefix
-plugin_prefix: '&8[&aVM&8]&r'
+#Villager Market"s message prefix
+plugin_prefix: "&8[&aVM&8]&r"
 #How much (%) should shop owner get refunded when selling shop
 refund_percent: 50.0
 #How often should villager shops auto-save? (minutes)
@@ -15,13 +15,15 @@ redstone_update_interval: 20
 #How much (%) should be taken as tax?
 tax: 0
 #Set currency symbol
-currency: '$'
+currency: "$"
 #Should the currency symbol be placed before worth?
 currency_before: false
+#Maximum shops a player can own. Set to -1 to disable
+max_shops: 2
 #Should activity log be saved when server/plugin restarts?
 auto_log: false
 #Chat input used to cancel actions
-cancel: 'cancel'
+cancel: "cancel"
 #If you enable this, Villager Market will attempt to regenerate lost
 #villagers when the plugin restarts.
 #Caution: This may affect performance!
@@ -31,78 +33,84 @@ require_collect: false
 #Enable per-adminshop permission requirements. The required
 #permission will be based on the UUID of the shop:
 #e.g. villagermarket.adminshop.01b0be53-aa98-471c-86c7-a12fbf4e7482
-#You can retrieve a shop's UUID with /vm getid
+#You can retrieve a shop"s UUID with /vm getid
 per_adminshop_permissions: false
+#Will require villagermarket.buy_shop to buy shops
+buy_shop_permission: true
 #Allow shop egg placing only in regions where the player is a member or owner
 world_guard: false
 
 #----------------------- Messages & Sounds -----------------------#
 
 messages:
-  reloaded: '&aPlugin reloaded!'
-  cancelled: '&cAction was cancelled!'
-  not_number: '&cYou must type a number!'
-  use_dot: '&cUse dot instead of comma for decimals!'
-  not_valid_range: '&cAmount must be between 1 and 64!'
-  amount_successful: '&aAmount set successfully!'
-  negative_price: '&cPrice can not be negative!'
-  add_successful: '&aItem added successfully!'
-  type_price: '&bPlease type the item price in the chat...'
-  type_amount: '&bPlease type the amount you wish to sell/buy in the chat...'
-  type_cancel: '&bOr type &c%cancel% &bto cancel' #Placeholder: %cancel% (see cancel option above)
-  type_price_for_shop: '&bPlease type the price you wish to sell your shop for...'
-  sold_shop: '&bShop sold! It is now available for purchase again!'
-  not_enough_money: '&cYou do not have enough money to buy this!'
-  not_enough_stock: '&cThere is not enough items in stock at the moment!'
-  remove_villager: '&cRight click the &bVillager Shop &cyou want to remove!'
-  no_villager_shop: '&cThis is not a Villager Shop!'
-  villager_removed: '&cVillager Shop removed!'
-  blacklisted: '&cThis item is blacklisted!'
-  owner_not_enough_money: '&cThe shop owner does not have enough money!'
-  not_enough_in_inventory: '&cYou do not have enough items in your inventory!'
-  bought_item_as_owner: '&b%player%&7 sold you &b%amount%x %item%&7 for &a%price%&7!' #Placeholders: %player%, %amount%, %item%, %price%
-  sold_item_as_owner: '&b%player%&7 bought &b%amount%x %item%&7 from you for &a%price%&7!' #Placeholders: %player%, %amount%, %material%, %price%
-  change_name: '&bPlease type the name you want for your shop!'
-  change_name_set: '&aSuccessfully set name to: &r%name%&a!'
-  must_be_menulore: '&cPlease toggle back to &e&nmenu lore&c to sell/buy items!'
-  cannot_buy_from_yourself: '&cYou can not buy items from yourself!'
-  cannot_sell_to_yourself: '&cYou can not sell items to yourself!'
-  tax: '&a%tax% &7was taken as taxes!'
-  expired: '&cYour shop has expired, and it is now available for purchase!'
-  move_villager: '&7Right click the &bVillager Shop &7you want to move!'
-  move_villager_to: '&7Click a block to move the villager!'
-  max_rent_time: '&cCan not increase time further. Maximum rent time is reached!'
-  search_result: '&7Found &b%amount% &7Villager Shops nearby!'
-  search_shop_info: '&7>> %name% &7at location: &c%location%'
-  get_stats: '&7Right click a &bVillager Shop &7to get the statistics!'
-  not_owner: '&cYou are not the owner of this Villager Shop!'
-  type_limit_player: '&bPlease type the maximum amount you want to buy in the chat (&c0 &bfor unlimited)...'
-  type_limit_admin: '&bPlease type the buy/sell limit for this item in the chat (&c0 &bfor unlimited)...'
-  reached_sell_limit: '&cYou can not sell more of this item!'
-  reached_buy_limit: '&cYou can not buy more of this item!'
-  reached_command_limit: '&cYou have reached the buy limit for this command!'
-  money_left: '&aYou have %amount% left!'
-  type_command: '&bPlease type in a command without "/" (%player% for placeholder)...'
-  finish_process: '&cPlease finish the shop item adding process first! (Type "cancel" to cancel)'
-  collected_money: '&bCollected &a%amount% &bmoney!'
-  not_playershop: '&cThis is not a Player Shop!'
-  add_trusted: '&7Click on a &bVillager Shop &7you own to &aadd &7trusted!'
-  remove_trusted: '&7Click on &bVillager Shop &7you own to &cremove &7trusted!'
-  trusted_added: '&aPlayer added!'
-  trusted_removed: '&cPlayer removed!'
-  region_no_access: '&cYou do not have access to this region!'
-  no_permission_adminshop: '&cYou do not have permission to use this Admin Shop!'
-  no_permission_change_name: '&cYou do not have permission to change name!'
-  no_permission_command: '&cYou do not have permission to use this command!'
+  reloaded: "&aPlugin reloaded!"
+  cancelled: "&cAction was cancelled!"
+  not_number: "&cYou must type a number!"
+  use_dot: "&cUse dot instead of comma for decimals!"
+  not_valid_range: "&cAmount must be between 1 and 64!"
+  amount_successful: "&aAmount set successfully!"
+  negative_price: "&cPrice can not be negative!"
+  add_successful: "&aItem added successfully!"
+  type_price: "&bPlease type the item price in the chat..."
+  type_amount: "&bPlease type the amount you wish to sell/buy in the chat..."
+  type_cancel: "&bOr type &c%cancel% &bto cancel" #Placeholder: %cancel% (see cancel option above)
+  type_price_for_shop: "&bPlease type the price you wish to sell your shop for..."
+  sold_shop: "&bShop sold! It is now available for purchase again!"
+  not_enough_money: "&cYou do not have enough money to buy this!"
+  not_enough_stock: "&cThere is not enough items in stock at the moment!"
+  remove_villager: "&cRight click the &bVillager Shop &cyou want to remove!"
+  no_villager_shop: "&cThis is not a Villager Shop!"
+  villager_removed: "&cVillager Shop removed!"
+  blacklisted: "&cThis item is blacklisted!"
+  owner_not_enough_money: "&cThe shop owner does not have enough money!"
+  not_enough_in_inventory: "&cYou do not have enough items in your inventory!"
+  bought_item_as_owner: "&b%player%&7 sold you &b%amount%x %item%&7 for &a%price%&7!" #Placeholders: %player%, %amount%, %item%, %price%
+  sold_item_as_owner: "&b%player%&7 bought &b%amount%x %item%&7 from you for &a%price%&7!" #Placeholders: %player%, %amount%, %material%, %price%
+  change_name: "&bPlease type the name you want for your shop!"
+  change_name_set: "&aSuccessfully set name to: &r%name%&a!"
+  must_be_menulore: "&cPlease toggle back to &e&nmenu lore&c to sell/buy items!"
+  cannot_buy_from_yourself: "&cYou can not buy items from yourself!"
+  cannot_sell_to_yourself: "&cYou can not sell items to yourself!"
+  tax: "&a%tax% &7was taken as taxes!"
+  expired: "&cYour shop has expired, and it is now available for purchase!"
+  move_villager: "&7Right click the &bVillager Shop &7you want to move!"
+  move_villager_to: "&7Click a block to move the villager!"
+  max_rent_time: "&cCan not increase time further. Maximum rent time is reached!"
+  search_result: "&7Found &b%amount% &7Villager Shops nearby!"
+  search_shop_info: "&7>> %name% &7at location: &c%location%"
+  get_stats: "&7Right click a &bVillager Shop &7to get the statistics!"
+  not_owner: "&cYou are not the owner of this Villager Shop!"
+  type_limit_player: "&bPlease type the maximum amount you want to buy in the chat (&c0 &bfor unlimited)..."
+  type_limit_admin: "&bPlease type the buy/sell limit for this item in the chat (&c0 &bfor unlimited)..."
+  reached_sell_limit: "&cYou can not sell more of this item!"
+  reached_buy_limit: "&cYou can not buy more of this item!"
+  reached_command_limit: "&cYou have reached the buy limit for this command!"
+  money_left: "&aYou have %amount% left!"
+  money_currently: "&aYou currently have %amount%!"
+  type_command: "&bPlease type in a command without '/' (%player% for placeholder)..."
+  finish_process: "&cPlease finish the shop item adding process first! (Type 'cancel' to cancel)"
+  collected_money: "&bCollected &a%amount% &bmoney!"
+  not_playershop: "&cThis is not a Player Shop!"
+  add_trusted: "&7Click on a &bVillager Shop &7you own to &aadd &7trusted!"
+  remove_trusted: "&7Click on &bVillager Shop &7you own to &cremove &7trusted!"
+  trusted_added: "&aPlayer added!"
+  trusted_removed: "&cPlayer removed!"
+  region_no_access: "&cYou do not have access to this region!"
+  no_permission_adminshop: "&cYou do not have permission to use this Admin Shop!"
+  no_permission_change_name: "&cYou do not have permission to change name!"
+  no_permission_command: "&cYou do not have permission to use this command!"
+  no_permission_buy_shop: "&cYou do not have permission to buy shops!"
+  max_shops: "&cYou are not able to own more shops!"
   get_id: "&7Right click a &bVillager Shop &7to get it's ID!"
-  id: '&7ShopID: &b%id%' #Placeholders: %id%
+  id: "&7ShopID: &b%id%" #Placeholders: %id%
+  skin_set: "&aSkin successfully set!"
 
 stats_message:
-  - '&bVillager Shop stats:'
-  - '>> Items sold: &a%items_sold%'
-  - '>> Items bought: &a%items_bought%'
-  - '>> Money earned: &a%money_earned%'
-  - '>> Money spent: &a%money_spent%'
+  - "&bVillager Shop stats:"
+  - ">> Items sold: &a%items_sold%"
+  - ">> Items bought: &a%items_bought%"
+  - ">> Money earned: &a%money_earned%"
+  - ">> Money spent: &a%money_spent%"
 
 sounds:
   create_shop: ENTITY_VILLAGER_TRADE
@@ -127,30 +135,34 @@ sounds:
 
 #Time localization
 time:
-  seconds: 'seconds'
-  minutes: 'minutes'
-  hours: 'hours'
-  days: 'days'
-  indefinitely: 'indefinitely'
+  seconds: "seconds"
+  minutes: "minutes"
+  hours: "hours"
+  days: "days"
+  indefinitely: "indefinitely"
 #Quantity localization
 quantity:
-  infinite: 'infinite'
-  unlimited: 'unlimited'
-
+  infinite: "infinite"
+  unlimited: "unlimited"
+#Villager status (Used for PAPI placeholders)
+status:
+  available: "&aAvailable"
+  bought: "&cBought"
+  no_owner: "&7None"
 
 #----------------------- Villager settings -----------------------#
 
 villager:
   #These are the default settings for created Villager Shops
-  name_admin: '&cAdmin Shop'
-  name_available: '&aAvailable shop!'
+  name_admin: "&cAdmin Shop"
+  name_available: "&aAvailable shop!"
   name_taken: "&b%player%'s shop" #Placeholders: %player%
   #Enabling this will make the villagers move around like normal
   #villagers and enable gravity.
   ai: false
   default_profession: NONE
   #The template for custom names:
-  custom_name: '&7[&b%player%&7] &r%custom_name%' #Placeholders: %player%, %custom_name%
+  custom_name: "&7[&b%player%&7] &r%custom_name%" #Placeholders: %player%, %custom_name%
 
 
 #----------------------- Rent settings -----------------------#
@@ -165,22 +177,22 @@ expire_check_interval: 10
 
 items:
   back:
-    name: '&c&lBack'
+    name: "&c&lBack"
     material: ARROW
-    lore: ''
+    lore: ""
   toggle_details:
-    name: '&eToggle details'
+    name: "&eToggle details"
     material: BOOK
     lore:
-      - '&bLeft click &7to toggle'
-      - '&7between &eitem lore'
-      - '&7and &emenu lore&7!'
-      - ''
-      - '&7>> &bRight click &7to go back'
+      - "&bLeft click &7to toggle"
+      - "&7between &eitem lore"
+      - "&7and &emenu lore&7!"
+      - ""
+      - "&7>> &bRight click &7to go back"
   filler:
-    name: ''
-    material: BLUE_STAINED_GLASS_PANE
-    lore: ''
+    name: ""
+    material: GRAY_STAINED_GLASS_PANE
+    lore: ""
 
 #----------------------- Menu settings -----------------------#
 
@@ -188,287 +200,326 @@ menus:
   #-------------------- Buy Shop --------------------#
   #Menu for buying shop
   buy_shop:
-    title: '&8Buy available shop'
+    title: "&8Buy available shop"
     items:
       shop_size:
-        name: '&a%amount%&7 shop slots' #Placeholders: %amount%
+        name: "&a%amount%&7 shop slots" #Placeholders: %amount%
         material: CHEST
       storage_size:
-        name: '&a%amount%&7 storage slots' #Placeholders: %amount%
+        name: "&a%amount%&7 storage slots" #Placeholders: %amount%
         material: WRITABLE_BOOK
       buy_shop:
         material: EMERALD
-        name: '&aBuy this shop!'
+        name: "&aBuy this shop!"
         lore: #Placeholders: %price%, %time%
-          - '&7Click to buy this'
-          - '&7shop for &a%price%&7!'
-          - ''
-          - '&7The shop will be'
-          - '&7yours for &b%time%&7!'
+          - "&7Click to buy this"
+          - "&7shop for &a%price%&7!"
+          - ""
+          - "&7The shop will be"
+          - "&7yours for &b%time%&7!"
 
   #-------------------- Edit Shop --------------------#
   #Menu for shop editor
   edit_shop:
-    title: '&8Edit shop'
+    title: "&8Edit shop"
     items:
       #Edit items for sale item
       edit_shopfront:
         material: WRITABLE_BOOK
-        name: '&bEdit shopfront'
+        name: "&bEdit shopfront"
         lore:
-          - '&7Click to edit'
-          - '&7the items for'
-          - '&7sale in your shop!'
-          - ''
+          - "&7Click to edit"
+          - "&7the items for"
+          - "&7sale in your shop!"
+          - ""
       #Preview shop item
       preview_shop:
         material: BOOK
-        name: '&ePreview shop'
+        name: "&ePreview shop"
         lore:
-          - '&7Click to preview'
-          - '&7your shop (the menu'
-          - '&7your &ncustomers&7 will see)'
-          - ''
+          - "&7Click to preview"
+          - "&7your shop (the menu"
+          - "&7your &ncustomers&7 will see)"
+          - ""
       #Edit storage item
       edit_storage:
         material: CHEST
-        name: '&cEdit storage'
+        name: "&cEdit storage"
         lore:
-          - '&7Click to edit'
-          - '&7the storage'
-          - '&7of your shop!'
-          - ''
+          - "&7Click to edit"
+          - "&7the storage"
+          - "&7of your shop!"
+          - ""
       #Edit villager item
       edit_villager:
         material: VILLAGER_SPAWN_EGG
-        name: '&eEdit villager'
+        name: "&eEdit villager"
         lore:
-          - '&7Click to edit'
-          - '&7the profession'
-          - '&7of your villager!'
-          - ''
+          - "&7Click to edit"
+          - "&7the profession"
+          - "&7of your villager!"
+          - ""
       #Change villager name item
       change_name:
         material: NAME_TAG
-        name: '&eChange villager name'
+        name: "&eChange villager name"
         lore:
-          - '&7Click to change'
-          - '&7the name of'
-          - '&7you villager!'
-          - ''
+          - "&7Click to change"
+          - "&7the name of"
+          - "&7you villager!"
+          - ""
       #Sell shop item
       sell_shop:
         material: FEATHER
-        name: '&cSell/abandon shop'
+        name: "&cSell/abandon shop"
         lore:
-          - '&7Click to abandon this'
-          - '&7Villager Shop!'
-          - ''
+          - "&7Click to abandon this"
+          - "&7Villager Shop!"
+          - ""
       #Collect money (this needs to be enabled in general settings)
       collect_money:
         material: GOLD_INGOT
-        name: '&aCollect money'
+        name: "&aCollect money"
         lore: #Placeholders: %worth%
-          - '&7Click to collect'
-          - '&a%worth% money!'
-          - ''
+          - "&7Click to collect"
+          - "&a%worth% money!"
+          - ""
       #Add more time item
       increase_time:
         material: EMERALD
-        name: '&aIncrease rent time!'
+        name: "&aIncrease rent time!"
         lore: #Placeholders: %expire%, %time%, %price%
-          - '&7>> Shop will expire:'
-          - '&c%expire%'
-          - ''
-          - '&7Click to increase your rent'
-          - '&7time by &b%time%&7 for &a%price%&7!'
+          - "&7>> Shop will expire:"
+          - "&c%expire%"
+          - ""
+          - "&7Click to increase your rent"
+          - "&7time by &b%time%&7 for &a%price%&7!"
 
   #-------------------- Shop Front --------------------#
   #Buy/sell items menu (This is the menu for customers)
   shopfront:
-    title: '&8Buy items'
-    item_name: '&f%item_name% %mode%' #Placeholders: %item_name%, %mode%
-    detail_suffix: '&8(Details)'
+    title: "&8Buy items"
+    item_name: "&f%item_name% %mode%" #Placeholders: %item_name%, %mode%
+    detail_suffix: "&8(Details)"
     modes:
-      buy: '&8[&aBUY&8]'
-      sell: '&8[&aSELL&8]'
-      command: '&8[&eCOMMAND&8]'
+      buy: "&8[&aBUY&8]"
+      sell: "&8[&aSELL&8]"
+      command: "&8[&eCOMMAND&8]"
     player:
       buy_lore: #Placeholders: %amount%, %price%, %stock%
-        - '&7Amount: &e%amount%'
-        - '&7Price: &a%price%'
-        - '&7Currently &b%stock% &7in stock!'
-        - ''
+        - "&7Amount: &e%amount%"
+        - "&7Price: &a%price%"
+        - "&7Currently &b%stock% &7in stock!"
+        - ""
       sell_lore: #Placeholders: %amount%, %price%, %available%
-        - '&7Amount: &e%amount%'
-        - '&7Price: &a%price%'
-        - '&7You can sell &c%available% &7more!'
-        - ''
+        - "&7Amount: &e%amount%"
+        - "&7Price: &a%price%"
+        - "&7You can sell &c%available% &7more!"
+        - ""
     admin:
       buy_lore:
-        - '&7Amount: &e%amount%'
-        - '&7Price: &a%price%'
-        - ''
+        - "&7Amount: &e%amount%"
+        - "&7Price: &a%price%"
+        - ""
       sell_lore:
-        - '&7Amount: &e%amount%'
-        - '&7Price: &a%price%'
-        - ''
+        - "&7Amount: &e%amount%"
+        - "&7Price: &a%price%"
+        - ""
       command_lore:
-        - '&7----------------'
-        - '&7> (&bcommand&7)'
-        - '&7Price: &a%price%'
-        - ''
+        - "&7----------------"
+        - "&7> (&bcommand&7)"
+        - "&7Price: &a%price%"
+        - ""
 
   #------------------ Edit Shop Front ------------------#
   #Edit shopfront menu. (Add/remove/edit items)
   edit_shopfront:
-    title: '&8Add items for sale'
-    item_name: '&f%item_name% %mode%' #Placeholders: %item_name%, %mode%
+    title: "&8Add items for sale"
+    item_name: "&f%item_name% %mode%" #Placeholders: %item_name%, %mode%
     modes:
-      buy: '&8[&aBUY&8]'
-      sell: '&8[&aSELL&8]'
-      command: '&8[&eCOMMAND&8]'
+      buy: "&8[&aBUY&8]"
+      sell: "&8[&aSELL&8]"
+      command: "&8[&eCOMMAND&8]"
     player:
       sell_lore: #Placeholders: %amount%, %price%, %stock%
-        - '&7Amount: &e%amount%'
-        - '&7Price: &a%price%'
-        - '&7Currently &b%stock% &7in stock!'
-        - ''
-        - '&7>> Right click &7to &cremove'
-        - '&7>> Middle click to &aedit'
-        - '&7>> Left click &7to toggle: &e&nsell&8 | &7buy'
-        - ''
-        - '&7>> Shift click to &bquick-add&7 items!'
+        - "&7Amount: &e%amount%"
+        - "&7Price: &a%price%"
+        - "&7Currently &b%stock% &7in stock!"
+        - ""
+        - "&7>> Right click &7to &cremove"
+        - "&7>> Middle click to &aedit"
+        - "&7>> Left click &7to toggle: &e&nsell&8 | &7buy"
+        - ""
+        - "&7>> Shift click to &bquick-add&7 items!"
       buy_lore: #Placeholders: %amount%, %price%, %available%, %limit%
-        - '&7Amount: &e%amount%'
-        - '&7Price: &a%price%'
-        - '&7You can buy &c%available% &7more!'
-        - ''
-        - '&7>> Right click &7to &cremove'
-        - '&7>> Middle click to &aedit'
-        - '&7>> Left click &7to toggle: sell&8 | &e&nbuy'
-        - ''
-        - '&7>> Shift click to set buy limit (Now: &b%limit%&7)'
+        - "&7Amount: &e%amount%"
+        - "&7Price: &a%price%"
+        - "&7You can buy &c%available% &7more!"
+        - ""
+        - "&7>> Right click &7to &cremove"
+        - "&7>> Middle click to &aedit"
+        - "&7>> Left click &7to toggle: sell&8 | &e&nbuy"
+        - ""
+        - "&7>> Shift click to set buy limit (Now: &b%limit%&7)"
     admin:
       sell_lore:
-        - '&7Amount: &e%amount%'
-        - '&7Price: &a%price%'
-        - '&7Player limit: &a%limit%'
-        - ''
-        - '&7>> Right click &7to &cremove'
-        - '&7>> Middle click to &aedit'
-        - '&7>> Left click &7to toggle: &e&nsell&8 | &7buy'
-        - ''
-        - '&7>> Shift click to make &bcommand item'
+        - "&7Amount: &e%amount%"
+        - "&7Price: &a%price%"
+        - "&7Player limit: &a%limit%"
+        - ""
+        - "&7>> Right click &7to &cremove"
+        - "&7>> Middle click to &aedit"
+        - "&7>> Left click &7to toggle: &e&nsell&8 | &7buy"
+        - ""
+        - "&7>> Shift click to make &bcommand item"
       buy_lore:
-        - '&7Amount: &e%amount%'
-        - '&7Price: &a%price%'
-        - '&7Player limit: &a%limit%'
-        - ''
-        - '&7>> Right click &7to &cremove'
-        - '&7>> Middle click to &aedit'
-        - '&7>> Left click &7to toggle: sell&8 | &e&nbuy'
-        - ''
-        - '&7>> Shift click to make &bcommand item'
+        - "&7Amount: &e%amount%"
+        - "&7Price: &a%price%"
+        - "&7Player limit: &a%limit%"
+        - ""
+        - "&7>> Right click &7to &cremove"
+        - "&7>> Middle click to &aedit"
+        - "&7>> Left click &7to toggle: sell&8 | &e&nbuy"
+        - ""
+        - "&7>> Shift click to make &bcommand item"
       command_lore:
-        - '&7-------------------------'
-        - '&7Price: &a%price%'
-        - '&7Player limit: &a%limit%'
-        - ''
-        - '&7>> Right click &7to &cremove'
-        - '&7>> Middle click to &aedit'
-        - ''
-        - '&7>> Shift click to change &bcommand'
+        - "&7-------------------------"
+        - "&7Price: &a%price%"
+        - "&7Player limit: &a%limit%"
+        - ""
+        - "&7>> Right click &7to &cremove"
+        - "&7>> Middle click to &aedit"
+        - ""
+        - "&7>> Shift click to change &bcommand"
 
   #--------------------- Storage ---------------------#
   storage:
-    title: '&8Shop Storage'
+    title: "&8Shop Storage"
     items:
       next:
-        name: '&eNext'
+        name: "&eNext"
         material: STONE_BUTTON
         lore:
-          - '&7Next page'
+          - "&7Next page"
       previous:
-        name: '&ePrevious'
+        name: "&ePrevious"
         material: STONE_BUTTON
         lore:
-          - '&7Previous page'
+          - "&7Previous page"
 
   #------------------ Edit Villager ------------------#
   #Edit villager menu
   edit_villager:
-    title: '&8Edit villager'
+    title: "&8Edit villager"
+    #This requires citizens to be on the server
+    citizens_item:
+      material: PLAYER_HEAD
+      name: "&eSet skin instead"
+      lore:
+        - "&7>> Click to set a player's"
+        - "&7skin for this shop!"
     items:
-      smith:
+      armorer:
         material: IRON_CHESTPLATE
-        name: '&7Smith'
-        lore: ''
+        name: "&7Armorer"
+        lore: ""
       butcher:
         material: PORKCHOP
-        name: '&cButcher'
-        lore: ''
+        name: "&cButcher"
+        lore: ""
       cartographer:
         material: MAP
-        name: '&bCartographer'
-        lore: ''
+        name: "&bCartographer"
+        lore: ""
       cleric:
         material: POTION
-        name: '&dCleric'
-        lore: ''
+        name: "&dCleric"
+        lore: ""
       farmer:
         material: WHEAT
-        name: '&eFarmer'
-        lore: ''
+        name: "&eFarmer"
+        lore: ""
       fisherman:
         material: COD
-        name: '&bFisherman'
-        lore: ''
+        name: "&bFisherman"
+        lore: ""
+      fletcher:
+        material: FLETCHING_TABLE
+        name: "&eFletcher"
+        lore: ""
       leatherworker:
         material: LEATHER
-        name: '&cLeatherworker'
-        lore: ''
+        name: "&cLeatherworker"
+        lore: ""
       librarian:
         material: BOOK
-        name: '&6Librarian'
-        lore: ''
+        name: "&6Librarian"
+        lore: ""
+      mason:
+        material: BRICK
+        name: "&cMason"
+        lore: ""
+      nitwit:
+        material: PAPER
+        name: "&fNitwit"
+        lore: ""
+      shepherd:
+        material: WHITE_WOOL
+        name: "&fShepherd"
+        lore: ""
+      toolsmith:
+        material: IRON_AXE
+        name: "&7Tool Smith"
+        lore: ""
+      weaponsmith:
+        material: IRON_SWORD
+        name: "&7Weapon Smith"
+        lore: ""
+      none:
+        material: VILLAGER_SPAWN_EGG
+        name: "&cNone"
+        lore: ""
 
   #-------------------- Sell Shop --------------------#
   #Sell shop menu
   sell_shop:
-    title: '&8Are you sure?'
+    title: "&8Are you sure?"
     items:
       no_cancel:
         material: RED_TERRACOTTA
-        name: '&cNo, cancel'
+        name: "&cNo, cancel"
       yes_sell: #If the Shop is reusable (it was created by command)
         material: LIME_TERRACOTTA
-        name: '&aYes, sell shop'
+        name: "&aYes, sell shop"
         lore: #Placeholders: %amount%
-          - '&7You will receive &a50%'
-          - '&7(&a%amount%&7) of money spend'
-          - '&7when you abandon/sell this shop'
-          - ''
-      yes_remove: #If the Shop isn't reusable (it was created with a Villager Shop item)
+          - "&7You will receive &a50%"
+          - "&7(&a%amount%&7) of money spend"
+          - "&7when you abandon/sell this shop"
+          - ""
+      yes_remove: #If the Shop isn"t reusable (it was created with a Villager Shop item)
         material: LIME_TERRACOTTA
-        name: '&aYes, remove shop'
+        name: "&aYes, remove shop"
         lore:
-          - '&7This will &cremove'
-          - '&7the Villager Shop forever!'
-          - ''
+          - "&7This will &cremove"
+          - "&7the Villager Shop and give you"
+          - "&7a new shop spawn egg!"
+
+  #-------------------- Sell Shop --------------------#
+  expired_shop:
+    title: "&8Your storage from an expired shop:"
 
 #----------------- Villager Shop Item settings -----------------#
 
 shop_item:
   material: VILLAGER_SPAWN_EGG
-  name: '&b&lCreate Villager Shop!'
+  name: "&b&lCreate Villager Shop!"
   lore: #Placeholders: %shop_size%, %storage_size%
-    - '&aPlace &7this spawn egg to'
-    - '&7create your very own'
-    - '&aVillager Shop&7!'
-    - ''
-    - '&7>> &aShop Size&7: &c%shop_size%'
-    - '&7>> &aStorage Size&7: &c%storage_size%'
+    - "&aPlace &7this spawn egg to"
+    - "&7create your very own"
+    - "&aVillager Shop&7!"
+    - ""
+    - "&7>> &aShop Size&7: &c%shop_size%"
+    - "&7>> &aStorage Size&7: &c%storage_size%"
 
 #----------------------- Other settings -----------------------#
 

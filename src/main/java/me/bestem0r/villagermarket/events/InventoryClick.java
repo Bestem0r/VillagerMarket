@@ -43,7 +43,7 @@ public class InventoryClick implements Listener {
                 break;
             //Edit shop
             case EDIT_SHOP:
-                if (event.getRawSlot() > 8) return;
+                if (event.getRawSlot() >= event.getView().getTopInventory().getSize()) return;
                 event.setCancelled(true);
                 villagerShop.editShopInteract(event);
                 break;

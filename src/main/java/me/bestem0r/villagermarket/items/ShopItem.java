@@ -211,7 +211,9 @@ public class ShopItem extends ItemStack {
                 .buildLore();
 
         String namePath = "menus" + inventoryPath + "item_name";
-        String name = (super.getItemMeta().hasDisplayName() ? super.getItemMeta().getDisplayName() : WordUtils.capitalizeFully(getType().name().replaceAll("_", " ")));
+
+        ItemMeta meta = super.getItemMeta();
+        String name = (meta.hasDisplayName() ? meta.getDisplayName() : (meta.hasLocalizedName() ? meta.getLocalizedName() : WordUtils.capitalizeFully(getType().name().replaceAll("_", " "))));
         String mode = new ColorBuilder(plugin).path("menus" + inventoryPath + "modes." + itemMode.toString().toLowerCase()).build();
         menuName = new ColorBuilder(plugin)
                 .path(namePath)
@@ -233,8 +235,7 @@ public class ShopItem extends ItemStack {
         }
         if (mode == Mode.COMMAND && loreType == LoreType.MENU) {
             List<String> currentLore = itemMeta.getLore();
-            if (menuLore == null) {
-            }
+
             if (currentLore != null) {
                 currentLore.addAll(menuLore);
                 itemMeta.setLore(currentLore);

@@ -11,8 +11,10 @@ import me.bestem0r.villagermarket.shops.VillagerShop;
 import me.bestem0r.villagermarket.utilities.ColorBuilder;
 import me.bestem0r.villagermarket.utilities.Methods;
 import me.bestem0r.villagermarket.utilities.MetricsLite;
+import me.bestem0r.villagermarket.utilities.Placeholders;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -35,7 +37,9 @@ public class VMPlugin extends JavaPlugin {
     private boolean redstoneEnabled;
     private boolean regenVillagers;
 
-    public static final HashMap<OfflinePlayer, List<ItemStack>> abandonOffline = new HashMap<>();
+    private boolean citizensEnabled;
+
+    public static final HashMap<UUID, List<ItemStack>> abandonOffline = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -97,6 +101,19 @@ public class VMPlugin extends JavaPlugin {
             }
         }
 
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
+            new Placeholders(this).register();
+        }
+
+        File abandonFile = new File(getDataFolder() + "/abandon_offline.yml");
+        YamlConfiguration abandonConfig = YamlConfiguration.loadConfiguration(abandonFile);
+        ConfigurationSection section = abandonConfig.getConfigurationSection("abandon_offline");
+        if (section != null) {
+            for (String uuid : section.getKeys(false)) {
+                abandonOffline.put(UUID.fromString(uuid), (List<ItemStack>) abandonConfig.getList("abandon_offline." + uuid));
+            }
+        }
+
         super.onEnable();
     }
 
@@ -109,12 +126,24 @@ public class VMPlugin extends JavaPlugin {
         if (getConfig().getBoolean("auto_log")) saveLog();
 
         super.onDisable();
+
+        File abandonFile = new File(getDataFolder() + "/abandon_offline.yml");
+        YamlConfiguration abandonConfig = YamlConfiguration.loadConfiguration(abandonFile);
+        for (UUID uuid : abandonOffline.keySet()) {
+            abandonConfig.set("abandon_offline." + uuid.toString(), abandonOffline.get(uuid));
+        }
+        try {
+            abandonConfig.save(abandonFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void reload() {
         reloadConfig();
         this.regenVillagers =getConfig().getBoolean("villager_regen");
         this.redstoneEnabled = getConfig().getBoolean("enable_redstone_output");
+        this.citizensEnabled = Bukkit.getPluginManager().getPlugin("Citizens") != null;
     }
 
     /** Setup Vault integration */
@@ -265,5 +294,8 @@ public class VMPlugin extends JavaPlugin {
     }
     public boolean isRedstoneEnabled() {
         return redstoneEnabled;
+    }
+    public boolean isCitizensEnabled() {
+        return citizensEnabled;
     }
 }

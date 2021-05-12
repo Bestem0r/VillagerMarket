@@ -20,10 +20,11 @@ public class EditShop {
     private EditShop() {}
 
     public static Inventory create(JavaPlugin plugin, VillagerShop villagerShop) {
-        Inventory inventory = Bukkit.createInventory(null, 9, new ColorBuilder(plugin).path("menus.edit_shop.title").build());
+        Inventory inventory = Bukkit.createInventory(null, 27, new ColorBuilder(plugin).path("menus.edit_shop.title").build());
 
         FileConfiguration mainConfig = plugin.getConfig();
 
+        ItemStack filler = Methods.stackFromPath(plugin, "items.filler");
         ItemStack editShopfront = Methods.stackFromPath(plugin, "menus.edit_shop.items.edit_shopfront");
         ItemStack previewShop = Methods.stackFromPath(plugin, "menus.edit_shop.items.preview_shop");
         ItemStack storage = Methods.stackFromPath(plugin, "menus.edit_shop.items.edit_storage");
@@ -77,6 +78,7 @@ public class EditShop {
         ItemStack[] inventoryItems;
         if (villagerShop instanceof AdminShop) {
             inventoryItems = new ItemStack[] {
+                    filler, filler, filler, filler, filler, filler, filler, filler, filler,
                     editShopfront,
                     previewShop,
                     editVillager,
@@ -85,10 +87,12 @@ public class EditShop {
                     null,
                     null,
                     null,
-                    back
+                    null,
+                    filler, filler, filler, filler, filler, filler, filler, filler, back
             };
         } else {
             inventoryItems = new ItemStack[] {
+                    filler, filler, filler, filler, filler, filler, filler, filler, filler,
                     editShopfront,
                     previewShop,
                     storage,
@@ -97,14 +101,15 @@ public class EditShop {
                     sellShop,
                     null,
                     null,
-                    back
+                    null,
+                    filler, filler, filler, filler, filler, filler, filler, filler, back
             };
         }
         if (villagerShop instanceof PlayerShop && !time.equals("never")) {
-            inventoryItems[7] = increaseTime;
+            inventoryItems[16] = increaseTime;
         }
         if (villagerShop instanceof PlayerShop && mainConfig.getBoolean("require_collect")) {
-            inventoryItems[6] = collectMoney;
+            inventoryItems[15] = collectMoney;
         }
         inventory.setContents(inventoryItems);
         return inventory;

@@ -82,30 +82,8 @@ public class ItemCommand implements SubCommand {
             }
             amount = Integer.parseInt(args[5]);
         }
-        target.getInventory().addItem(villagerShopItem(shopSize, storageSize, amount));
+        target.getInventory().addItem(Methods.villagerShopItem(plugin, shopSize, storageSize, amount));
         target.playSound(target.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1);
-    }
-
-    /** Returns new Villager Shop Item */
-    private ItemStack villagerShopItem(int shopSize, int storageSize, int amount) {
-
-        int maxAmount = (Math.min(amount, 64));
-        String infinite = plugin.getConfig().getString("quantity.infinite");
-        String storageString = (storageSize == 0 ? infinite : String.valueOf(storageSize));
-        String shopString = (shopSize == 0 ? infinite : String.valueOf(shopSize));
-
-
-        ItemStack shopItem = Methods.stackFromPath(plugin, "shop_item");
-        ItemMeta shopMeta = shopItem.getItemMeta();
-        shopMeta.setLore(new ColorBuilder(plugin)
-                .path("shop_item.lore")
-                .replace("%shop_size%", shopString)
-                .replace("%storage_size%", storageString)
-                .buildLore());
-        shopMeta.getPersistentDataContainer().set(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING, shopSize + "-" + storageSize);
-        shopItem.setItemMeta(shopMeta);
-        shopItem.setAmount(maxAmount);
-        return shopItem;
     }
 
     private boolean canConvert(String string) {

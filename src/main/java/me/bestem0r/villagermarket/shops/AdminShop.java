@@ -152,19 +152,19 @@ public class AdminShop extends VillagerShop {
         int slot = event.getRawSlot();
         switch (slot) {
             //Edit for sale
-            case 0:
+            case 9:
                 shopfrontHolder.open(player, Shopfront.Type.EDITOR);
                 break;
             //Preview shop
-            case 1:
+            case 10:
                 shopfrontHolder.open(player, Shopfront.Type.CUSTOMER);
                 break;
             //Edit villager
-            case 2:
+            case 11:
                 openInventory(player, ShopMenu.EDIT_VILLAGER);
                 break;
             //Change name
-            case 3:
+            case 12:
                 event.getView().close();
                 Bukkit.getServer().getPluginManager().registerEvents(new ChangeName(plugin, player, entityUUID), plugin);
                 player.sendMessage(new ColorBuilder(plugin).path("messages.change_name").addPrefix().build());

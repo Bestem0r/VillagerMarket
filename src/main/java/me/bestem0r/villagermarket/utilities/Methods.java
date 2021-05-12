@@ -6,9 +6,11 @@ import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -143,5 +145,34 @@ public class Methods {
 
         //Check if Villager is spawned correctly
         return villager.getUniqueId();
+    }
+
+    public static long getOwnedShops(Player player) {
+        return VMPlugin.shops.stream()
+                .map(VillagerShop::getOwnerUUID)
+                .filter(u -> u.equals(player.getUniqueId().toString()))
+                .count();
+    }
+
+    /** Returns new Villager Shop Item */
+    public static ItemStack villagerShopItem(VMPlugin plugin, int shopSize, int storageSize, int amount) {
+
+        int maxAmount = (Math.min(amount, 64));
+        String infinite = plugin.getConfig().getString("quantity.infinite");
+        String storageString = (storageSize == 0 ? infinite : String.valueOf(storageSize));
+        String shopString = (shopSize == 0 ? infinite : String.valueOf(shopSize));
+
+
+        ItemStack shopItem = Methods.stackFromPath(plugin, "shop_item");
+        ItemMeta shopMeta = shopItem.getItemMeta();
+        shopMeta.setLore(new ColorBuilder(plugin)
+                .path("shop_item.lore")
+                .replace("%shop_size%", shopString)
+                .replace("%storage_size%", storageString)
+                .buildLore());
+        shopMeta.getPersistentDataContainer().set(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING, shopSize + "-" + storageSize);
+        shopItem.setItemMeta(shopMeta);
+        shopItem.setAmount(maxAmount);
+        return shopItem;
     }
 }
