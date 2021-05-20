@@ -19,6 +19,8 @@ public class Placeholders extends PlaceholderExpansion {
 
     public Placeholders(VMPlugin plugin) {
         this.plugin = plugin;
+        
+        VMPlugin.getPlugin(VMPlugin.class).isCitizensEnabled();
 
         this.available = new ColorBuilder(plugin).path("status.available").build();
         this.bought = new ColorBuilder(plugin).path("status.bought").build();

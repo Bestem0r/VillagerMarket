@@ -125,11 +125,12 @@ public class VMPlugin extends JavaPlugin {
         Bukkit.getScheduler().cancelTasks(this);
         if (getConfig().getBoolean("auto_log")) saveLog();
 
-        super.onDisable();
 
         File abandonFile = new File(getDataFolder() + "/abandon_offline.yml");
         YamlConfiguration abandonConfig = YamlConfiguration.loadConfiguration(abandonFile);
+        abandonConfig.set("abandon_offline", null);
         for (UUID uuid : abandonOffline.keySet()) {
+            Bukkit.getLogger().info(uuid.toString());
             abandonConfig.set("abandon_offline." + uuid.toString(), abandonOffline.get(uuid));
         }
         try {
@@ -137,6 +138,8 @@ public class VMPlugin extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        super.onDisable();
     }
 
     public void reload() {

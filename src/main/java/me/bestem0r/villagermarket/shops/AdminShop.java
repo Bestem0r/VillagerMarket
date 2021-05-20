@@ -166,9 +166,12 @@ public class AdminShop extends VillagerShop {
             //Change name
             case 12:
                 event.getView().close();
-                Bukkit.getServer().getPluginManager().registerEvents(new ChangeName(plugin, player, entityUUID), plugin);
+                Bukkit.getServer().getPluginManager().registerEvents(new ChangeName(plugin, player, entityUUID.toString()), plugin);
                 player.sendMessage(new ColorBuilder(plugin).path("messages.change_name").addPrefix().build());
                 player.sendMessage(new ColorBuilder(plugin).path("messages.type_cancel").replace("%cancel%", cancel).addPrefix().build());
+                break;
+            case 26:
+                event.getView().close();
                 break;
         }
     }

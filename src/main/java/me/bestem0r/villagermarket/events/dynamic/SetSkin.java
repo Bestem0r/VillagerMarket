@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.plugin.Plugin;
 
 import java.util.UUID;
 
@@ -25,9 +26,9 @@ public class SetSkin implements Listener {
         if (uuid.equals(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
 
-            shop.setCitizensSkin(event.getMessage());
-            event.getPlayer().sendMessage(new ColorBuilder(Bukkit.getPluginManager().getPlugin("VillagerMarket"))
-                    .path("messages.skin_set").addPrefix().build());
+            Plugin plugin = Bukkit.getPluginManager().getPlugin("VillagerMarket");
+            Bukkit.getScheduler().runTask(plugin, () -> shop.setCitizensSkin(event.getMessage()));
+            event.getPlayer().sendMessage(new ColorBuilder(plugin).path("messages.skin_set").addPrefix().build());
 
             HandlerList.unregisterAll(this);
         }

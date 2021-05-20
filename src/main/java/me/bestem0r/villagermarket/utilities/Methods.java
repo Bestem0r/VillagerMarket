@@ -37,7 +37,9 @@ public class Methods {
     /** Returns Villager Shop based on EntityUUID */
     public static VillagerShop shopFromUUID(UUID uuid) {
         for (VillagerShop villagerShop : VMPlugin.shops) {
-            if (villagerShop.getEntityUUID().equals(uuid.toString())) return villagerShop;
+            if (villagerShop.getEntityUUID().equals(uuid)) {
+                return villagerShop;
+            }
         }
         return null;
     }
@@ -55,10 +57,6 @@ public class Methods {
         return item;
     }
 
-    /** Returns list of professions */
-    public static List<Villager.Profession> getProfessions() {
-        return professions;
-    }
 
     /** Saves/Resets Villager Config with default values */
     public static void newShopConfig(VMPlugin plugin, UUID entityUUID, int storageSize, int shopfrontSize, int cost, VillagerShop.VillagerType villagerType, String duration) {

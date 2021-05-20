@@ -11,6 +11,8 @@ import me.bestem0r.villagermarket.items.ShopItem;
 import me.bestem0r.villagermarket.utilities.ColorBuilder;
 import me.bestem0r.villagermarket.utilities.Methods;
 import me.bestem0r.villagermarket.utilities.ShopStats;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -44,7 +46,7 @@ public class PlayerShop extends VillagerShop {
     public void updateRedstone(boolean forceOff) {
         if (!plugin.isRedstoneEnabled()) { return; }
         if (cost == -1) { return; }
-        Entity entity = Bukkit.getEntity(UUID.fromString(entityUUID));
+        Entity entity = Bukkit.getEntity(entityUUID);
         if (entity == null) { return; }
 
         Location location = entity.getLocation();
@@ -257,7 +259,7 @@ public class PlayerShop extends VillagerShop {
             case 13:
                 if (player.hasPermission("villagermarket.change_name")) {
                     event.getView().close();
-                    Bukkit.getServer().getPluginManager().registerEvents(new ChangeName(plugin, player, entityUUID), plugin);
+                    Bukkit.getServer().getPluginManager().registerEvents(new ChangeName(plugin, player, entityUUID.toString()), plugin);
                     player.sendMessage(new ColorBuilder(plugin).path("messages.change_name").addPrefix().build());
                     player.sendMessage(new ColorBuilder(plugin).path("messages.type_cancel").replace("%cancel%", cancel).addPrefix().build());
                 } else {
@@ -279,6 +281,9 @@ public class PlayerShop extends VillagerShop {
                 if (!super.duration.equalsIgnoreCase("infinite")) {
                     increaseTime(player);
                 }
+                break;
+            case 26:
+                event.getView().close();
         }
     }
 
@@ -396,8 +401,16 @@ public class PlayerShop extends VillagerShop {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(ownerUUID));
         Economy economy = plugin.getEconomy();
 
-        Entity villager = Bukkit.getEntity(UUID.fromString(entityUUID));
-        if (villager != null) { villager.setCustomName(new ColorBuilder(plugin).path("villager.name_available").build()); }
+        Entity entity = Bukkit.getEntity(entityUUID);
+        if (entity != null) {
+            if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(entity)) {
+                CitizensAPI.getNPCRegistry().getNPC(entity).setName(new ColorBuilder(plugin).path("villager.name_available").build());
+            } else if (entity instanceof Villager){
+                Villager villager = (Villager) entity;
+                entity.setCustomName(new ColorBuilder(plugin).path("villager.name_available").build());
+                villager.setProfession(Villager.Profession.NONE);
+            }
+        }
 
         if (cost != -1) { economy.depositPlayer(offlinePlayer, ((double) getCost() * (mainConfig.getDouble("refund_percent") / 100)) * timesRented); }
         economy.depositPlayer(offlinePlayer, collectedMoney.doubleValue());
@@ -406,9 +419,8 @@ public class PlayerShop extends VillagerShop {
         if (offlinePlayer.isOnline()) {
             Player player = (Player) offlinePlayer;
             Inventory inventory = Bukkit.createInventory(null, 54, new ColorBuilder(plugin).path("menus.expired_shop.title").build());
-            List<ItemStack> items = VMPlugin.abandonOffline.get(player.getUniqueId());
 
-            inventory.setContents(items.toArray(new ItemStack[0]));
+            inventory.setContents(storage.toArray(new ItemStack[0]));
             player.openInventory(inventory);
         } else {
             VMPlugin.abandonOffline.put(offlinePlayer.getUniqueId(), storage);
@@ -438,9 +450,14 @@ public class PlayerShop extends VillagerShop {
         if (cost != -1) {
             player.sendMessage(new ColorBuilder(plugin).path("messages.sold_shop").addPrefix().build());
         } else {
-            Entity villager = Bukkit.getEntity(UUID.fromString(entityUUID));
+            Entity villager = Bukkit.getEntity(entityUUID);
             villager.getWorld().dropItemNaturally(villager.getLocation(), Methods.villagerShopItem(plugin, shopSize / 9, storageSize / 9, 1));
-            villager.remove();
+            if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(villager)) {
+                NPC npc = CitizensAPI.getNPCRegistry().getNPC(villager);
+                npc.destroy();
+            } else {
+                villager.remove();
+            }
             file.delete();
             VMPlugin.shops.remove(this);
         }
@@ -476,8 +493,13 @@ public class PlayerShop extends VillagerShop {
 
     /** Sets owner and changes name */
     public void setOwner(Player player) {
-        Villager villager = (Villager) Bukkit.getEntity(UUID.fromString(entityUUID));
-        villager.setCustomName(new ColorBuilder(plugin).path("villager.name_taken").replace("%player%", player.getName()).build());
+        Entity villager = Bukkit.getEntity(entityUUID);
+        String name = new ColorBuilder(plugin).path("villager.name_taken").replace("%player%", player.getName()).build();
+        if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(villager)) {
+            CitizensAPI.getNPCRegistry().getNPC(villager).setName(name);
+        } else {
+            villager.setCustomName(name);
+        }
         this.ownerUUID = (player.getUniqueId().toString());
         this.ownerName = (player.getName());
     }

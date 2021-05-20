@@ -5,6 +5,7 @@ import me.bestem0r.villagermarket.utilities.Methods;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
 
 import java.io.File;
@@ -44,14 +45,16 @@ public class EntityInfo {
         }
     }
     public void save() {
-        Villager villager = (Villager) Bukkit.getEntity(entityUUID);
-        if (villager != null) {
-            config.set("villager.profession", villager.getProfession().name());
-            config.set("villager.name", villager.getName());
-            config.set("villager.location.x", villager.getLocation().getX());
-            config.set("villager.location.y", villager.getLocation().getY());
-            config.set("villager.location.z", villager.getLocation().getZ());
-            config.set("villager.location.world", villager.getLocation().getWorld().getName());
+        Entity entity = Bukkit.getEntity(entityUUID);
+        if (entity != null) {
+            if (entity instanceof Villager) {
+                config.set("entity.profession", ((Villager) entity).getProfession().name());
+            }
+            config.set("entity.name", entity.getName());
+            config.set("entity.location.x", entity.getLocation().getX());
+            config.set("entity.location.y", entity.getLocation().getY());
+            config.set("entity.location.z", entity.getLocation().getZ());
+            config.set("entity.location.world", entity.getLocation().getWorld().getName());
         }
     }
     public boolean hasStoredData() {

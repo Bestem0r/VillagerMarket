@@ -35,6 +35,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -51,10 +52,10 @@ public class PlayerEvents implements Listener {
     @EventHandler (ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void playerRightClick(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
+        if (event.getHand() == EquipmentSlot.OFF_HAND) { return; }
         VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
         if (villagerShop != null) {
             event.setCancelled(true);
-            if(event.getHand() == EquipmentSlot.OFF_HAND) { return; }
 
             if (villagerShop instanceof AdminShop) {
                 if (player.hasPermission("villagermarket.admin")) {
@@ -85,7 +86,7 @@ public class PlayerEvents implements Listener {
     public void onMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         for (VillagerShop villagerShop : VMPlugin.shops) {
-            Entity entity = Bukkit.getEntity(UUID.fromString(villagerShop.getEntityUUID()));
+            Entity entity = Bukkit.getEntity(villagerShop.getEntityUUID());
             if (entity == null) continue;
             if (entity.getNearbyEntities(5, 5, 5).contains(player)) {
                 entity.teleport(entity.getLocation().setDirection(player.getLocation().subtract(entity.getLocation()).toVector()));
@@ -117,6 +118,10 @@ public class PlayerEvents implements Listener {
                         return;
                     }
                 }
+            }
+            if (!player.hasPermission("villagermarket.use_spawn_item")) {
+                player.sendMessage(new ColorBuilder(plugin).path("messages.no_permission_use_item").addPrefix().build());
+                return;
             }
 
             String data = dataContainer.get(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING);

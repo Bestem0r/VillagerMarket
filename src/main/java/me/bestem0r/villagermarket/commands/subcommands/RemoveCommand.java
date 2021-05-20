@@ -6,6 +6,9 @@ import me.bestem0r.villagermarket.commands.SubCommand;
 import me.bestem0r.villagermarket.shops.VillagerShop;
 import me.bestem0r.villagermarket.utilities.ColorBuilder;
 import me.bestem0r.villagermarket.utilities.Methods;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.api.npc.NPCRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -76,7 +79,12 @@ public class RemoveCommand implements SubCommand {
                 file.delete();
 
                 VMPlugin.shops.remove(villagerShop);
-                event.getRightClicked().remove();
+                if (Bukkit.getPluginManager().isPluginEnabled("Citizens") && CitizensAPI.getNPCRegistry().isNPC(event.getRightClicked())) {
+                    NPC npc = CitizensAPI.getNPCRegistry().getNPC(event.getRightClicked());
+                    npc.destroy();
+                } else {
+                    event.getRightClicked().remove();
+                }
             } else {
                 player.sendMessage(new ColorBuilder(plugin).path("messages.no_villager_shop").addPrefix().build());
             }

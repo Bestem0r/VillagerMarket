@@ -4,7 +4,7 @@ version: 1.9.0
 description: A plugin made by Bestem0r to create Villager Shops
 api-version: 1.13
 depend: [Vault]
-softdepend: [Essentials, CMI, WorldEdit, WorldGuard, LightEconomy, TheNewEconomy, HellConomy, EasyConomy, PlaceholderAPI]
+softdepend: [Essentials, CMI, WorldEdit, WorldGuard, LightEconomy, TheNewEconomy, HellConomy, EasyConomy, PlaceholderAPI, Citizens]
 commands:
   vm:
     description: List all Villager Market commands
@@ -36,3 +36,5 @@ permissions:
         description: Open other player's shop editors
       rename:
         description: Rename your shop
+      use_spawn_item:
+        description: Use shop spawn item

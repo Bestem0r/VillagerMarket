@@ -100,9 +100,11 @@ messages:
   no_permission_change_name: "&cYou do not have permission to change name!"
   no_permission_command: "&cYou do not have permission to use this command!"
   no_permission_buy_shop: "&cYou do not have permission to buy shops!"
+  no_permission_use_item: "&cYou do not have permission to use this item!"
   max_shops: "&cYou are not able to own more shops!"
   get_id: "&7Right click a &bVillager Shop &7to get it's ID!"
   id: "&7ShopID: &b%id%" #Placeholders: %id%
+  type_skin: "&bPlease type the skin name in the chat..."
   skin_set: "&aSkin successfully set!"
 
 stats_message:
@@ -506,7 +508,7 @@ menus:
 
   #-------------------- Sell Shop --------------------#
   expired_shop:
-    title: "&8Your storage from an expired shop:"
+    title: "&8Expired shop storage:"
 
 #----------------- Villager Shop Item settings -----------------#
 

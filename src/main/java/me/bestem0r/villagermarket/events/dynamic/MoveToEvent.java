@@ -29,7 +29,7 @@ public class MoveToEvent implements Listener {
         if (event.getClickedBlock() == null) return;
         event.setCancelled(true);
 
-        Entity entity = Bukkit.getEntity(UUID.fromString(villagerShop.getEntityUUID()));
+        Entity entity = Bukkit.getEntity(villagerShop.getEntityUUID());
         if (villagerShop instanceof PlayerShop) {
             ((PlayerShop) villagerShop).updateRedstone(true);
         }

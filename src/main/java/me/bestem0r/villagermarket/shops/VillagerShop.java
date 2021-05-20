@@ -1,15 +1,21 @@
 package me.bestem0r.villagermarket.shops;
 
+import com.sk89q.worldguard.bukkit.event.BulkEvent;
 import me.bestem0r.villagermarket.EntityInfo;
 import me.bestem0r.villagermarket.VMPlugin;
 import me.bestem0r.villagermarket.events.InventoryClick;
 import me.bestem0r.villagermarket.events.ItemDrop;
 import me.bestem0r.villagermarket.events.dynamic.SetAmount;
+import me.bestem0r.villagermarket.events.dynamic.SetSkin;
 import me.bestem0r.villagermarket.inventories.*;
 import me.bestem0r.villagermarket.items.ShopItem;
 import me.bestem0r.villagermarket.utilities.ColorBuilder;
 import me.bestem0r.villagermarket.utilities.Methods;
 import me.bestem0r.villagermarket.utilities.ShopStats;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.trait.LookClose;
+import net.citizensnpcs.trait.SkinTrait;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -17,6 +23,8 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.inventory.ClickType;
@@ -41,7 +49,7 @@ public abstract class VillagerShop {
 
     protected String ownerUUID;
     protected String ownerName;
-    protected String entityUUID;
+    protected UUID entityUUID;
     private final EntityInfo entityInfo;
 
     protected String duration;
@@ -85,8 +93,8 @@ public abstract class VillagerShop {
         this.mainConfig = plugin.getConfig();
         this.file = file;
         this.config = YamlConfiguration.loadConfiguration(file);
-        this.entityUUID = file.getName().substring(0, file.getName().indexOf('.'));
-        this.entityInfo = new EntityInfo(plugin, config, UUID.fromString(entityUUID));
+        this.entityUUID = UUID.fromString(file.getName().substring(0, file.getName().indexOf('.')));
+        this.entityInfo = new EntityInfo(plugin, config, entityUUID);
 
         this.ownerUUID = config.getString("ownerUUID");
         this.ownerName = config.getString("ownerName");
@@ -189,7 +197,7 @@ public abstract class VillagerShop {
     }
 
     public void changeUUID(UUID uuid) {
-        entityUUID = uuid.toString();
+        entityUUID = uuid;
         file.renameTo(new File(plugin.getDataFolder() + "/Shops/" + uuid + ".yml"));
         this.file = (new File(plugin.getDataFolder() + "/Shops/" + uuid + ".yml"));
     }
@@ -305,7 +313,7 @@ public abstract class VillagerShop {
                 player.sendMessage(new ColorBuilder(plugin).path("messages.type_cancel").replace("%cancel%", cancel).addPrefix().build());
 
                 ShopItem.Builder builder = new ShopItem.Builder(plugin, cursorItem)
-                        .entityUUID(entityUUID)
+                        .entityUUID(entityUUID.toString())
                         .villagerType(this instanceof PlayerShop ? VillagerType.PLAYER : VillagerType.ADMIN)
                         .slot(slot);
 
@@ -327,7 +335,7 @@ public abstract class VillagerShop {
                 player.sendMessage(new ColorBuilder(plugin).path("messages.type_cancel").replace("%cancel%", cancel).addPrefix().build());
 
                 ShopItem.Builder builder = new ShopItem.Builder(plugin, shopItem.asItemStack(ShopItem.LoreType.ITEM))
-                        .entityUUID(entityUUID)
+                        .entityUUID(entityUUID.toString())
                         .villagerType(this instanceof PlayerShop ? VillagerType.PLAYER : VillagerType.ADMIN)
                         .slot(slot);
                 Bukkit.getServer().getPluginManager().registerEvents(new SetAmount(plugin, player, builder), plugin);
@@ -351,19 +359,35 @@ public abstract class VillagerShop {
 
     /** Runs when player interacts with change profession menu */
     public void editVillagerInteract(InventoryClickEvent event) {
-        Villager villagerObject = (Villager) Bukkit.getEntity(UUID.fromString(entityUUID));
-        Player player = (Player) event.getWhoClicked();
-
         if (event.getRawSlot() > 17) return;
         event.setCancelled(true);
+
+        Player player = (Player) event.getWhoClicked();
+        if (event.getRawSlot() == 16) {
+            player.sendMessage(new ColorBuilder(plugin).path("messages.type_skin").addPrefix().build());
+            Bukkit.getPluginManager().registerEvents(new SetSkin(this, player.getUniqueId()), plugin);
+            event.getView().close();
+            return;
+        }
 
         if (event.getRawSlot() == 17) {
             player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.back")), 0.5f, 1);
             openInventory(player, ShopMenu.EDIT_SHOP);
             return;
         }
+        if (event.getRawSlot() >= Villager.Profession.values().length) {
+            return;
+        }
+        Entity entity = Bukkit.getEntity(entityUUID);
+        if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(entity)) {
+            UUID uuid = Methods.spawnShop(plugin, entity.getLocation(), "player");
+            Bukkit.getEntity(uuid).setCustomName(CitizensAPI.getNPCRegistry().getNPC(entity).getName());
+            CitizensAPI.getNPCRegistry().getNPC(entity).destroy();
+            changeUUID(uuid);
+        }
 
-        assert villagerObject != null;
+        Villager villagerObject = (Villager) Bukkit.getEntity(entityUUID);
+
         event.getView().close();
         villagerObject.setProfession(Villager.Profession.values()[event.getRawSlot()]);
         player.playSound(player.getLocation(), Sound.valueOf(mainConfig.getString("sounds.change_profession")), 0.5f, 1);
@@ -468,7 +492,27 @@ public abstract class VillagerShop {
     }
 
     public void setCitizensSkin(String skin) {
-        Citize
+        Entity entity = Bukkit.getEntity(entityUUID);
+        if (entity != null) {
+            String name = entity.getCustomName();
+            if (CitizensAPI.getNPCRegistry().isNPC(entity)) {
+                name = CitizensAPI.getNPCRegistry().getNPC(entity).getName();
+            }
+
+            NPC npc = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, name);
+            npc.spawn(entity.getLocation());
+            npc.getOrAddTrait(LookClose.class).lookClose(true);
+            npc.getOrAddTrait(SkinTrait.class).setSkinName(skin);
+
+            if (CitizensAPI.getNPCRegistry().isNPC(entity)) {
+                CitizensAPI.getNPCRegistry().getNPC(entity).destroy();
+            } else {
+                entity.remove();
+            }
+
+            changeUUID(npc.getEntity().getUniqueId());
+        }
+
     }
 
     public boolean hasOwner() {
@@ -496,7 +540,7 @@ public abstract class VillagerShop {
     public HashMap<Integer, ShopItem> getItemList() {
         return itemList;
     }
-    public String getEntityUUID() {
+    public UUID getEntityUUID() {
         return entityUUID;
     }
     public int getTimesRented() {

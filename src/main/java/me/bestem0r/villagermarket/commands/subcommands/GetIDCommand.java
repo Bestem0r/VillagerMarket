@@ -65,7 +65,7 @@ public class GetIDCommand implements SubCommand {
             event.setCancelled(true);
             VillagerShop villagerShop = Methods.shopFromUUID(event.getRightClicked().getUniqueId());
             if (villagerShop != null) {
-                player.sendMessage(new ColorBuilder(plugin).path("messages.id").replace("%id%", villagerShop.getEntityUUID()).addPrefix().build());
+                player.sendMessage(new ColorBuilder(plugin).path("messages.id").replace("%id%", villagerShop.getEntityUUID().toString()).addPrefix().build());
             } else {
                 player.sendMessage(new ColorBuilder(plugin).path("messages.no_villager_shop").addPrefix().build());
             }
