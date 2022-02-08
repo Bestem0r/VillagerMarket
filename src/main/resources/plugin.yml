@@ -1,6 +1,7 @@
 name: VillagerMarket
 main: me.bestem0r.villagermarket.VMPlugin
-version: 1.9.0
+version: 1.10.3
+author: Bestem0r
 description: A plugin made by Bestem0r to create Villager Shops
 api-version: 1.13
 depend: [Vault]
@@ -11,30 +12,83 @@ commands:
     usage: /vm help
     aliases:
       - villagermarket
+
 permissions:
-  villagermarket:
+  villagermarket.admin:
+    default: op
+    description: All VillagerMarket Permissions
     children:
-      command:
-        children:
-          create:
-            description: Create Villager Shops
-            item:
-              description: Give Villager Shop item to other players
-            search:
-              description: Search for nearby Villager Shops
-            stats:
-              description: Get Villager Shop stats
-            remove:
-              description: Remove Villager Shops
-            move:
-              description: Move Villager Shops
-            reload:
-              description: Reload Villager Market
-      admin:
-        description: Edit Admin Shops
-      spy:
-        description: Open other player's shop editors
-      rename:
-        description: Rename your shop
-      use_spawn_item:
-        description: Use shop spawn item
+      villagermarket.adminshops: true
+      villagermarket.command.create: true
+      villagermarket.command.item: true
+      villagermarket.command.search: true
+      villagermarket.command.stats: true
+      villagermarket.command.remove: true
+      villagermarket.command.move: true
+      villagermarket.command.reload: true
+      villagermarket.command.expiredstorage: true
+      villagermarket.spy: true
+      villagermarket.rename: true
+      villagermarket.use_spawn_item: true
+      villagermarket.unlimited_shops: true
+      villagermarket.command.help: true
+      villagermarket.command.getid: true
+      villagermarket.use_citizens: true
+
+  villagermarket.adminshops:
+    default: op
+    description: Edit Admin Shops
+  villagermarket.command.create:
+    default: op
+    description: Create Villager Shops
+  villagermarket.command.item:
+    default: op
+    description:  Give Villager Shop item to other players
+  villagermarket.command.search:
+    default: op
+    description: Search for nearby Villager Shops
+  villagermarket.command.stats:
+    default: op
+    description: Get Villager Shop stats
+  villagermarket.command.remove:
+    default: op
+    description: Remove Villager Shops
+  villagermarket.command.move:
+    default: op
+    description: Move Villager Shops
+  villagermarket.command.reload:
+    default: op
+    description: Reload Villager Market
+  villagermarket.command.help:
+    default: op
+    description: All Villager Market commands
+  villagermarket.command.expiredstorage:
+    default: op
+    description: Open expired storage
+  villagermarket.command.getid:
+    default: op
+    description: Get shop ID
+  villagermarket.spy:
+    default: op
+    description: Open other player's shop editors
+  villagermarket.change_name:
+    default: op
+    description: Rename your shop
+  villagermarket.use_spawn_item:
+    default: op
+    description: Use shop spawn item
+  villagermarket.unlimited_shops:
+    default: op
+    description: Unlimited Shops
+  villagermarket.max_shops.<amount>:
+    default: op
+    description: Set maximum shops
+  villagermarket.use_citizens:
+    default: op
+    description: Turn your shop into an NPC
+  villagermarket.bypass_limit:
+    default: op
+    description: Bypass admin shop limits
+  villagermarket.bypass_price:
+    default: op
+    description: Buypass max price
