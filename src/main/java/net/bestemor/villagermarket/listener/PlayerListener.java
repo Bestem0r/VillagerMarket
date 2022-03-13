@@ -7,6 +7,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.bestemor.villagermarket.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
+import net.bestemor.villagermarket.event.PlaceShopEggEvent;
 import net.bestemor.villagermarket.menu.Shopfront;
 import net.bestemor.villagermarket.shop.AdminShop;
 import net.bestemor.villagermarket.shop.PlayerShop;
@@ -15,6 +16,7 @@ import net.bestemor.villagermarket.shop.VillagerShop;
 import net.bestemor.villagermarket.utils.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -34,6 +36,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 public class PlayerListener implements Listener {
@@ -149,8 +152,16 @@ public class PlayerListener implements Listener {
             String data = dataContainer.get(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING);
             int shopSize = Integer.parseInt(data.split("-")[0]);
             int storageSize = Integer.parseInt(data.split("-")[1]);
+            Location location = event.getClickedBlock().getLocation().clone().add(0.5, 1, 0.5);
 
-            Entity entity = plugin.getShopManager().spawnShop(event.getClickedBlock().getLocation().clone().add(0.5, 1, 0.5), "player");
+            PlaceShopEggEvent eggEvent = new PlaceShopEggEvent(player, location, shopSize, storageSize);
+            Bukkit.getPluginManager().callEvent(eggEvent);
+            if (eggEvent.isCancelled()) {
+                return;
+            }
+
+
+            Entity entity = plugin.getShopManager().spawnShop(location, "player");
             if (Bukkit.getEntity(entity.getUniqueId()) != null) {
                 plugin.getShopManager().createShopConfig(plugin, entity.getUniqueId(), storageSize, shopSize, -1, "player", "infinite");
                 PlayerShop playerShop = (PlayerShop) plugin.getShopManager().getShop(entity.getUniqueId());

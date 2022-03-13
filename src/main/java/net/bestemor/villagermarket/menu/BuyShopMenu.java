@@ -2,10 +2,12 @@ package net.bestemor.villagermarket.menu;
 
 import net.bestemor.villagermarket.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
+import net.bestemor.villagermarket.event.BuyShopEvent;
 import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.ShopMenu;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -80,6 +82,12 @@ public class BuyShopMenu extends Menu {
             }
             if (economy.getBalance(player) < shop.getCost()) {
                 player.sendMessage(ConfigManager.getMessage("messages.not_enough_money"));
+                return;
+            }
+
+            BuyShopEvent buyShopEvent = new BuyShopEvent(player, shop);
+            Bukkit.getPluginManager().callEvent(buyShopEvent);
+            if (buyShopEvent.isCancelled()) {
                 return;
             }
 

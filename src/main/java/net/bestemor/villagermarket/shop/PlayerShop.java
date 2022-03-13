@@ -2,6 +2,7 @@ package net.bestemor.villagermarket.shop;
 
 import net.bestemor.villagermarket.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
+import net.bestemor.villagermarket.event.AbandonShopEvent;
 import net.bestemor.villagermarket.menu.BuyShopMenu;
 import net.bestemor.villagermarket.menu.StorageHolder;
 import net.citizensnpcs.api.CitizensAPI;
@@ -249,6 +250,8 @@ public class PlayerShop extends VillagerShop {
     }
 
     public void abandon() {
+        Bukkit.getPluginManager().callEvent(new AbandonShopEvent(this));
+
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ownerUUID);
         Economy economy = plugin.getEconomy();
 

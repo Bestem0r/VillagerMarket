@@ -1,7 +1,6 @@
 package net.bestemor.villagermarket;
 
 import net.bestemor.villagermarket.command.CommandModule;
-import me.bestem0r.villagermarket.command.subcommand.*;
 import net.bestemor.villagermarket.command.subcommand.*;
 import net.bestemor.villagermarket.listener.ChatListener;
 import net.bestemor.villagermarket.listener.EntityListener;

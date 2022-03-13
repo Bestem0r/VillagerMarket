@@ -39,7 +39,7 @@ public class ChatListener implements Listener {
     public void onChat(AsyncPlayerChatEvent event) {
 
         UUID uuid = event.getPlayer().getUniqueId();
-        String message = ChatColor.stripColor(event.getMessage());
+        String message = ChatColor.stripColor(event.getMessage()).replace("§", "").replace("&", "");
         //Bukkit.getLogger().info("|" + message + "|");
         Player player = event.getPlayer();
 
