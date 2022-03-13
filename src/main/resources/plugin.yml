@@ -1,5 +1,5 @@
 name: VillagerMarket
-main: me.bestem0r.villagermarket.VMPlugin
+main: net.bestemor.villagermarket.VMPlugin
 version: 1.10.3
 author: Bestem0r
 description: A plugin made by Bestem0r to create Villager Shops

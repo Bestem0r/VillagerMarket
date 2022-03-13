@@ -14,7 +14,7 @@ enable_redstone_output: false
 redstone_update_interval: 20
 #How much (%) should be taken as tax?
 tax: 0
-#Set currency symbol
+#Currency symbol
 currency: "$"
 #Should the currency symbol be placed before worth?
 currency_before: false
