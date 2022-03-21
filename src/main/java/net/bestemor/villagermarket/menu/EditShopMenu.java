@@ -1,6 +1,9 @@
 package net.bestemor.villagermarket.menu;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.menu.Clickable;
+import net.bestemor.core.menu.Menu;
+import net.bestemor.core.menu.MenuContent;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.shop.AdminShop;
 import net.bestemor.villagermarket.shop.PlayerShop;
@@ -25,16 +28,6 @@ public class EditShopMenu extends Menu {
     private final VMPlugin plugin;
     private final VillagerShop shop;
 
-    private ItemStack editShopfrontItem;
-    private ItemStack previewShopItem;
-    private ItemStack editVillagerItem;
-    private ItemStack changeNameItem;
-
-    private ItemStack storageItem;
-    private ItemStack removeShopItem;
-    private ItemStack collectMoneyItem;
-    private ItemStack increaseTimeItem;
-
     public EditShopMenu(VMPlugin plugin, VillagerShop shop) {
         super(plugin.getMenuListener(), 54, ConfigManager.getString("menus.edit_shop.title"));
         this.plugin = plugin;
@@ -42,7 +35,7 @@ public class EditShopMenu extends Menu {
     }
 
     @Override
-    protected void update(Inventory inventory) {
+    protected void onUpdate(MenuContent content) {
 
         if (shop instanceof PlayerShop && !shop.getDuration().equals("infinite")) {
 
@@ -51,75 +44,71 @@ public class EditShopMenu extends Menu {
             int amount = Integer.parseInt(timeShort.substring(0, timeShort.length() - 1));
             String time = amount + " " + ConfigManager.getUnit(unit, amount > 1);
 
-            this.increaseTimeItem = ConfigManager.getItem("menus.edit_shop.items.increase_time")
+            PlayerShop playerShop = (PlayerShop) shop;
+
+            Clickable increaseTime = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.increase_time")
                     .replace("%expire%", ConfigManager.getTimeLeft(shop.getExpireDate()))
                     .replace("%time%", time)
-                    .replaceCurrency("%price%", BigDecimal.valueOf(shop.getCost())).build();
+                    .replaceCurrency("%price%", BigDecimal.valueOf(shop.getCost())).build(), event -> {
 
-            inventory.setItem(13, increaseTimeItem);
+                Instant newExpire = shop.getExpireDate().plusSeconds(playerShop.getSeconds());
+                Instant max = Instant.now().plusSeconds(ConfigManager.getInt("max_rent") * 86400L);
+
+                Player player = (Player) event.getWhoClicked();
+                if (newExpire.isAfter(max)) {
+                    player.sendMessage(ConfigManager.getMessage("messages.max_rent_time"));
+                    return;
+                }
+                Economy economy = plugin.getEconomy();
+                if (economy.getBalance(player) < playerShop.getCost()) {
+                    player.sendMessage(ConfigManager.getMessage("messages.not_enough_money"));
+                    return;
+                }
+                economy.withdrawPlayer(player, playerShop.getCost());
+                playerShop.increaseTime();
+                shop.updateMenu(ShopMenu.EDIT_SHOP);
+
+                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.increase_time"), 1, 1);
+            });
+
+            content.setClickable(13, increaseTime);
         }
         if (shop instanceof PlayerShop && ConfigManager.getBoolean("require_collect")) {
-            this.collectMoneyItem = ConfigManager.getItem("menus.edit_shop.items.collect_money").replaceCurrency("%worth%", shop.getCollectedMoney()).build();
-            inventory.setItem(40, collectMoneyItem);
+
+            PlayerShop playerShop = (PlayerShop) shop;
+
+            Clickable collectMoney = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.collect_money")
+                    .replaceCurrency("%worth%", shop.getCollectedMoney()).build(), event -> {
+                playerShop.collectMoney((Player) event.getWhoClicked());
+            });
+            content.setClickable(40, collectMoney);
         }
     }
 
     @Override
-    public void create(Inventory inventory) {
+    public void onCreate(MenuContent content) {
 
         ItemStack filler = ConfigManager.getItem("items.filler").build();
-        this.editShopfrontItem = ConfigManager.getItem("menus.edit_shop.items.edit_shopfront").build();
-        this.previewShopItem = ConfigManager.getItem("menus.edit_shop.items.preview_shop").build();
-        this.editVillagerItem = ConfigManager.getItem("menus.edit_shop.items.edit_villager").build();
-        this.changeNameItem = ConfigManager.getItem("menus.edit_shop.items.change_name").build();
-        this.removeShopItem = ConfigManager.getItem("menus.edit_shop.items.sell_shop").build();
-        this.storageItem = ConfigManager.getItem("menus.edit_shop.items.edit_storage").build();
 
-        fillEdges(filler);
+        Clickable editShopfront = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.edit_shopfront").build(), event -> {
+            shop.openInventory(event.getWhoClicked(), ShopMenu.EDIT_SHOPFRONT);
+        });
+        Clickable previewShop = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.preview_shop").build(), event -> {
+            shop.openInventory(event.getWhoClicked(), ShopMenu.CUSTOMER);
+        });
+        Clickable editVillager = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.edit_villager").build(), event -> {
+          shop.openInventory(event.getWhoClicked(), ShopMenu.EDIT_VILLAGER);
+        });
 
-        if (shop instanceof AdminShop) {
-            inventory.setItem(21, editShopfrontItem);
-            inventory.setItem(23, previewShopItem);
-            inventory.setItem(30, editVillagerItem);
-            inventory.setItem(32, changeNameItem);
-        } else {
-            inventory.setItem(21, editShopfrontItem);
-            inventory.setItem(22, storageItem);
-            inventory.setItem(23, previewShopItem);
-            inventory.setItem(30, editVillagerItem);
-            inventory.setItem(31, removeShopItem);
-            inventory.setItem(32, changeNameItem);
+        Clickable changeName = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.change_name").build(), event -> {
 
-            update();
-        }
-    }
-
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-
-        if (event.getCurrentItem() == null) {
-            return;
-        }
-        event.setCancelled(true);
-
-        Player player = (Player) event.getWhoClicked();
-        player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-
-        ItemStack currentItem = event.getCurrentItem();
-        if (editShopfrontItem.equals(currentItem)) {
-            this.shop.openInventory(player, ShopMenu.EDIT_SHOPFRONT);
-        } else if (previewShopItem.equals(currentItem)) {
-            this.shop.openInventory(player, ShopMenu.CUSTOMER);
-        } else if (editVillagerItem.equals(currentItem)) {
-            this.shop.openInventory(player, ShopMenu.EDIT_VILLAGER);
-        } else if (changeNameItem.equals(currentItem)) {
-            event.getView().close();
-
+            Player player = (Player) event.getWhoClicked();
             if (!player.hasPermission("villagermarket.change_name")) {
                 player.sendMessage(ConfigManager.getMessage("messages.no_permission_change_name"));
                 return;
             }
 
+            event.getView().close();
             player.sendMessage(ConfigManager.getMessage("messages.change_name"));
             plugin.getChatListener().addStringListener(player, (result) -> {
 
@@ -146,37 +135,34 @@ public class EditShopMenu extends Menu {
 
                 player.sendMessage(ConfigManager.getMessage("messages.change_name_set").replace("%name%", name));
             });
-        }
+        });
 
-        if (shop instanceof PlayerShop) {
+        content.fillEdges(filler);
+
+        if (shop instanceof AdminShop) {
+            content.setClickable(21, editShopfront);
+            content.setClickable(23,  previewShop);
+            content.setClickable(30,  editVillager);
+            content.setClickable(32,  changeName);
+        } else if (shop instanceof PlayerShop) {
+
             PlayerShop playerShop = (PlayerShop) shop;
 
-            if (currentItem.equals(storageItem)) {
-                playerShop.openStorage(player);
-            } else if (currentItem.equals(collectMoneyItem)) {
-                playerShop.collectMoney(player);
-            } else if (currentItem.equals(increaseTimeItem)) {
+            Clickable removeShop = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.sell_shop").build(), event -> {
+                shop.openInventory(event.getWhoClicked(), ShopMenu.SELL_SHOP);
+            });
+            Clickable storage = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.edit_storage").build(), event -> {
+                playerShop.openStorage((Player) event.getWhoClicked());
+            });
 
-                Instant newExpire = shop.getExpireDate().plusSeconds(playerShop.getSeconds());
-                Instant max = Instant.now().plusSeconds(ConfigManager.getInt("max_rent") * 86400L);
+            content.setClickable(21, editShopfront);
+            content.setClickable(22, storage);
+            content.setClickable(23, previewShop);
+            content.setClickable(30, editVillager);
+            content.setClickable(31, removeShop);
+            content.setClickable(32, changeName);
 
-                if (newExpire.isAfter(max)) {
-                    player.sendMessage(ConfigManager.getMessage("messages.max_rent_time"));
-                    return;
-                }
-                Economy economy = plugin.getEconomy();
-                if (economy.getBalance(player) < playerShop.getCost()) {
-                    player.sendMessage(ConfigManager.getMessage("messages.not_enough_money"));
-                    return;
-                }
-                economy.withdrawPlayer(player, playerShop.getCost());
-                playerShop.increaseTime();
-                shop.updateMenu(ShopMenu.EDIT_SHOP);
-
-                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.increase_time"), 1, 1);
-            } else if (currentItem.equals(removeShopItem)) {
-                playerShop.openInventory(player, ShopMenu.SELL_SHOP);
-            }
+            update();
         }
     }
 }

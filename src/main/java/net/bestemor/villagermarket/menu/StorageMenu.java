@@ -1,6 +1,10 @@
 package net.bestemor.villagermarket.menu;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.menu.Clickable;
+import net.bestemor.core.menu.Menu;
+import net.bestemor.core.menu.MenuContent;
+import net.bestemor.core.menu.MenuListener;
 import net.bestemor.villagermarket.utils.VMUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -37,52 +41,39 @@ public class StorageMenu extends Menu {
     }
 
     @Override
-    protected void create(Inventory inventory) {
-        inventory.setContents(items.toArray(new ItemStack[0]));
-        createBottom(inventory);
+    protected void onCreate(MenuContent content) {
+        getInventory().setContents(items.toArray(new ItemStack[0]));
+        update();
     }
 
+
     @Override
-    public void handleClick(InventoryClickEvent event) {
-        Player player = (Player) event.getWhoClicked();
+    protected void onUpdate(MenuContent content) {
+        if (isInfinite) {
+            content.fillBottom(ConfigManager.getItem("items.filler").build());
 
-        ItemStack current = event.getCurrentItem();
-
-        if (holder.getShop() != null) {
-            holder.getShop().getShopfrontHolder().update();
+            if (page != 0) {
+                content.setClickable(48, Clickable.of(ConfigManager.getItem("items.previous").build(), event -> {
+                    Player player = (Player) event.getWhoClicked();
+                    player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+                    didChangePage = true;
+                    holder.open(player, page - 1);
+                }));
+            }
+            if (page != holder.getPages() - 1) {
+                content.setClickable(50, Clickable.of(ConfigManager.getItem("items.next").build(), event -> {
+                    Player player = (Player) event.getWhoClicked();
+                    player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+                    didChangePage = true;
+                    holder.open(player, page + 1);
+                }));
+            }
         }
-
-        if (current == null) { return; }
-
-        if (isInfinite && event.getRawSlot() < 54 && event.getRawSlot() > 44) {
-            event.setCancelled(true);
-        }
-
-        if (event.getRawSlot() == inventorySize - 1) {
+        content.setClickable(inventorySize - 1, Clickable.of(ConfigManager.getItem("items.back").build(), event -> {
+            Player player = (Player) event.getWhoClicked();
             this.holder.back(player);
             player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-            event.setCancelled(true);
-            return;
-        }
-
-        if (isInfinite && event.getRawSlot() == 48 && page != 0) {
-            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-            didChangePage = true;
-            holder.open(player, page - 1);
-            return;
-        }
-        if (isInfinite && event.getRawSlot() == 50 && page != holder.getPages() - 1) {
-            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-            didChangePage = true;
-            holder.open(player, page + 1);
-        }
-
-
-    }
-
-    @Override
-    protected void update(Inventory inventory) {
-        createBottom(inventory);
+        }));
     }
 
     @Override
@@ -93,25 +84,11 @@ public class StorageMenu extends Menu {
         didChangePage = false;
     }
 
-    private void createBottom(Inventory inventory) {
-        if (isInfinite) {
-            fillBottom(ConfigManager.getItem("items.filler").build());
-
-            if (page != 0) {
-                inventory.setItem(48, ConfigManager.getItem("items.previous").build());
-            }
-            if (page != holder.getPages() - 1) {
-                inventory.setItem(50, ConfigManager.getItem("items.next").build());
-            }
-        }
-        inventory.setItem(inventorySize - 1, ConfigManager.getItem("items.back").build());
-    }
-
     public void setItems(List<ItemStack> items) {
         int start = Math.min(items.size(), page * itemsSize);
         int end = Math.min(items.size(), (page + 1) * itemsSize);
         this.items = items.subList(start, end);
-        create(getInventory());
+        create();
     }
 
     public int getAmount(ItemStack i) {

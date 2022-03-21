@@ -1,6 +1,6 @@
 package net.bestemor.villagermarket.shop;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.event.AbandonShopEvent;
 import net.bestemor.villagermarket.menu.BuyShopMenu;

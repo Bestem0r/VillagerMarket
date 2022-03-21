@@ -1,8 +1,8 @@
 package net.bestemor.villagermarket.command.subcommand;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.command.ISubCommand;
+import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
-import net.bestemor.villagermarket.command.ISubCommand;
 import net.bestemor.villagermarket.utils.VMUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -26,7 +26,7 @@ public class SearchCommand implements ISubCommand {
     }
 
     @Override
-    public List<String> getCompletion(int index, String[] args) {
+    public List<String> getCompletion(String[] args) {
         return new ArrayList<>();
     }
 
@@ -74,7 +74,12 @@ public class SearchCommand implements ISubCommand {
 
     @Override
     public String getDescription() {
-        return "Search for nearby shops: &6/vm search <radius>";
+        return "Search for nearby shops";
+    }
+
+    @Override
+    public String getUsage() {
+        return "<radius>";
     }
 
     @Override

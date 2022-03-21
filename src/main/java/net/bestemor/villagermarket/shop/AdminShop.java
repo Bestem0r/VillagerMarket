@@ -1,6 +1,6 @@
 package net.bestemor.villagermarket.shop;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;

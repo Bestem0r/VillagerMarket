@@ -1,8 +1,8 @@
 package net.bestemor.villagermarket.command.subcommand;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.command.ISubCommand;
+import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
-import net.bestemor.villagermarket.command.ISubCommand;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -29,9 +29,10 @@ public class MoveCommand implements ISubCommand {
     }
 
     @Override
-    public List<String> getCompletion(int index, String[] args) {
+    public List<String> getCompletion(String[] args) {
         return new ArrayList<>();
     }
+
 
     @Override
     public void run(CommandSender sender, String[] args) {
@@ -52,6 +53,11 @@ public class MoveCommand implements ISubCommand {
     @Override
     public String getDescription() {
         return "Move shop: &6/vm move";
+    }
+
+    @Override
+    public String getUsage() {
+        return null;
     }
 
     @Override

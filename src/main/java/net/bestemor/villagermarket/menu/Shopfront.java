@@ -1,8 +1,7 @@
 package net.bestemor.villagermarket.menu;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
-import me.bestem0r.villagermarket.shop.*;
 import net.bestemor.villagermarket.shop.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

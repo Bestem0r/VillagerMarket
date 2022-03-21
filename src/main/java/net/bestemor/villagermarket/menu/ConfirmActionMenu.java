@@ -5,7 +5,11 @@
 
 package net.bestemor.villagermarket.menu;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.menu.Clickable;
+import net.bestemor.core.menu.Menu;
+import net.bestemor.core.menu.MenuContent;
+import net.bestemor.core.menu.MenuListener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -22,29 +26,19 @@ public class ConfirmActionMenu extends Menu {
     }
 
     @Override
-    protected void create(Inventory inventory) {
+    protected void onCreate(MenuContent content) {
 
-        fillEdges(ConfigManager.getItem("items.filler").build());
+        content.fillEdges(ConfigManager.getItem("items.filler").build());
 
-        inventory.setItem(12, ConfigManager.getItem("menus.confirm_action.items.accept").build());
-        inventory.setItem(14, ConfigManager.getItem("menus.confirm_action.items.cancel").build());
-    }
-
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-        event.setCancelled(true);
-
-        Player player = (Player) event.getWhoClicked();
-
-        switch (event.getRawSlot()) {
-            case 12:
-                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-                accept.run();
-                break;
-            case 14:
-                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-                cancel.run();
-                break;
-        }
+        content.setClickable(12, Clickable.of(ConfigManager.getItem("menus.confirm_action.items.accept").build(), (event) -> {
+            Player player = (Player) event.getWhoClicked();
+            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+            accept.run();
+        }));
+        content.setClickable(14, Clickable.of(ConfigManager.getItem("menus.confirm_action.items.cancel").build(), (event) -> {
+            Player player = (Player) event.getWhoClicked();
+            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+            cancel.run();
+        }));
     }
 }

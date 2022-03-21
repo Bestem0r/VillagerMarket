@@ -1,16 +1,16 @@
 package net.bestemor.villagermarket.menu;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.menu.Clickable;
+import net.bestemor.core.menu.Menu;
+import net.bestemor.core.menu.MenuContent;
 import net.bestemor.villagermarket.VMPlugin;
-import me.bestem0r.villagermarket.shop.*;
 import net.bestemor.villagermarket.shop.*;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.math.BigDecimal;
@@ -31,21 +31,35 @@ public class EditItemMenu extends Menu {
     }
 
     @Override
-    protected void create(Inventory inventory) {
-        fillEdges(ConfigManager.getItem("items.filler").build());
+    protected void onCreate(MenuContent content) {
+        content.fillEdges(ConfigManager.getItem("items.filler").build());
 
         shopItem.reloadMeta(shop);
-        inventory.setItem(53, ConfigManager.getItem("items.back").build());
-        inventory.setItem(49, ConfigManager.getItem("menus.edit_item.items.delete").build());
+        
+        content.setClickable(53, Clickable.of(ConfigManager.getItem("items.back").build(), (event) -> {
+            Player player = (Player) event.getWhoClicked(); 
+            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+            shop.openInventory(player, ShopMenu.EDIT_SHOPFRONT);
+        }));
+        
+        content.setClickable(49, Clickable.of(ConfigManager.getItem("menus.edit_item.items.delete").build(), (event) -> {
+            Player player = (Player) event.getWhoClicked();
+            
+            new ConfirmActionMenu(plugin.getMenuListener(), () -> {
+                shop.getShopfrontHolder().remove(shopItem.getSlot());
+                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.remove_item"), 1, 1);
+                shop.openInventory(player, ShopMenu.EDIT_SHOPFRONT);
+            }, () -> open(player)).open(player);
+        }));
 
-        update(inventory);
+        update();
     }
 
     @Override
-    protected void update(Inventory inventory) {
+    protected void onUpdate(MenuContent content) {
 
-        inventory.setItem(4, shopItem.getRawItem());
-        inventory.setItem(31, null);
+        content.setClickable(4, Clickable.empty(shopItem.getRawItem()));
+        content.setClickable(31, null);
 
         String mode = shopItem.getMode().name().toLowerCase(Locale.ROOT);
         String modeName = ConfigManager.getString("menus.shopfront.modes." + mode);
@@ -72,125 +86,57 @@ public class EditItemMenu extends Menu {
         String limit = (shopItem.getLimit() == 0 ? ConfigManager.getString("quantity.unlimited") : String.valueOf(shopItem.getLimit()));
 
         if (shop instanceof AdminShop) {
-            inventory.setItem(32, ConfigManager.getItem("menus.edit_item.items.limit_cooldown")
+            content.setClickable(32, Clickable.of(ConfigManager.getItem("menus.edit_item.items.limit_cooldown")
                     .replace("%cooldown%", shopItem.getCooldown() == null ? "none" : shopItem.getCooldown())
-                    .replace("%next%", ConfigManager.getTimeLeft(shopItem.getNextReset())).build());
+                    .replace("%next%", ConfigManager.getTimeLeft(shopItem.getNextReset())).build(), this::handleCooldown));
 
-            ItemStack playerLimitItem = ConfigManager.getItem("menus.edit_item.items.player_limit").replace("%limit%", limit)
-                    .replace("%cycle%", ConfigManager.getString("menus.edit_item.limit_cycle." + shopItem.getLimitMode().name().toLowerCase())).build();
-            inventory.setItem(30, playerLimitItem);
+            String cycleName = shopItem.getLimitMode().name().toLowerCase();
+            content.setClickable(30, Clickable.of(ConfigManager.getItem("menus.edit_item.items.player_limit")
+                    .replace("%limit%", limit)
+                    .replace("%cycle%", ConfigManager.getString("menus.edit_item.limit_cycle." + cycleName)).build(), this::handleLimit));
 
         } else if (shopItem.getMode() == ItemMode.BUY) {
-            ItemStack limitItem = ConfigManager.getItem("menus.edit_item.items.buy_limit").replace("%limit%", limit).build();
-            inventory.setItem(31, limitItem);
+            content.setClickable(31, Clickable.of(ConfigManager.getItem("menus.edit_item.items.buy_limit")
+                    .replace("%limit%", limit).build(), this::handleLimit));
         }
 
         if (shopItem.getMode() == ItemMode.COMMAND) {
             String command = shopItem.getCommand() == null || shopItem.getCommand().equals("") ? "none" : shopItem.getCommand();
             ItemStack commandItem =  ConfigManager.getItem("menus.edit_item.items.command").replace("%command%", command).build();
-            inventory.setItem(31, commandItem);
-        }
+            content.setClickable(31, Clickable.of(commandItem, (event) -> {
 
-        inventory.setItem(21, amountItem);
-        inventory.setItem(22, modeItem);
-        inventory.setItem(23, priceItem);
-    }
-
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-
-        if (event.getRawSlot() < 54 || event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-            event.setCancelled(true);
-        } else {
-            event.setCancelled(false);
-        }
-
-        Player player = (Player) event.getWhoClicked();
-
-        int slot = event.getRawSlot();
-        if (slot == 53 || slot == 22) {
-            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-        }
-
-        switch (slot) {
-            case 53:
-                shop.openInventory(player, ShopMenu.EDIT_SHOPFRONT);
-                break;
-            case 22:
-                shopItem.cycleTradeMode();
-                update();
-                break;
-            case 49:
-                new ConfirmActionMenu(plugin.getMenuListener(), () -> {
-                    shop.getShopfrontHolder().remove(shopItem.getSlot());
-                    player.playSound(player.getLocation(), ConfigManager.getSound("sounds.remove_item"), 1, 1);
-                    shop.openInventory(player, ShopMenu.EDIT_SHOPFRONT);
-                }, () -> open(player)).open(player);
-
-                break;
-            case 21:
                 event.getView().close();
-                typeAmount(player);
-                break;
-            case 23:
-                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-                if (event.getCursor() != null && event.getCursor().getType() != Material.AIR) {
-                    shopItem.setItemTrade(event.getCursor().clone());
+                Player player = (Player) event.getWhoClicked();
+                player.sendMessage(ConfigManager.getMessage("messages.type_command"));
+                plugin.getChatListener().addStringListener(player, (result) -> {
+                    shopItem.setCommand(result);
                     update();
-                } else {
-                    shopItem.setItemTrade(null);
-                    event.getView().close();
-                    typePrice(player);
-                }
+                    open(player);
+                });
+            }));
         }
 
-        if (slot == 31 && shopItem.getMode() == ItemMode.COMMAND) {
+        content.setClickable(21, Clickable.of(amountItem, (event) -> {
             event.getView().close();
-            player.sendMessage(ConfigManager.getMessage("messages.type_command"));
-            plugin.getChatListener().addStringListener(player, (result) -> {
-                shopItem.setCommand(result);
+            typeAmount((Player) event.getWhoClicked());
+        }));
+        
+        content.setClickable(22, Clickable.of(modeItem, (event) -> {
+            shopItem.cycleTradeMode();
+            update();
+        }));
+        content.setClickable(23, Clickable.of(priceItem, (event) -> {
+            Player player = (Player) event.getWhoClicked(); 
+            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+            if (event.getCursor() != null && event.getCursor().getType() != Material.AIR) {
+                shopItem.setItemTrade(event.getCursor().clone());
                 update();
-                open(player);
-            });
-        }
-
-        if (event.getCurrentItem() != null && (shop instanceof AdminShop && slot == 30) || (shopItem.getMode() == ItemMode.BUY && slot == 31)) {
-
-            if (shop instanceof AdminShop && event.getClick() == ClickType.RIGHT) {
-                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-                shopItem.cycleLimitMode();
-                update();
-                return;
+            } else {
+                shopItem.setItemTrade(null);
+                event.getView().close();
+                typePrice(player);
             }
-            event.getView().close();
-
-            player.sendMessage(ConfigManager.getMessage("messages.type_limit_" + (shop instanceof AdminShop ? "admin" : "player")));
-            plugin.getChatListener().addDecimalListener(player, (result) -> {
-                shopItem.setLimit(result.intValue());
-                update();
-                open(player);
-            });
-        }
-
-        if (shop instanceof AdminShop && slot == 32) {
-
-            switch (event.getClick()) {
-                case LEFT:
-                    event.getView().close();
-                    player.sendMessage(ConfigManager.getMessage("messages.type_limit_cooldown"));
-                    plugin.getChatListener().addStringListener(player, (result) -> {
-                        shopItem.setCooldown(result);
-                        player.sendMessage(ConfigManager.getMessage("messages.limit_cooldown_set").replace("%time%", result));
-                        update();
-                        open(player);
-                    });
-                    break;
-                case RIGHT:
-                    player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-                    shopItem.clearLimits();
-                    player.sendMessage(ConfigManager.getMessage("messages.limits_cleared"));
-            }
-        }
+        }));
     }
 
     @Override
@@ -227,5 +173,43 @@ public class EditItemMenu extends Menu {
             update();
             open(player);
         });
+    }
+
+    private void handleLimit(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        if (shop instanceof AdminShop && event.getClick() == ClickType.RIGHT) {
+            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+            shopItem.cycleLimitMode();
+            update();
+            return;
+        }
+        event.getView().close();
+
+        player.sendMessage(ConfigManager.getMessage("messages.type_limit_" + (shop instanceof AdminShop ? "admin" : "player")));
+        plugin.getChatListener().addDecimalListener(player, (result) -> {
+            shopItem.setLimit(result.intValue());
+            update();
+            open(player);
+        });
+    }
+
+    private void handleCooldown(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        switch (event.getClick()) {
+            case LEFT:
+                event.getView().close();
+                player.sendMessage(ConfigManager.getMessage("messages.type_limit_cooldown"));
+                plugin.getChatListener().addStringListener(player, (result) -> {
+                    shopItem.setCooldown(result);
+                    player.sendMessage(ConfigManager.getMessage("messages.limit_cooldown_set").replace("%time%", result));
+                    update();
+                    open(player);
+                });
+                break;
+            case RIGHT:
+                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+                shopItem.clearLimits();
+                player.sendMessage(ConfigManager.getMessage("messages.limits_cleared"));
+        }
     }
 }

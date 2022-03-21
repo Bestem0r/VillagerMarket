@@ -1,6 +1,9 @@
 package net.bestemor.villagermarket.menu;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.menu.Clickable;
+import net.bestemor.core.menu.Menu;
+import net.bestemor.core.menu.MenuContent;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.ShopMenu;
@@ -26,7 +29,7 @@ public class SellShopMenu extends Menu {
     }
 
     @Override
-    public void create(Inventory inventory) {
+    public void onCreate(MenuContent content) {
         String priceHalved = String.valueOf((double) shop.getCost() * (ConfigManager.getDouble("refund_percent") / 100) * shop.getTimesRented());
 
         String configPath = (shop.getCost() == -1 ? "yes_remove" : "yes_sell");
@@ -36,19 +39,7 @@ public class SellShopMenu extends Menu {
         ItemStack confirmItem = ConfigManager.getItem("menus.sell_shop.items." + configPath)
                 .replaceCurrency("%amount%", new BigDecimal(priceHalved)).build();
 
-        inventory.setItem(12, confirmItem);
-        inventory.setItem(14, cancel);
-
-        fillEdges(fillItem);
-    }
-
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-        if (event.getRawSlot() > 27 || !(shop instanceof PlayerShop)) { return; }
-
-        event.setCancelled(true);
-
-        if (event.getRawSlot() == 12) {
+        content.setClickable(12, Clickable.of(confirmItem, event -> {
             PlayerShop playerShop = (PlayerShop) shop;
 
             Player player = (Player) event.getWhoClicked();
@@ -64,10 +55,12 @@ public class SellShopMenu extends Menu {
                 plugin.getShopManager().removeShop(shop.getEntityUUID());
             }
             event.getView().close();
-        }
+        }));
 
-        if (event.getRawSlot() == 14) {
+        content.setClickable(14, Clickable.of(cancel, event -> {
             shop.openInventory((Player) event.getWhoClicked(), ShopMenu.EDIT_SHOP);
-        }
+        }));
+
+        content.fillEdges(fillItem);
     }
 }

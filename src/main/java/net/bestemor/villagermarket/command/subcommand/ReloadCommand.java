@@ -1,9 +1,8 @@
 package net.bestemor.villagermarket.command.subcommand;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.command.ISubCommand;
+import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
-import net.bestemor.villagermarket.command.CommandModule;
-import net.bestemor.villagermarket.command.ISubCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -13,14 +12,12 @@ import java.util.List;
 public class ReloadCommand implements ISubCommand {
 
     private final VMPlugin plugin;
-    private CommandModule module;
-
     public ReloadCommand(VMPlugin plugin) {
         this.plugin = plugin;
     }
 
     @Override
-    public List<String> getCompletion(int index, String[] args) {
+    public List<String> getCompletion(String[] args) {
         return new ArrayList<>();
     }
 
@@ -37,7 +34,12 @@ public class ReloadCommand implements ISubCommand {
 
     @Override
     public String getDescription() {
-        return "Reload plugin: &6/vm reload";
+        return "Reload plugin";
+    }
+
+    @Override
+    public String getUsage() {
+        return null;
     }
 
     @Override

@@ -1,8 +1,8 @@
 package net.bestemor.villagermarket.command.subcommand;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.command.ISubCommand;
+import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
-import net.bestemor.villagermarket.command.ISubCommand;
 import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import org.bukkit.Bukkit;
@@ -32,7 +32,7 @@ public class TrustedCommand implements ISubCommand {
     }
 
     @Override
-    public List<String> getCompletion(int index, String[] args) {
+    public List<String> getCompletion(String[] args) {
         List<String> list = new ArrayList<>();
         switch (args.length) {
             case 2:
@@ -85,7 +85,12 @@ public class TrustedCommand implements ISubCommand {
 
     @Override
     public String getDescription() {
-        return "Remove/remove trusted: &6/vm trusted <add/remove> <player>";
+        return "Remove/remove trusted";
+    }
+
+    @Override
+    public String getUsage() {
+        return "<add/remove> <player>";
     }
 
     @Override

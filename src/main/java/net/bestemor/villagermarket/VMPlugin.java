@@ -1,11 +1,12 @@
 package net.bestemor.villagermarket;
 
-import net.bestemor.villagermarket.command.CommandModule;
+import net.bestemor.core.command.CommandModule;
+import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.menu.MenuListener;
 import net.bestemor.villagermarket.command.subcommand.*;
 import net.bestemor.villagermarket.listener.ChatListener;
 import net.bestemor.villagermarket.listener.EntityListener;
 import net.bestemor.villagermarket.listener.PlayerListener;
-import net.bestemor.villagermarket.menu.MenuListener;
 import net.bestemor.villagermarket.shop.ShopManager;
 import net.bestemor.villagermarket.utils.UpdateChecker;
 import net.milkbowl.vault.economy.Economy;

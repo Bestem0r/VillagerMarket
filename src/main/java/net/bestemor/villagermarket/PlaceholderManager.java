@@ -1,5 +1,6 @@
 package net.bestemor.villagermarket;
 
+import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;

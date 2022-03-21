@@ -1,8 +1,8 @@
 package net.bestemor.villagermarket.command.subcommand;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.command.ISubCommand;
+import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
-import net.bestemor.villagermarket.command.ISubCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -24,7 +24,7 @@ public class CreateCommand implements ISubCommand {
     }
 
     @Override
-    public List<String> getCompletion(int index, String[] args) {
+    public List<String> getCompletion(String[] args) {
         List<String> list = new ArrayList<>();
         switch (args.length) {
             case 2:
@@ -140,7 +140,12 @@ public class CreateCommand implements ISubCommand {
 
     @Override
     public String getDescription() {
-        return "Create shop: &6/vm create <type> <shopsize> [storagesize] [price] [time]";
+        return "Create new shop";
+    }
+
+    @Override
+    public String getUsage() {
+        return "<type> <shopsize> [storagesize] [price] [time]";
     }
 
     @Override

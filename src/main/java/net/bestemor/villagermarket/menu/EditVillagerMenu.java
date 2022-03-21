@@ -1,6 +1,9 @@
 package net.bestemor.villagermarket.menu;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.menu.Clickable;
+import net.bestemor.core.menu.Menu;
+import net.bestemor.core.menu.MenuContent;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.shop.ShopMenu;
 import net.bestemor.villagermarket.shop.VillagerShop;
@@ -25,57 +28,46 @@ public class EditVillagerMenu extends Menu {
     }
 
     @Override
-    public void create(Inventory inventory) {
+    public void onCreate(MenuContent content) {
         Villager.Profession[] professions = Villager.Profession.values();
 
         ItemStack filler = ConfigManager.getItem("items.filler").build();
-        fillSlots(filler, 0, 1, 2, 3, 4, 5, 6, 7, 8);
-        fillBottom(filler);
+        content.fillSlots(filler, 0, 1, 2, 3, 4, 5, 6, 7, 8);
+        content.fillBottom(filler);
 
         for (int i = 0; i < professions.length; i++) {
-            inventory.setItem(i + 9, ConfigManager.getItem("menus.edit_villager.items." + professions[i].name().toLowerCase(Locale.ROOT)).build());
+            String profession = professions[i].name().toLowerCase(Locale.ROOT);
+            int finalI = i;
+            content.setClickable(i + 9, Clickable.of(ConfigManager.getItem("menus.edit_villager.items." + profession).build(), event -> {
+
+                Player player = (Player) event.getWhoClicked();
+                shop.setProfession(professions[finalI]);
+                event.getView().close();
+                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.change_profession"), 0.5f, 1);
+
+            }));
         }
         if (plugin.isCitizensEnabled()) {
-            inventory.setItem(31, ConfigManager.getItem("menus.edit_villager.citizens_item").build());
+            content.setClickable(31, Clickable.of(ConfigManager.getItem("menus.edit_villager.citizens_item").build(), event -> {
+                Player player = (Player) event.getWhoClicked();
+                if (!player.hasPermission("villagermarket.use_citizens")) {
+                    player.sendMessage(ConfigManager.getMessage("messages.no_permission_citizens"));
+                    return;
+                }
+                player.sendMessage(ConfigManager.getMessage("messages.type_skin"));
+
+                plugin.getChatListener().addStringListener(player, (result) -> {
+                    Bukkit.getScheduler().runTask(plugin, () -> shop.setCitizensSkin(result));
+                    player.sendMessage(ConfigManager.getMessage("messages.skin_set"));
+                });
+
+                event.getView().close();
+            }));
         }
-        inventory.setItem(35, ConfigManager.getItem("items.back").build());
-    }
-
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-
-        event.setCancelled(true);
-
-        Player player = (Player) event.getWhoClicked();
-        if (event.getRawSlot() == 31 && Bukkit.getPluginManager().getPlugin("Citizens") != null) {
-            if (!player.hasPermission("villagermarket.use_citizens")) {
-                player.sendMessage(ConfigManager.getMessage("messages.no_permission_citizens"));
-                return;
-            }
-            player.sendMessage(ConfigManager.getMessage("messages.type_skin"));
-
-            plugin.getChatListener().addStringListener(player, (result) -> {
-                Bukkit.getScheduler().runTask(plugin, () -> shop.setCitizensSkin(result));
-                player.sendMessage(ConfigManager.getMessage("messages.skin_set"));
-            });
-
-            event.getView().close();
-            return;
-        }
-
-        if (event.getRawSlot() == 35) {
+        content.setClickable(35, Clickable.of(ConfigManager.getItem("items.back").build() ,event -> {
+            Player player = (Player) event.getWhoClicked();
             player.playSound(player.getLocation(), ConfigManager.getSound("sounds.back"), 0.5f, 1);
             shop.openInventory(player, ShopMenu.EDIT_SHOP);
-
-            return;
-        }
-        if (event.getRawSlot() >= Villager.Profession.values().length + 9 || event.getRawSlot() < 9) {
-            return;
-        }
-
-        shop.setProfession(Villager.Profession.values()[event.getRawSlot() - 9]);
-        event.getView().close();
-
-        player.playSound(player.getLocation(), ConfigManager.getSound("sounds.change_profession"), 0.5f, 1);
+        }));
     }
 }

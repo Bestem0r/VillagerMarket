@@ -1,7 +1,7 @@
 package net.bestemor.villagermarket.command.subcommand;
 
+import net.bestemor.core.command.ISubCommand;
 import net.bestemor.villagermarket.VMPlugin;
-import net.bestemor.villagermarket.command.ISubCommand;
 import net.bestemor.villagermarket.shop.EntityInfo;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import org.bukkit.Bukkit;
@@ -24,7 +24,7 @@ public class RegenCommand implements ISubCommand {
     }
 
     @Override
-    public List<String> getCompletion(int index, String[] args) {
+    public List<String> getCompletion(String[] args) {
         return new ArrayList<>();
     }
 
@@ -54,7 +54,12 @@ public class RegenCommand implements ISubCommand {
 
     @Override
     public String getDescription() {
-        return "Regenerate lost shops: &6/vm regen";
+        return "Regenerate lost shops";
+    }
+
+    @Override
+    public String getUsage() {
+        return null;
     }
 
     @Override

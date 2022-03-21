@@ -1,7 +1,7 @@
 package net.bestemor.villagermarket.shop;
 
+import net.bestemor.core.menu.Menu;
 import net.bestemor.villagermarket.VMPlugin;
-import me.bestem0r.villagermarket.menu.*;
 import net.bestemor.villagermarket.menu.*;
 import net.bestemor.villagermarket.utils.VMUtils;
 import net.citizensnpcs.api.CitizensAPI;
@@ -11,10 +11,7 @@ import net.citizensnpcs.trait.SkinTrait;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
+import org.bukkit.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -99,6 +96,10 @@ public abstract class VillagerShop {
 
     public void updateMenu(ShopMenu shopMenu) {
         menus.get(shopMenu).update();
+    }
+
+    public void openInventory(HumanEntity player, ShopMenu shopMenu) {
+        this.openInventory((Player) player, shopMenu);
     }
 
     public void openInventory(Player player, ShopMenu shopMenu) {

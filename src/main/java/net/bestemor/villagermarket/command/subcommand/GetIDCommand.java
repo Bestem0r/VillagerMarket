@@ -1,8 +1,8 @@
 package net.bestemor.villagermarket.command.subcommand;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.command.ISubCommand;
+import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
-import net.bestemor.villagermarket.command.ISubCommand;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -29,7 +29,7 @@ public class GetIDCommand implements ISubCommand {
     }
 
     @Override
-    public List<String> getCompletion(int index, String[] args) {
+    public List<String> getCompletion(String[] args) {
         return new ArrayList<>();
     }
 
@@ -50,7 +50,12 @@ public class GetIDCommand implements ISubCommand {
 
     @Override
     public String getDescription() {
-        return "Get Shop UUID: /vm getid";
+        return "Get shop UUID";
+    }
+
+    @Override
+    public String getUsage() {
+        return "";
     }
 
     @Override

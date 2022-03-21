@@ -1,7 +1,7 @@
 package net.bestemor.villagermarket.command.subcommand;
 
+import net.bestemor.core.command.ISubCommand;
 import net.bestemor.villagermarket.VMPlugin;
-import net.bestemor.villagermarket.command.ISubCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -22,7 +22,7 @@ public class ItemCommand implements ISubCommand {
     }
 
     @Override
-    public List<String> getCompletion(int index, String[] args) {
+    public List<String> getCompletion(String[] args) {
         switch (args.length) {
             case 2:
                 return Collections.singletonList("give");
@@ -82,7 +82,12 @@ public class ItemCommand implements ISubCommand {
 
     @Override
     public String getDescription() {
-        return "Give item: &6/vm item give <player> <shopsize> <storagesize> [amount]";
+        return "Give shop spawn item";
+    }
+
+    @Override
+    public String getUsage() {
+        return "<player> <shopsize> <storagesize> [amount]";
     }
 
     @Override

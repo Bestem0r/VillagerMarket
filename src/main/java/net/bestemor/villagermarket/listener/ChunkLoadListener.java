@@ -1,6 +1,6 @@
 package net.bestemor.villagermarket.listener;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.shop.EntityInfo;
 import net.bestemor.villagermarket.shop.VillagerShop;

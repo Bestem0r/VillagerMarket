@@ -1,8 +1,8 @@
 package net.bestemor.villagermarket.command.subcommand;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.command.ISubCommand;
+import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
-import net.bestemor.villagermarket.command.ISubCommand;
 import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import org.bukkit.Bukkit;
@@ -28,7 +28,7 @@ public class StatsCommand implements ISubCommand {
     }
 
     @Override
-    public List<String> getCompletion(int index, String[] args) {
+    public List<String> getCompletion(String[] args) {
         return new ArrayList<>();
     }
 
@@ -52,7 +52,12 @@ public class StatsCommand implements ISubCommand {
 
     @Override
     public String getDescription() {
-        return "Show shop statistics: &6/vm stats";
+        return "Show shop statistics";
+    }
+
+    @Override
+    public String getUsage() {
+        return null;
     }
 
     @Override

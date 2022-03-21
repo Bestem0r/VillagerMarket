@@ -1,6 +1,9 @@
 package net.bestemor.villagermarket.menu;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.menu.Clickable;
+import net.bestemor.core.menu.Menu;
+import net.bestemor.core.menu.MenuContent;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.event.BuyShopEvent;
 import net.bestemor.villagermarket.shop.PlayerShop;
@@ -28,7 +31,7 @@ public class BuyShopMenu extends Menu {
     }
 
     @Override
-    public void create(Inventory inventory) {
+    public void onCreate(MenuContent content) {
 
         String cost = String.valueOf(shop.getCost());
 
@@ -49,20 +52,9 @@ public class BuyShopMenu extends Menu {
         ItemStack storageSize = ConfigManager.getItem( "menus.buy_shop.items.storage_size").replace("%amount%", storageAmount).build();
         ItemStack buyShop = ConfigManager.getItem("menus.buy_shop.items.buy_shop").replaceCurrency("%price%", new BigDecimal(cost)).replace("%time%", time).build();
 
-        fillEdges(ConfigManager.getItem("items.filler").build());
-        inventory.setItem(12, shopSize);
-        inventory.setItem(13, buyShop);
-        inventory.setItem(14, storageSize);
-    }
-
-
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-        if (event.getRawSlot() >= 27) { return; }
-
-        event.setCancelled(true);
-
-        if (event.getRawSlot() == 13) {
+        content.fillEdges(ConfigManager.getItem("items.filler").build());
+        content.setClickable(12, Clickable.empty(shopSize));
+        content.setClickable(13, Clickable.of(buyShop, (event) -> {
             Player player = (Player) event.getWhoClicked();
 
             Economy economy = plugin.getEconomy();
@@ -101,6 +93,7 @@ public class BuyShopMenu extends Menu {
             VMPlugin.log.add(new Date() + ": " + player.getName() + " bought shop for " + shop.getCost());
             shop.updateRedstone(false);
             shop.openInventory(player, ShopMenu.EDIT_SHOP);
-        }
+        }));
+        content.setClickable(14, Clickable.empty(storageSize));
     }
 }

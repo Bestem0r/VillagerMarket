@@ -1,6 +1,6 @@
 package net.bestemor.villagermarket.shop;
 
-import net.bestemor.villagermarket.ConfigManager;
+import net.bestemor.core.config.ConfigManager;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.math.BigDecimal;
