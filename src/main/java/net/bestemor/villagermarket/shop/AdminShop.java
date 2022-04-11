@@ -16,6 +16,8 @@ public class AdminShop extends VillagerShop {
     public AdminShop(VMPlugin plugin, File file) {
         super(plugin, file);
         shopfrontHolder.load();
+
+        isLoaded = true;
     }
 
     /** Buys item/command from the admin shop */

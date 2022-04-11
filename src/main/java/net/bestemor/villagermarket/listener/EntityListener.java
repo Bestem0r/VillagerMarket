@@ -4,11 +4,14 @@ import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.shop.ShopMenu;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LightningStrike;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.VillagerCareerChangeEvent;
+import org.bukkit.event.weather.LightningStrikeEvent;
 
 public class EntityListener implements Listener {
     
@@ -49,13 +52,10 @@ public class EntityListener implements Listener {
     }
 
     @EventHandler
-    public void onLightningStrike(EntitySpawnEvent event) {
-        Entity spawnedEntity = event.getEntity();
-        if (spawnedEntity instanceof LightningStrike) {
-            for (Entity entity : spawnedEntity.getNearbyEntities(2, 2, 2)) {
-                if (plugin.getShopManager().getShop(entity.getUniqueId()) != null) {
-                    event.setCancelled(true);
-                }
+    public void onLightningStrike(LightningStrikeEvent event) {
+        for (Entity entity : event.getLightning().getNearbyEntities(4, 4, 4)) {
+            if (plugin.getShopManager().getShop(entity.getUniqueId()) != null) {
+                event.setCancelled(true);
             }
         }
     }

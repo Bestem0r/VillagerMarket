@@ -38,6 +38,16 @@ public class PlayerShop extends VillagerShop {
         super(plugin, file);
         super.collectedMoney = BigDecimal.valueOf(config.getDouble("collected_money"));
 
+        String uuidString = config.getString("ownerUUID");
+        String nameString = config.getString("ownerName");
+        this.ownerUUID = uuidString == null || uuidString.equals("admin_shop") || uuidString.equals("null") ? null : UUID.fromString(uuidString);
+        this.ownerName = nameString == null || nameString.equals("admin_shop") || nameString.equals("null") ? null : nameString;
+
+        if (ownerUUID != null) {
+            OfflinePlayer owner = Bukkit.getOfflinePlayer(ownerUUID);
+            this.ownerName = owner.getName();
+        }
+
         final List<ItemStack> items = new ArrayList<>();
         List<?> storage = getConfig().getList("storage");
         if (storage != null) {
@@ -48,15 +58,12 @@ public class PlayerShop extends VillagerShop {
 
         this.menus.put(ShopMenu.BUY_SHOP, new BuyShopMenu(plugin, this));
 
-        String uuidString = config.getString("ownerUUID");
-        String nameString = config.getString("ownerName");
-        this.ownerUUID = uuidString == null || uuidString.equals("admin_shop") || uuidString.equals("null") ? null : UUID.fromString(uuidString);
-        this.ownerName = nameString == null || nameString.equals("admin_shop") || nameString.equals("null") ? null : nameString;
-
         this.trustedPlayers = config.getStringList("trusted");
 
         updateRedstone(false);
         shopfrontHolder.load();
+
+        isLoaded = true;
     }
 
     public void updateRedstone(boolean forceOff) {

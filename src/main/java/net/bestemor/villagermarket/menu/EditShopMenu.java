@@ -118,6 +118,10 @@ public class EditShopMenu extends Menu {
                         return;
                     }
                 }
+                if (result.length() > ConfigManager.getInt("villager.max_name_length")) {
+                    player.sendMessage(ConfigManager.getMessage("messages.max_name_length"));
+                    return;
+                }
 
                 String name = ChatColor.translateAlternateColorCodes('&', result);
                 String customName = shop instanceof PlayerShop ? ConfigManager.getString("villager.custom_name")

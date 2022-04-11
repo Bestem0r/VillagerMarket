@@ -187,9 +187,13 @@ public class ShopManager {
 
     /** Thread runs save() method for all Villager Shops */
     private void beginSaveThread() {
-        long interval = 20 * 60 * ConfigManager.getLong("auto_save_interval");
+        long interval = 20 * 60L * Math.max(1, ConfigManager.getInt("auto_save_interval"));
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-            shops.values().forEach(VillagerShop::save);
+            if (!plugin.isEnabled()) {
+                return;
+            }
+            List<VillagerShop> shopsCopy = new ArrayList<>(shops.values());
+            shopsCopy.forEach(VillagerShop::save);
         }, interval, interval);
     }
 

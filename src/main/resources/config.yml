@@ -115,6 +115,7 @@ messages:
   name_blacklisted: "&cYou are not allowed to use this shop name!"
   max_item_price: "&cItem price too high! Please retry with a lower price"
   shopfront_cooldown: "&cPlease wait before buying/selling again!"
+  max_name_length: "&cThis name is too long! Maximum name length is 12 characters"
 
 stats_message:
   - "&bVillagerShop stats:"
@@ -181,8 +182,10 @@ villager:
   #villagers and enable gravity.
   ai: false
   default_profession: NONE
-  #Template for custom names:
+  #Template for custom names
   custom_name: "&7[&b%player%&7] &r%custom_name%" #Placeholders: %player%, %custom_name%
+  #Maximum name length
+  max_name_length: 12
   #Players will not be able to use shop names containing these words
   name_blacklist:
     - "whore"

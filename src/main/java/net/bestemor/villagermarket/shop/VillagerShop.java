@@ -48,6 +48,7 @@ public abstract class VillagerShop {
     protected ShopStats shopStats;
 
     protected final VMPlugin plugin;
+    protected boolean isLoaded = false;
 
     public enum VillagerType {
         ADMIN,
@@ -171,6 +172,9 @@ public abstract class VillagerShop {
 
     /** Save method */
     public void save() {
+        if (!isLoaded) {
+            return;
+        }
         config.set("expire", expireDate == null ? 0 : expireDate.toEpochMilli());
         config.set("times_rented", timesRented);
         config.set("collected_money", collectedMoney);
@@ -181,7 +185,7 @@ public abstract class VillagerShop {
         config.set("items_for_sale", null);
         for (Integer slot : shopfrontHolder.getItemList().keySet()) {
             ShopItem shopItem = shopfrontHolder.getItemList().get(slot);
-            if (shopItem == null) { continue; }
+            if (shopItem == null || slot == null) { continue; }
             config.set("items_for_sale." + slot + ".item", shopItem.getRawItem());
             config.set("items_for_sale." + slot + ".price", shopItem.isItemTrade() ? shopItem.getItemTrade() : shopItem.getPrice());
             config.set("items_for_sale." + slot + ".mode", shopItem.getMode().toString());
@@ -198,7 +202,8 @@ public abstract class VillagerShop {
 
             Map<UUID, Integer> playerLimits = shopItem.getPlayerLimits();
             for (UUID uuid : playerLimits.keySet()) {
-                config.set("items_for_sale." + slot + ".limits." + uuid.toString(), playerLimits.get(uuid));
+                if (uuid == null) { continue; }
+                config.set("items_for_sale." + slot + ".limits." + uuid, playerLimits.get(uuid));
             }
         }
         try {
