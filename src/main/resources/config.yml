@@ -37,8 +37,9 @@ buy_shop_permission: false
 drop_spawn_egg: true
 #Allow shop egg placing only in regions where the player is a member or owner
 world_guard: false
-
-
+#Shops must be interacted with before shop keeper will look at nearby players
+#Enable if you are experiencing lag issues on large servers
+look_close_caching: false
 
 #----------------------- Messages & Sounds -----------------------#
 

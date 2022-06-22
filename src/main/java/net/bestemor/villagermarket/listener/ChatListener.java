@@ -54,7 +54,7 @@ public class ChatListener implements Listener {
             } else if (stringListeners.containsKey(uuid)) {
                 Consumer<String> consumer = stringListeners.get(uuid);
                 stringListeners.remove(uuid);
-                Bukkit.getScheduler().runTask(plugin, () -> consumer.accept(message));
+                Bukkit.getScheduler().runTask(plugin, () -> consumer.accept(event.getMessage()));
 
             } else if (decimalListeners.containsKey(uuid)) {
                 if (!isNumeric(message)) {

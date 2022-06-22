@@ -14,11 +14,9 @@ import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.ShopMenu;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import net.bestemor.villagermarket.utils.UpdateChecker;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,23 +26,26 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerListener implements Listener {
 
     private final VMPlugin plugin;
     private final List<UUID> cancelledPlayers = new ArrayList<>();
+    private final Map<UUID, Entity> cachedEntities = new HashMap<>();
+
+    private final boolean performanceMode;
 
     public PlayerListener(VMPlugin plugin) {
         this.plugin = plugin;
+        this.performanceMode = ConfigManager.getBoolean("look_close_caching");
     }
 
     public void addCancelledPlayer(UUID uuid) {
@@ -68,6 +69,7 @@ public class PlayerListener implements Listener {
         VillagerShop shop = plugin.getShopManager().getShop(event.getRightClicked().getUniqueId());
         
         if (shop != null) {
+            cachedEntities.put(event.getRightClicked().getUniqueId(), event.getRightClicked());
             event.setCancelled(true);
 
             if (shop instanceof AdminShop) {
@@ -98,14 +100,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        for (Entity entity : plugin.getShopManager().getEntities()) {
-            if (entity.getNearbyEntities(5, 5, 5).contains(player)) {
-                entity.teleport(entity.getLocation().setDirection(player.getLocation().subtract(entity.getLocation()).toVector()));
+        Player p = event.getPlayer();
+        for (Entity e : performanceMode ? cachedEntities.values() : plugin.getShopManager().getEntities()) {
+            if (p.getWorld().getName().equals(e.getWorld().getName()) && p.getLocation().distanceSquared(e.getLocation()) < 25) {
+                e.teleport(e.getLocation().setDirection(p.getLocation().subtract(e.getLocation()).toVector()));
             }
         }
     }
-
     @EventHandler
     public void onItemClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -136,11 +137,15 @@ public class PlayerListener implements Listener {
                 RegionManager rm = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()));
                 ApplicableRegionSet set = rm.getApplicableRegions(BukkitAdapter.asBlockVector(event.getClickedBlock().getLocation()));
                 UUID uuid = player.getUniqueId();
+                boolean isMember = false;
                 for (ProtectedRegion region : set) {
-                    if (!region.getOwners().getUniqueIds().contains(uuid) && !region.getMembers().getUniqueIds().contains(uuid)) {
-                        player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
-                        return;
+                    if (region.getOwners().getUniqueIds().contains(uuid) || region.getMembers().getUniqueIds().contains(uuid)) {
+                        isMember = true;
                     }
+                }
+                if (!isMember) {
+                    player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
+                    return;
                 }
             }
             if (!player.hasPermission("villagermarket.use_spawn_item")) {

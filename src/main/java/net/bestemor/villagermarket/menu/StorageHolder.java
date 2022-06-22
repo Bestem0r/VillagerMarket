@@ -111,9 +111,10 @@ public class StorageHolder {
     }
 
     public void removeItem(ItemStack i) {
+        int amountLeft = i.getAmount();
         for (StorageMenu menu : storageMenus) {
-            if (menu.getInventory().containsAtLeast(i, i.getAmount())) {
-                menu.getInventory().removeItem(i);
+            amountLeft -= menu.removeItem(i, amountLeft);
+            if (amountLeft <= 0) {
                 break;
             }
         }

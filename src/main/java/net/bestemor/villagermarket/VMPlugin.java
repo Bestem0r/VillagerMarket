@@ -63,7 +63,7 @@ public class VMPlugin extends JavaPlugin {
         this.playerListener = new PlayerListener(this);
         registerEvents();
 
-        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.10.4-#4 of VillagerMarket! Please expect and report all bugs in my discord server");
+        //Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.10.5-#4 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
@@ -75,10 +75,10 @@ public class VMPlugin extends JavaPlugin {
         new UpdateChecker(this, 82965).getVersion(version -> {
             String currentVersion = this.getDescription().getVersion();
             if (!currentVersion.equalsIgnoreCase(version)) {
-                String foundVersion = ChatColor.translateAlternateColorCodes('&', "&bA new version of VillagerMarket was found!");
-                String latestVersion = ChatColor.translateAlternateColorCodes('&',"&bLatest version: &a" + version);
-                String yourVersion = ChatColor.translateAlternateColorCodes('&', "&bYour version &c" + currentVersion);
-                String downloadVersion = ChatColor.translateAlternateColorCodes('&', "&bGet it here for the latest features and bug fixes: &ehttps://www.spigotmc.org/resources/82965/");
+                String foundVersion = ChatColor.AQUA + "A new version of VillagerMarket was found!";
+                String latestVersion = ChatColor.AQUA + "Latest version: " + ChatColor.GREEN + version;
+                String yourVersion = ChatColor.AQUA + "Your version: " + ChatColor.RED + currentVersion;
+                String downloadVersion = ChatColor.AQUA + "Get it here for the latest features and bug fixes: " + ChatColor.YELLOW + "https://www.spigotmc.org/resources/82965/";
 
                 getLogger().warning(foundVersion);
                 getLogger().warning(latestVersion);

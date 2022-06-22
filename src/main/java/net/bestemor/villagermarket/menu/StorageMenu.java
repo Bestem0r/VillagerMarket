@@ -81,6 +81,9 @@ public class StorageMenu extends Menu {
             holder.close();
         }
         didChangePage = false;
+        if (holder.getShop() == null) {
+            return;
+        }
         holder.getShop().getShopfrontHolder().update();
     }
 
@@ -141,5 +144,28 @@ public class StorageMenu extends Menu {
 
     public void addItem(ItemStack i) {
         getInventory().addItem(i);
+    }
+
+    public int removeItem(ItemStack i, int amount) {
+        int removed = 0;
+        for (int slot = 0; slot < getInventory().getContents().length; slot++) {
+            ItemStack storageItem = getInventory().getContents()[slot];
+
+            if (storageItem == null) {
+                continue;
+            }
+            if (!VMUtils.compareItems(i, storageItem)) {
+                continue;
+            }
+            if (amount - removed >= storageItem.getAmount()) {
+                getInventory().setItem(slot, null);
+                removed += storageItem.getAmount();
+            } else {
+                storageItem.setAmount(storageItem.getAmount() - (amount - removed));
+                removed += (amount - removed);
+                break;
+            }
+        }
+        return removed;
     }
 }

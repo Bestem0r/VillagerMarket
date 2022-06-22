@@ -191,10 +191,15 @@ public class Shopfront {
     }
 
     public void close() {
-        editorInventory.getViewers().forEach(HumanEntity::closeInventory);
-        detailedInventory.getViewers().forEach(HumanEntity::closeInventory);
+        List<HumanEntity> editorViewers = new ArrayList<>(editorInventory.getViewers());
+        editorViewers.forEach(HumanEntity::closeInventory);
+
+        List<HumanEntity> detailedViewers = new ArrayList<>(detailedInventory.getViewers());
+        detailedViewers.forEach(HumanEntity::closeInventory);
+
         for (Inventory i : customerInventories.values()) {
-            i.getViewers().forEach(HumanEntity::closeInventory);
+            List<HumanEntity> customerViewers = new ArrayList<>(i.getViewers());
+            customerViewers.forEach(HumanEntity::closeInventory);
         }
     }
 
@@ -216,6 +221,9 @@ public class Shopfront {
 
             ItemStack current = event.getCurrentItem();
 
+            if (type == Type.DETAILED || type == Type.CUSTOMER) {
+                event.setCancelled(true);
+            }
             if (isInfinite && event.getRawSlot() == 50 && page + 1 < shop.getShopfrontHolder().getSize()) {
                 holder.open(player, type, page + 1);
                 player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);

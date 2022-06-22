@@ -144,6 +144,16 @@ public class EditItemMenu extends Menu {
         shop.getShopfrontHolder().update();
     }
 
+    @Override
+    protected void onClick(InventoryClickEvent event) {
+        if (event.getClick() != ClickType.RIGHT && event.getClick() != ClickType.LEFT) {
+            return;
+        }
+        if (event.getRawSlot() > 53) {
+            event.setCancelled(false);
+        }
+    }
+
     private void typeAmount(Player player) {
         player.sendMessage(ConfigManager.getMessage("messages.type_amount"));
         plugin.getChatListener().addDecimalListener(player, (result) -> {

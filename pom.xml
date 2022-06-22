@@ -11,7 +11,7 @@
 
     <groupId>me.bestemor.villagermarket</groupId>
     <artifactId>VillagerMarket</artifactId>
-    <version>1.10.4-SNAPSHOT</version>
+    <version>1.10.5-SNAPSHOT</version>
 
     <repositories>
         <repository>
@@ -30,7 +30,7 @@
 
         <repository>
             <id>md_5-public</id>
-            <url>http://repo.md-5.net/content/groups/public/</url>
+            <url>https://repo.md-5.net/content/groups/public/</url>
         </repository>
 
         <repository>
@@ -91,7 +91,7 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>1.7</version>
+            <version>3.0.0</version>
             <scope>compile</scope>
         </dependency>
 
