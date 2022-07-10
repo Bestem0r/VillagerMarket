@@ -63,7 +63,7 @@ public class VMPlugin extends JavaPlugin {
         this.playerListener = new PlayerListener(this);
         registerEvents();
 
-        //Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.10.5-#4 of VillagerMarket! Please expect and report all bugs in my discord server");
+        //Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.10.6-#2 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
@@ -121,6 +121,8 @@ public class VMPlugin extends JavaPlugin {
                 .addSubCommand("getid", new GetIDCommand(this))
                 .addSubCommand("expiredstorage", new ExpiredStorageCommand(this))
                 .addSubCommand("regen", new RegenCommand(this))
+                .addSubCommand("clone", new CloneCommand(this))
+                .addSubCommand("setsize", new SetSizeCommand(this))
                 .permissionPrefix("villagermarket.command")
                 .build();
 
@@ -149,7 +151,6 @@ public class VMPlugin extends JavaPlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new EntityListener(this), this);
         pluginManager.registerEvents(playerListener, this);
-        //pluginManager.registerEvents(new ChunkLoad(this), this);
         pluginManager.registerEvents(menuListener, this);
         pluginManager.registerEvents(chatListener, this);
     }

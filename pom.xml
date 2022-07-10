@@ -11,7 +11,7 @@
 
     <groupId>me.bestemor.villagermarket</groupId>
     <artifactId>VillagerMarket</artifactId>
-    <version>1.10.5-SNAPSHOT</version>
+    <version>1.10.6-SNAPSHOT</version>
 
     <repositories>
         <repository>
@@ -21,6 +21,11 @@
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
+        </repository>
+
+        <repository>
+            <id>glaremasters repo</id>
+            <url>https://repo.glaremasters.me/repository/towny/</url>
         </repository>
 
         <repository>
@@ -80,6 +85,14 @@
             </exclusions>
         </dependency>
 
+        <!-- Towny -->
+        <dependency>
+            <groupId>com.palmergames.bukkit.towny</groupId>
+            <artifactId>towny</artifactId>
+            <version>0.98.2.0</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- PAPI -->
         <dependency>
             <groupId>me.clip</groupId>
@@ -122,8 +135,8 @@
                 <configuration>
                     <relocations>
                         <relocation>
-                            <pattern>org.bstats.bukkit</pattern>
-                            <shadedPattern>me.bestem0r.villagermarket.utils.bstats</shadedPattern>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>net.bestemor.villagermarket.utils.bstats</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>net.bestemor.core</pattern>

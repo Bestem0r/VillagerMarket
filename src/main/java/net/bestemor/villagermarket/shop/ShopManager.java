@@ -31,7 +31,7 @@ public class ShopManager {
     private final Map<UUID, VillagerShop> shops = new HashMap<>();
     private final List<String> blackList;
 
-    private boolean redstoneEnabled;
+    private final boolean redstoneEnabled;
 
     private final HashMap<UUID, List<ItemStack>> expiredStorages = new HashMap<>();
 
@@ -83,7 +83,6 @@ public class ShopManager {
         Villager villager = (Villager) location.getWorld().spawnEntity(location, EntityType.VILLAGER);
 
         villager.setInvulnerable(!plugin.getConfig().getBoolean("villager.killable"));
-        //Bukkit.getLogger().info("Killable: " + villager.isInvulnerable());
         villager.setCollidable(false);
         villager.setSilent(true);
         villager.setAI(plugin.getConfig().getBoolean("villager.ai"));
@@ -99,6 +98,28 @@ public class ShopManager {
         for (VillagerShop shop : shops.values()) {
             shop.getShopfrontHolder().closeAll();
         }
+    }
+
+    public void cloneShop(VillagerShop shop, Location location) {
+        shop.save();
+        String type = shop instanceof PlayerShop ? "player" : "admin";
+        Entity entity = spawnShop(location, type);
+        File file = createShopConfig(entity.getUniqueId(), shop.getStorageSize() / 9, shop.getShopSize() / 9, shop.getCost(), type.toUpperCase(), shop.getDuration());
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        for (String key : shop.getConfig().getKeys(false)) {
+            ConfigurationSection section = shop.getConfig().getConfigurationSection(key);
+            if (section != null) {
+                config.set(key, section);
+            } else {
+                config.set(key, shop.getConfig().get(key));
+            }
+        }
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        loadShop(file);
     }
 
     public void saveAll() {
@@ -252,8 +273,8 @@ public class ShopManager {
     }
 
     /** Saves/Resets Villager Config with default values */
-    public void createShopConfig(VMPlugin plugin, UUID entityUUID, int storageSize, int shopfrontSize, int cost, String type, String duration) {
-        File file = new File(Bukkit.getServer().getPluginManager().getPlugin("VillagerMarket").getDataFolder() + "/Shops/", entityUUID + ".yml");
+    public File createShopConfig(UUID entityUUID, int storageSize, int shopfrontSize, int cost, String type, String duration) {
+        File file = new File(plugin.getDataFolder() + "/Shops/", entityUUID + ".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
 
@@ -269,6 +290,7 @@ public class ShopManager {
         } catch (IOException i) {
             i.printStackTrace();
         }
+        return file;
     }
 
     /** Returns new Villager Shop Item */

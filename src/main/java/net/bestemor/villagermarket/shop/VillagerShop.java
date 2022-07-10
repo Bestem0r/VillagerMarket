@@ -213,10 +213,13 @@ public abstract class VillagerShop {
         }
     }
 
-    /** Reload all inventories */
-    public void reload() {
-        shopfrontHolder.reload();
+    public void closeAllMenus() {
+        for (ShopMenu shopMenu : menus.keySet()) {
+            menus.get(shopMenu).close();
+        }
+        this.shopfrontHolder.closeAll();
     }
+
 
     /** Adds shopItem to player's inventory and drops overflowing items */
     protected void giveShopItem(Player player, ShopItem shopItem) {
@@ -305,5 +308,28 @@ public abstract class VillagerShop {
     }
     public int getSeconds() {
         return seconds;
+    }
+    public File getFile() {
+        return file;
+    }
+
+    public void setStorageSize(int storageSize) {
+        this.storageSize = storageSize;
+        this.config.set("storageSize", storageSize);
+        try {
+            this.config.save(this.file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setShopfrontSize(int shopSize) {
+        this.shopSize = shopSize;
+        this.config.set("shopfrontSize", shopSize);
+        try {
+            this.config.save(this.file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

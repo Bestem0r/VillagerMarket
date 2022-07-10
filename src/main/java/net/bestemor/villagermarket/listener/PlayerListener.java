@@ -1,5 +1,7 @@
 package net.bestemor.villagermarket.listener;
 
+import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.object.Town;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -16,7 +18,6 @@ import net.bestemor.villagermarket.shop.VillagerShop;
 import net.bestemor.villagermarket.utils.UpdateChecker;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,7 +27,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -117,6 +117,7 @@ public class PlayerListener implements Listener {
 
         ItemMeta itemMeta = itemStack.getItemMeta();
         PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+        Location clickedLoc = event.getClickedBlock().getLocation();
 
         if (dataContainer.has(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING)) {
             event.setCancelled(true);
@@ -133,9 +134,26 @@ public class PlayerListener implements Listener {
                 return;
             }
 
+            //Towny check
+            if (Bukkit.getPluginManager().isPluginEnabled("Towny") && ConfigManager.getBoolean("towny.enabled")) {
+                if (!TownyAPI.getInstance().isWilderness(clickedLoc)) {
+                    try {
+                        Town town = Objects.requireNonNull(TownyAPI.getInstance().getTownBlock(clickedLoc)).getTown();
+                        if (!town.hasResident(player)) {
+                            player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
+                            return;
+                        }
+                    } catch (Exception ignore) {}
+                } else if (!ConfigManager.getBoolean("towny.allow_in_wilderness")) {
+                    player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
+                    return;
+                }
+            }
+
+            //WorldGuard check
             if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard") && ConfigManager.getBoolean("world_guard")) {
                 RegionManager rm = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()));
-                ApplicableRegionSet set = rm.getApplicableRegions(BukkitAdapter.asBlockVector(event.getClickedBlock().getLocation()));
+                ApplicableRegionSet set = rm.getApplicableRegions(BukkitAdapter.asBlockVector(clickedLoc));
                 UUID uuid = player.getUniqueId();
                 boolean isMember = false;
                 for (ProtectedRegion region : set) {
@@ -156,7 +174,7 @@ public class PlayerListener implements Listener {
             String data = dataContainer.get(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING);
             int shopSize = Integer.parseInt(data.split("-")[0]);
             int storageSize = Integer.parseInt(data.split("-")[1]);
-            Location location = event.getClickedBlock().getLocation().clone().add(0.5, 1, 0.5);
+            Location location = clickedLoc.clone().add(0.5, 1, 0.5);
 
             PlaceShopEggEvent eggEvent = new PlaceShopEggEvent(player, location, shopSize, storageSize);
             Bukkit.getPluginManager().callEvent(eggEvent);
@@ -167,14 +185,14 @@ public class PlayerListener implements Listener {
 
             Entity entity = plugin.getShopManager().spawnShop(location, "player");
             if (Bukkit.getEntity(entity.getUniqueId()) != null) {
-                plugin.getShopManager().createShopConfig(plugin, entity.getUniqueId(), storageSize, shopSize, -1, "player", "infinite");
+                plugin.getShopManager().createShopConfig(entity.getUniqueId(), storageSize, shopSize, -1, "player", "infinite");
                 PlayerShop playerShop = (PlayerShop) plugin.getShopManager().getShop(entity.getUniqueId());
                 playerShop.setOwner(player);
             } else {
                 Bukkit.getLogger().severe(ChatColor.RED + "[VillagerMarket] Unable to spawn Villager! Does WorldGuard deny mobs pawn?");
             }
 
-            player.playSound(event.getClickedBlock().getLocation(), ConfigManager.getSound("sounds.create_shop"), 1, 1);
+            player.playSound(clickedLoc, ConfigManager.getSound("sounds.create_shop"), 1, 1);
             if (itemStack.getAmount() > 1) {
                 itemStack.setAmount(itemStack.getAmount() - 1);
             } else {

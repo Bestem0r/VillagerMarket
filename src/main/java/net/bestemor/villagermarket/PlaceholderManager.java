@@ -1,6 +1,7 @@
 package net.bestemor.villagermarket;
 
 import net.bestemor.core.config.ConfigManager;
+import net.bestemor.villagermarket.shop.AdminShop;
 import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -56,6 +57,12 @@ public class PlaceholderManager extends PlaceholderExpansion {
 
         if (params.equals("owned_shops")) {
             return String.valueOf(plugin.getShopManager().getOwnedShops(player).size());
+        }
+        if (params.equals("available_for_rent")) {
+            return String.valueOf(plugin.getShopManager().getShops().stream()
+                    .filter(s -> s instanceof PlayerShop)
+                    .map(s -> (PlayerShop) s)
+                    .filter(s -> !s.hasOwner()).count());
         }
         if (params.equals("max_shops")) {
             int maxShops = plugin.getShopManager().getMaxShops(player);

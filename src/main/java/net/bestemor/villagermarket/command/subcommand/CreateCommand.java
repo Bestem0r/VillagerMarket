@@ -121,7 +121,7 @@ public class CreateCommand implements ISubCommand {
         Entity entity = plugin.getShopManager().spawnShop(player.getLocation(), type);
         player.sendMessage(ConfigManager.getMessage("messages.id").replace("%id%", entity.getUniqueId().toString()));
         if (Bukkit.getEntity(entity.getUniqueId()) != null) {
-            plugin.getShopManager().createShopConfig(plugin, entity.getUniqueId(), storageSize, shopSize, cost, type.toUpperCase(Locale.ROOT), duration);
+            plugin.getShopManager().createShopConfig(entity.getUniqueId(), storageSize, shopSize, cost, type.toUpperCase(Locale.ROOT), duration);
         } else {
             Bukkit.getLogger().severe(ChatColor.RED + "Unable to spawn Villager! Does WorldGuard deny mobs pawn?");
         }
