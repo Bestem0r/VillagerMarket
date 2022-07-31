@@ -2,6 +2,7 @@ package net.bestemor.villagermarket.listener;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.utils.ShopPlotUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -121,7 +122,6 @@ public class PlayerListener implements Listener {
 
         if (dataContainer.has(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING)) {
             event.setCancelled(true);
-            //Check if player does not have access to the region
 
             int max = plugin.getShopManager().getMaxShops(player);
             int owned = plugin.getShopManager().getOwnedShops(player).size();
@@ -139,7 +139,7 @@ public class PlayerListener implements Listener {
                 if (!TownyAPI.getInstance().isWilderness(clickedLoc)) {
                     try {
                         Town town = Objects.requireNonNull(TownyAPI.getInstance().getTownBlock(clickedLoc)).getTown();
-                        if (!town.hasResident(player)) {
+                        if (!town.hasResident(player) || (ConfigManager.getBoolean("towny.shop_plot_only") && !ShopPlotUtil.isShopPlot(clickedLoc))) {
                             player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
                             return;
                         }

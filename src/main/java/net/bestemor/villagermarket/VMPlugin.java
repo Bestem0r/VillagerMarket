@@ -46,11 +46,10 @@ public class VMPlugin extends JavaPlugin {
 
         getConfig().options().copyDefaults();
         saveDefaultConfig();
+        reloadConfiguration();
 
         ConfigManager.setConfig(getConfig());
         ConfigManager.setPrefixPath("plugin_prefix");
-
-        reloadConfiguration();
 
         this.chatListener = new ChatListener(this);
 

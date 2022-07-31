@@ -120,6 +120,19 @@ public abstract class VillagerShop {
 
         if (shopItem == null) { return; }
         event.setCancelled(true);
+
+        if (shopItem.getMode() == ItemMode.BUY_AND_SELL) {
+            switch (event.getClick()) {
+                case LEFT:
+                    buyItem(slot, player);
+                    break;
+                case RIGHT:
+                    sellItem(slot, player);
+                    break;
+            }
+            return;
+        }
+
         switch (shopItem.getMode()) {
             case BUY:
                 sellItem(slot, player);

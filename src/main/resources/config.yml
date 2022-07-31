@@ -35,13 +35,6 @@ per_adminshop_permissions: false
 buy_shop_permission: false
 #Will drop spawn egg when a shops created with spawn egg is removed
 drop_spawn_egg: true
-#Allow shop egg placing only in regions where the player is a member or owner
-world_guard: false
-towny:
-  #Enable towny support
-  enabled: true
-  #Allows players to place shop eggs in wilderness
-  allow_in_wilderness: false
 #Shops must be interacted with before shop keeper will look at nearby players
 #Enable if you are experiencing lag issues on large servers
 look_close_caching: false
@@ -202,6 +195,20 @@ villager:
     - "nigger"
 
 
+#------------------ Plugin support settings ------------------#
+
+#Allow shop egg placing only in regions where the player is a member or owner
+world_guard: false
+towny:
+  #Enable towny support
+  enabled: true
+  #Allows players to place shop eggs in wilderness
+  allow_in_wilderness: false
+  #Only allow shops to placed in shop plots
+  shop_plot_only: true
+
+
+
 #----------------------- Rent settings -----------------------#
 
 #Max limit for shop renting (days)
@@ -331,30 +338,84 @@ menus:
     modes:
       buy: "&8[&aBUY&8]"
       sell: "&8[&aSELL&8]"
+      buy_and_sell: "&8[&aBUY&7/&aSELL&8]"
       command: "&8[&eCOMMAND&8]"
+      trade: "&8[&eTRADE&8]"
     player_shop:
-      trade_lore:
+      trade_lore: #Placeholders: %amount%, %price%, %stock%, %mode%
+        - "&7Mode&f: %mode%"
+        - ""
         - "&7Amount&f: &e%amount%"
         - "&7Price&f: &a%price%"
         - "&7You can trade &b%available% &7more"
-      buy_lore: #Placeholders: %amount%, %price%, %stock%
+        - ""
+        - "&7>> Click to trade"
+      buy_lore: #Placeholders: %amount%, %price%, %stock%, %mode%
+        - "&7Mode&f: %mode%"
+        - ""
         - "&7Amount&f: &e%amount%"
         - "&7Price&f: &a%price%"
         - "&7Currently &b%stock% &7in stock"
-      sell_lore: #Placeholders: %amount%, %price%, %available%
+        - ""
+        - "&7>> Click to buy"
+      sell_lore: #Placeholders: %amount%, %price%, %available%, %mode%
+        - "&7Mode&f: %mode%"
+        - ""
         - "&7Amount&f: &e%amount%"
         - "&7Price&f: &a%price%"
         - "&7You can sell &b%available% &7more"
-    admin_shop:
-      standard_lore:
+        - ""
+        - "&7>> Click to sell"
+      buy_and_sell_lore: #Placeholders: %amount%, %price%, %available%, %mode%
+        - "&7Mode&f: %mode%"
+        - ""
         - "&7Amount&f: &e%amount%"
         - "&7Price&f: &a%price%"
+        - "&7Currently &b%stock% &7in stock"
+        - "&7You can sell &b%available% &7more"
+        - ""
+        - "&7>> Left click to buy"
+        - "&7>> Right click to sell"
+    admin_shop:
+      buy_and_sell:
+        - "&7Mode&f: %mode%"
+        - ""
+        - "&7Amount&f: &e%amount%"
+        - "&7Price&f: &a%price%"
+        - ""
+        - "&7>> Left click to buy"
+        - "&7>> Right click to sell"
+      trade_lore:
+        - "&7Mode&f: %mode%"
+        - ""
+        - "&7Amount&f: &e%amount%"
+        - "&7Price&f: &a%price%"
+        - ""
+        - "&7>> Click to trade"
+      sell_lore:
+        - "&7Mode&f: %mode%"
+        - ""
+        - "&7Amount&f: &e%amount%"
+        - "&7Price&f: &a%price%"
+        - ""
+        - "&7>> Click to sell"
+      buy_lore:
+        - "&7Mode&f: %mode%"
+        - ""
+        - "&7Amount&f: &e%amount%"
+        - "&7Price&f: &a%price%"
+        - ""
+        - "&7>> Click to buy"
       limit_lore:
+        - "&7Mode&f: %mode%"
+        - ""
         - "&7Amount&f: &e%amount%"
         - "&7Price&f: &a%price%"
         - ""
         - "&7Bought: (&e%bought%&7/&e%limit%&7)"
         - "&7Resets in: &e%reset%"
+        - ""
+        - "&7>> Click to buy"
 
   #------------------ Edit Shop Front ------------------#
   edit_shopfront:
@@ -363,28 +424,47 @@ menus:
     modes:
       buy: "&8[&aBUY&8]"
       sell: "&8[&aSELL&8]"
+      buy_and_sell: "&8[&aSELL&7/&aBUY&8]"
       command: "&8[&eCOMMAND&8]"
+      trade: "&8[&eTRADE&8]"
     player_shop:
       trade_lore:
+        - "&7Mode&f: %mode%"
+        - ""
         - "&7Amount&f: &e%amount%"
         - "&7Price&f: &a%price%"
         - "&7You can trade &b%available% &7more"
         - ""
         - "&7>> Click to edit"
       sell_lore: #Placeholders: %amount%, %price%, %stock%
+        - "&7Mode&f: %mode%"
+        - ""
         - "&7Amount&f: &e%amount%"
         - "&7Price&f: &a%price%"
         - "&7Currently &b%stock% &7in stock!"
         - ""
         - "&7>> Click to edit"
       buy_lore: #Placeholders: %amount%, %price%, %available%
+        - "&7Mode&f: %mode%"
+        - ""
         - "&7Amount&f: &e%amount%"
         - "&7Price&f: &a%price%"
         - "&7You can buy &c%available% &7more!"
         - ""
         - "&7>> Click to edit"
+      buy_and_sell_lore:
+        - "&7Mode&f: %mode%"
+        - ""
+        - "&7Amount&f: &e%amount%"
+        - "&7Price&f: &a%price%"
+        - "&7You can buy &c%available% &7more!"
+        - "&7Currently &b%stock% &7in stock!"
+        - ""
+        - "&7>> Click to edit"
     admin_shop:
       standard_lore:
+        - "&7Mode&f: %mode%"
+        - ""
         - "&7Amount&f: &e%amount%"
         - "&7Price&f: &a%price%"
         - "&7Player limit&f: &a%limit%"
@@ -483,13 +563,15 @@ menus:
     mode_cycle:
       player_shop:
         item_trade: "&eSell &7(Trading for item)"
-        sell: "&eSell &7| Buy"
-        buy: "&7Sell | &eBuy"
+        sell: "&eSell &7| Buy | Buy & Sell"
+        buy: "&7Sell | &eBuy &7| Buy & Sell"
+        buy_and_sell: "&7Sell | Buy | &eBuy & Sell"
       admin_shop:
         item_trade: "&eSell &7(Trading for item)"
-        sell: "&eSell &7| Buy | Command"
-        buy: "&7Sell | &eBuy &7| Command"
-        command: "&7Sell | Buy | &eCommand"
+        sell: "&eSell &7| Buy | Buy & Sell | Command"
+        buy: "&7Sell | &eBuy &7| Buy & Sell | Command"
+        command: "&7Sell | Buy | Buy & Sell | &eCommand"
+        buy_and_sell: "&7Sell | Buy | &eBuy & Sell &7| Command"
 
     items:
       mode:

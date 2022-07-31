@@ -23,8 +23,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import static net.bestemor.villagermarket.shop.ItemMode.BUY;
-import static net.bestemor.villagermarket.shop.ItemMode.SELL;
+import static net.bestemor.villagermarket.shop.ItemMode.*;
 
 public class ShopItem {
 
@@ -41,9 +40,6 @@ public class ShopItem {
     private boolean isAdmin;
 
     private List<String> editorLore = new ArrayList<>();
-
-    private String editorName;
-    private String customerName;
 
     private BigDecimal price;
     private ItemStack itemTrade;
@@ -204,7 +200,10 @@ public class ShopItem {
                     mode = ItemMode.BUY;
                     break;
                 case BUY:
-                    mode = isAdmin ? ItemMode.COMMAND : SELL;
+                    mode = BUY_AND_SELL;
+                    break;
+                case BUY_AND_SELL:
+                    mode = isAdmin ? ItemMode.COMMAND : ItemMode.SELL;
                     break;
                 case COMMAND:
                     mode = SELL;
@@ -270,14 +269,6 @@ public class ShopItem {
     public void reloadMeta(VillagerShop shop) {
         reloadData(shop);
         editorLore = getLore("edit_shopfront", mode, null);
-        customerName = getItemName("shopfront", mode == ItemMode.COMMAND ? ItemMode.COMMAND : mode == SELL ? ItemMode.BUY : SELL);
-        editorName = getItemName("edit_shopfront", mode);
-    }
-
-    private String getItemName(String path, ItemMode itemMode) {
-        String namePath = "menus." + path + ".item_name";
-        String mode = ConfigManager.getString("menus." + path + ".modes." + itemMode.toString().toLowerCase());
-        return ConfigManager.getString(namePath).replace("%item_name%", getItemName(item)).replace("%mode%", mode);
     }
 
     public String getItemName() {
@@ -330,12 +321,13 @@ public class ShopItem {
         String typePath = (isAdmin ? "admin_shop." : "player_shop.");
         String modePath = isItemTrade() ? "trade" : mode.toString().toLowerCase();
 
-        String lorePath = "menus." + path + "." + typePath + (!isAdmin ? (modePath + "_") : (limit > 0 && !path.equals("edit_shopfront") ? "limit_" : "standard_"))  + "lore";
+        String lorePath = "menus." + path + "." + typePath + (isAdmin && limit > 0 ? "limit" : (isAdmin && path.startsWith("edit") ? "standard" : modePath))  + "_lore";
         ConfigManager.ListBuilder builder = ConfigManager.getListBuilder(lorePath)
                 .replace("%amount%", String.valueOf(this.item.getAmount()))
                 .replace("%stock%", String.valueOf(storageAmount))
                 .replace("%bought%", String.valueOf(limitMode == LimitMode.SERVER || p == null ? serverTrades : getPlayerLimit(p)))
                 .replace("%available%", String.valueOf(available))
+                .replace("%mode%", ConfigManager.getString("menus.shopfront.modes." + modePath))
                 .replace("%reset%", nextReset == null || nextReset.getEpochSecond() == 0 ? ConfigManager.getString("time.never") : ConfigManager.getTimeLeft(nextReset))
                 .replace("%limit%", limit == 0 ? ConfigManager.getString("quantity.unlimited") : String.valueOf(limit));
 
@@ -352,8 +344,7 @@ public class ShopItem {
     public ItemStack getEditorItem() {
         ItemStack i = getRawItem();
         ItemMeta m = i.getItemMeta();
-        if (m != null && editorName != null && editorLore != null) {
-            m.setDisplayName(editorName);
+        if (m != null && editorLore != null) {
             m.setLore(editorLore);
             i.setItemMeta(m);
         }
@@ -362,9 +353,8 @@ public class ShopItem {
     public ItemStack getCustomerItem(Player p) {
         ItemStack i = getRawItem();
         ItemMeta m = i.getItemMeta();
-        if (m != null && customerName != null) {
-            m.setDisplayName(customerName);
-            m.setLore(getLore("shopfront", mode == ItemMode.COMMAND ? ItemMode.COMMAND : mode == SELL ? ItemMode.BUY : SELL, p));
+        if (m != null) {
+            m.setLore(getLore("shopfront", mode.inverted(), p));
             i.setItemMeta(m);
         }
         return i;
