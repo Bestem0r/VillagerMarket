@@ -31,6 +31,18 @@ public class AdminShop extends VillagerShop {
         if (!shopItem.verifyPurchase(player)) {
             return;
         }
+        ConfigManager.CurrencyBuilder message = ConfigManager.getCurrencyBuilder("messages.bought_item_as_customer")
+                .replace("%amount%", String.valueOf(shopItem.getAmount()))
+                .replace("%item%", shopItem.getItemName())
+                .replace("%shop%", getShopName());
+
+        if (shopItem.isItemTrade()) {
+            message.replace("%price%", shopItem.getItemTrade().getAmount() + "x " + shopItem.getItemTradeName());
+        } else {
+            message.replaceCurrency("%price%", price);
+        }
+        player.sendMessage(message.build());
+
         if (shopItem.isItemTrade()) {
             removeItems(player.getInventory(), shopItem.getItemTrade());
         } else {
@@ -63,6 +75,12 @@ public class AdminShop extends VillagerShop {
         if (!shopItem.verifyPurchase(player)) {
             return;
         }
+
+        player.sendMessage(ConfigManager.getCurrencyBuilder("messages.sold_item_as_customer")
+                .replace("%amount%", String.valueOf(shopItem.getAmount()))
+                .replaceCurrency("%price%", price)
+                .replace("%item%", shopItem.getItemName())
+                .replace("%shop%", getShopName()).build());
 
         economy.depositPlayer(player, price.doubleValue());
         removeItems(player.getInventory(), shopItem.getRawItem());
@@ -105,9 +123,11 @@ public class AdminShop extends VillagerShop {
         }
         economy.withdrawPlayer(player, price.doubleValue());
 
-        if (shopItem.getCommand() != null && !shopItem.getCommand().equals("")) {
+        if (shopItem.getCommands() != null && !shopItem.getCommands().isEmpty()) {
             ConsoleCommandSender sender = Bukkit.getConsoleSender();
-            Bukkit.dispatchCommand(sender, shopItem.getCommand().replaceAll("%player%", player.getName()));
+            for (String command : shopItem.getCommands()) {
+                Bukkit.dispatchCommand(sender, command.replaceAll("%player%", player.getName()));
+            }
         }
 
         shopItem.incrementPlayerTrades(player);

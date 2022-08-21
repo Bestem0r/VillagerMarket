@@ -35,9 +35,11 @@ per_adminshop_permissions: false
 buy_shop_permission: false
 #Will drop spawn egg when a shops created with spawn egg is removed
 drop_spawn_egg: true
-#Shops must be interacted with before shop keeper will look at nearby players
+#Shops must be interacted with before shopkeeper will look at nearby players
 #Enable if you are experiencing lag issues on large servers
 look_close_caching: false
+#Will disable announcing new updates when joining
+disable_update_announce: false
 
 #----------------------- Messages & Sounds -----------------------#
 
@@ -119,6 +121,8 @@ messages:
   shop_cloned: "&aVillager Shop successfully cloned. Move it using &e/vm move&a."
   set_size: "&7Right click the &bVillager Shop &7you want to set size for."
   size_set: "&aSize set to &e%size%&a."
+  bought_item_as_customer: "&7You bought &b%amount%x %item%&7 for &a%price%&7 from &r%shop%." #Placeholders: %amount%, %item%, %price%, %shop%
+  sold_item_as_customer: "&7You sold &b%amount%x %item%&7 for &a%price%&7 to &r%shop%." #Placeholders: %amount%, %item%, %price%, %shop%
 
 stats_message:
   - "&bVillagerShop stats:"
@@ -204,7 +208,7 @@ towny:
   enabled: true
   #Allows players to place shop eggs in wilderness
   allow_in_wilderness: false
-  #Only allow shops to placed in shop plots
+  #Only allow shops placed in shop plots
   shop_plot_only: true
 
 
@@ -320,7 +324,7 @@ menus:
 
   #-------------------- Shop Front --------------------#
   shopfront:
-    title: "&8Shop"
+    title: "&7%shop%"
     item_name: "&f%item_name% %mode%" #Placeholders: %item_name%, %mode%
     detail_suffix: "&8(Details)"
     #Cooldown between selling/buying items (milliseconds)
@@ -377,11 +381,12 @@ menus:
         - "&7>> Left click to buy"
         - "&7>> Right click to sell"
     admin_shop:
-      buy_and_sell:
+      buy_and_sell_lore:
         - "&7Mode&f: %mode%"
         - ""
         - "&7Amount&f: &e%amount%"
         - "&7Price&f: &a%price%"
+        - "%limit_lore%"
         - ""
         - "&7>> Left click to buy"
         - "&7>> Right click to sell"
@@ -390,6 +395,7 @@ menus:
         - ""
         - "&7Amount&f: &e%amount%"
         - "&7Price&f: &a%price%"
+        - "%limit_lore%"
         - ""
         - "&7>> Click to trade"
       sell_lore:
@@ -397,6 +403,7 @@ menus:
         - ""
         - "&7Amount&f: &e%amount%"
         - "&7Price&f: &a%price%"
+        - "%limit_lore%"
         - ""
         - "&7>> Click to sell"
       buy_lore:
@@ -404,18 +411,29 @@ menus:
         - ""
         - "&7Amount&f: &e%amount%"
         - "&7Price&f: &a%price%"
+        - "%limit_lore%"
         - ""
         - "&7>> Click to buy"
-      limit_lore:
+      command_lore:
         - "&7Mode&f: %mode%"
         - ""
         - "&7Amount&f: &e%amount%"
         - "&7Price&f: &a%price%"
+        - "%limit_lore%"
+        - ""
+        - "&7>> Click to buy command"
+      buy_limit_lore:
         - ""
         - "&7Bought: (&e%bought%&7/&e%limit%&7)"
         - "&7Resets in: &e%reset%"
+      sell_limit_lore:
         - ""
-        - "&7>> Click to buy"
+        - "&7Sold: (&e%bought%&7/&e%limit%&7)"
+        - "&7Resets in: &e%reset%"
+      buy_and_sell_limit_lore:
+        - ""
+        - "&7Bought or sold: (&e%bought%&7/&e%limit%&7)"
+        - "&7Resets in: &e%reset%"
 
   #------------------ Edit Shop Front ------------------#
   edit_shopfront:
@@ -602,10 +620,11 @@ menus:
         material: COMMAND_BLOCK
         name: "&eCommand"
         lore:
-          - "&7Current command:"
+          - "&7Current command(s):"
           - "&7- &e%command%&7"
           - ""
-          - "&7>> Click to edit"
+          - "&7>> Left to add"
+          - "&7>> Right to reset"
       buy_limit:
         material: FEATHER
         name: "&eBuy Limit&7: %limit%"

@@ -57,7 +57,7 @@ public class ShopItem {
 
     private ItemMode mode = SELL;
 
-    private String command;
+    private final List<String> commands = new ArrayList<>();
 
     public ShopItem(VMPlugin plugin, ItemStack item, int slot) {
         this.plugin = plugin;
@@ -83,8 +83,9 @@ public class ShopItem {
             this.price = BigDecimal.ZERO;
         }
 
-        if (section.getString("command") != null) {
-            setCommand(section.getString("command"));
+        section.getStringList("command");
+        for (String command : section.getStringList("command")) {
+            addCommand(command);
         }
 
         this.mode = ItemMode.valueOf(section.getString("mode"));
@@ -102,7 +103,7 @@ public class ShopItem {
                 NamespacedKey key = new NamespacedKey(plugin, "villagermarket-command");
                 ItemMeta m = item.getItemMeta();
                 if (m != null && m.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
-                    setCommand(m.getPersistentDataContainer().get(key, PersistentDataType.STRING));
+                    addCommand(m.getPersistentDataContainer().get(key, PersistentDataType.STRING));
                 }
             }
         } catch (Exception ignore) {}
@@ -129,8 +130,8 @@ public class ShopItem {
         return limit;
     }
     public int getAmount() { return item.getAmount(); }
-    public String getCommand() {
-        return command == null ? "" : command;
+    public List<String> getCommands() {
+        return commands;
     }
     public boolean isItemTrade() {
         return this.itemTrade != null;
@@ -166,9 +167,9 @@ public class ShopItem {
     public void setAmount(int amount) {
         this.item.setAmount(amount);
     }
-    public void setCommand(String command) {
+    public void addCommand(String command) {
         this.mode = ItemMode.COMMAND;
-        this.command = command;
+        this.commands.add(command);
     }
     public void setItemTrade(ItemStack itemTrade) {
         this.itemTrade = itemTrade;
@@ -176,6 +177,11 @@ public class ShopItem {
             this.mode = SELL;
         }
     }
+
+    public void resetCommand() {
+        this.commands.clear();
+    }
+
 
     public void setCooldown(String cooldown) {
         String amount = cooldown.substring(0, cooldown.length() - 1);
@@ -321,15 +327,21 @@ public class ShopItem {
         String typePath = (isAdmin ? "admin_shop." : "player_shop.");
         String modePath = isItemTrade() ? "trade" : mode.toString().toLowerCase();
 
-        String lorePath = "menus." + path + "." + typePath + (isAdmin && limit > 0 ? "limit" : (isAdmin && path.startsWith("edit") ? "standard" : modePath))  + "_lore";
+        String reset = nextReset == null || nextReset.getEpochSecond() == 0 ? ConfigManager.getString("time.never") : ConfigManager.getTimeLeft(nextReset);
+        String bought = String.valueOf(limitMode == LimitMode.SERVER || p == null ? serverTrades : getPlayerLimit(p));
+        String limitInfo = limit == 0 ? ConfigManager.getString("quantity.unlimited") : String.valueOf(limit);
+
+        String lorePath = "menus." + path + "." + typePath + (isAdmin && path.startsWith("edit") ? "standard" : modePath)  + "_lore";
         ConfigManager.ListBuilder builder = ConfigManager.getListBuilder(lorePath)
                 .replace("%amount%", String.valueOf(this.item.getAmount()))
                 .replace("%stock%", String.valueOf(storageAmount))
-                .replace("%bought%", String.valueOf(limitMode == LimitMode.SERVER || p == null ? serverTrades : getPlayerLimit(p)))
+                .replace("%bought%", bought)
                 .replace("%available%", String.valueOf(available))
                 .replace("%mode%", ConfigManager.getString("menus.shopfront.modes." + modePath))
-                .replace("%reset%", nextReset == null || nextReset.getEpochSecond() == 0 ? ConfigManager.getString("time.never") : ConfigManager.getTimeLeft(nextReset))
-                .replace("%limit%", limit == 0 ? ConfigManager.getString("quantity.unlimited") : String.valueOf(limit));
+                .replace("%reset%", reset)
+                .replace("%limit%", limitInfo);
+
+
 
         if (isItemTrade()) {
             builder.replace("%price%", itemTrade.getAmount() + "x" + " " + getItemName(itemTrade));
@@ -338,7 +350,22 @@ public class ShopItem {
         } else {
             builder.replaceCurrency("%price%", getPrice());
         }
-        return builder.build();
+        List<String> lore = builder.build();
+
+        if (isAdmin && limit > 0) {
+            int index = lore.indexOf("%limit_lore%");
+            if (index != -1) {
+                lore.remove(index);
+                String type = isItemTrade() ? "buy" : mode.getInteractionType();
+                lore.addAll(index, ConfigManager.getListBuilder("menus.shopfront.admin_shop." + type + "_limit_lore")
+                        .replace("%reset%", reset)
+                        .replace("%limit%", limitInfo)
+                        .replace("%bought%", bought).build());
+            }
+        }
+        lore.remove("%limit_lore%");
+
+        return lore;
     }
 
     public ItemStack getEditorItem() {

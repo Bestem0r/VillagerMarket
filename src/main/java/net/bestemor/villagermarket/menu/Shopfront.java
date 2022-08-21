@@ -55,8 +55,9 @@ public class Shopfront {
         this.isInfinite = shop.getShopSize() == 0;
         this.size = (isInfinite ? 54 : shop.getShopSize());
 
-        String editorTitle = ConfigManager.getString("menus.edit_shopfront.title");
-        String detailedTitle =  ConfigManager.getString("menus.shopfront.title") + " " + ConfigManager.getString("menus.shopfront.detail_suffix");
+        String editorTitle = ConfigManager.getString("menus.edit_shopfront.title").replace("%shop%", shop.getShopName());
+        String detailedTitle =  (ConfigManager.getString("menus.shopfront.title") + " " + ConfigManager.getString("menus.shopfront.detail_suffix"))
+                .replace("%shop%", shop.getShopName());;
 
         if (isInfinite) {
             editorTitle += " | " + (page + 1);
@@ -115,7 +116,7 @@ public class Shopfront {
     }
 
     private Inventory getCustomerInventory(Player player) {
-        String customerTitle = ConfigManager.getString("menus.shopfront.title");
+        String customerTitle = ConfigManager.getString("menus.shopfront.title").replace("%shop%", shop.getShopName());
         if (isInfinite) {
             customerTitle += " | " + (page + 1);
         }

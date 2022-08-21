@@ -17,7 +17,10 @@ import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.ShopMenu;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import net.bestemor.villagermarket.utils.UpdateChecker;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -72,6 +75,7 @@ public class PlayerListener implements Listener {
         if (shop != null) {
             cachedEntities.put(event.getRightClicked().getUniqueId(), event.getRightClicked());
             event.setCancelled(true);
+            shop.setShopName(event.getRightClicked().getCustomName());
 
             if (shop instanceof AdminShop) {
                 if (p.hasPermission("villagermarket.adminshops")) {
@@ -205,7 +209,7 @@ public class PlayerListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
 
         Player player = event.getPlayer();
-        if (player.hasPermission("villagermarket.admin")) {
+        if (player.hasPermission("villagermarket.admin") && !ConfigManager.getBoolean("disable_update_announce")) {
             new UpdateChecker(plugin, 82965).getVersion(version -> {
                 String currentVersion = plugin.getDescription().getVersion();
                 if (!currentVersion.equalsIgnoreCase(version)) {

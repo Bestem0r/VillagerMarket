@@ -149,6 +149,18 @@ public class PlayerShop extends VillagerShop {
         giveShopItem(player, shopItem);
         storageHolder.removeItem(shopItem.getRawItem());
 
+        ConfigManager.CurrencyBuilder message = ConfigManager.getCurrencyBuilder("messages.bought_item_as_customer")
+                .replace("%amount%", String.valueOf(shopItem.getAmount()))
+                .replace("%item%", shopItem.getItemName())
+                .replace("%shop%", getShopName());
+
+        if (shopItem.isItemTrade()) {
+            message.replace("%price%", shopItem.getItemTrade().getAmount() + "x " + shopItem.getItemTradeName());
+        } else {
+            message.replaceCurrency("%price%", price);
+        }
+        player.sendMessage(message.build());
+
         player.playSound(player.getLocation(), ConfigManager.getSound("sounds.buy_item"), 1, 1);
         VMPlugin.log.add(new Date() + ": " + player.getName() + " bought " + amount + "x " + shopItem.getType() + " from " + ownerName + " (" + price + ")");
     }
@@ -199,6 +211,13 @@ public class PlayerShop extends VillagerShop {
             }
             ownerOnline.sendMessage(builder.build());
         }
+
+        player.sendMessage(ConfigManager.getCurrencyBuilder("messages.sold_item_as_customer")
+                .replace("%amount%", String.valueOf(shopItem.getAmount()))
+                .replaceCurrency("%price%", price)
+                .replace("%item%", shopItem.getItemName())
+                .replace("%shop%", getShopName()).build());
+
         VMPlugin.log.add(new Date() + ": " + player.getName() + " sold " + amount + "x " + shopItem.getType() + " to " + ownerName + " (" + price + ")");
     }
 

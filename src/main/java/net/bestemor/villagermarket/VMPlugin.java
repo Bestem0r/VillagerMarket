@@ -62,7 +62,7 @@ public class VMPlugin extends JavaPlugin {
         this.playerListener = new PlayerListener(this);
         registerEvents();
 
-        //Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.10.6-#2 of VillagerMarket! Please expect and report all bugs in my discord server");
+        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.0-#1 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {

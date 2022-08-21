@@ -1,10 +1,16 @@
 package net.bestemor.villagermarket.shop;
 
 public enum ItemMode {
-    BUY,
-    SELL,
-    BUY_AND_SELL,
-    COMMAND;
+    BUY("buy"),
+    SELL("buy"),
+    BUY_AND_SELL("buy_and_sell"),
+    COMMAND("buy");
+
+    private final String interactionType;
+
+    ItemMode(String interactionType) {
+        this.interactionType = interactionType;
+    }
 
     public ItemMode inverted() {
         switch (this) {
@@ -19,5 +25,9 @@ public enum ItemMode {
             default:
                 return null;
         }
+    }
+
+    public String getInteractionType() {
+        return interactionType;
     }
 }

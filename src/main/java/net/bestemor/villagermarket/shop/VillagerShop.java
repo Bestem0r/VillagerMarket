@@ -44,6 +44,8 @@ public abstract class VillagerShop {
 
     protected EnumMap<ShopMenu, Menu> menus = new EnumMap<>(ShopMenu.class);
 
+    private String shopName;
+
     protected final ShopfrontHolder shopfrontHolder;
     protected ShopStats shopStats;
 
@@ -80,6 +82,9 @@ public abstract class VillagerShop {
         this.menus.put(ShopMenu.SELL_SHOP, new SellShopMenu(plugin, this));
 
         this.shopfrontHolder = new ShopfrontHolder(plugin, this);
+
+        Entity entity = Bukkit.getEntity(entityUUID);
+        this.shopName = entity == null ? null : entity.getCustomName();
     }
 
     public void setUUID(UUID uuid) {
@@ -125,9 +130,11 @@ public abstract class VillagerShop {
             switch (event.getClick()) {
                 case LEFT:
                     buyItem(slot, player);
+                    shopfrontHolder.update();
                     break;
                 case RIGHT:
                     sellItem(slot, player);
+                    shopfrontHolder.update();
                     break;
             }
             return;
@@ -203,7 +210,7 @@ public abstract class VillagerShop {
             config.set("items_for_sale." + slot + ".price", shopItem.isItemTrade() ? shopItem.getItemTrade() : shopItem.getPrice());
             config.set("items_for_sale." + slot + ".mode", shopItem.getMode().toString());
             config.set("items_for_sale." + slot + ".buy_limit", shopItem.getLimit());
-            config.set("items_for_sale." + slot + ".command", shopItem.getCommand());
+            config.set("items_for_sale." + slot + ".command", shopItem.getCommands());
             config.set("items_for_sale." + slot + ".server_trades", shopItem.getServerTrades());
             config.set("items_for_sale." + slot + ".limit_mode", shopItem.getLimitMode().toString());
             config.set("items_for_sale." + slot + ".cooldown", shopItem.getCooldown());
@@ -334,6 +341,20 @@ public abstract class VillagerShop {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getShopName() {
+        if (this.shopName != null) {
+            return shopName;
+        }
+
+        Entity entity = Bukkit.getEntity(entityUUID);
+        this.shopName = entity == null ? null : entity.getCustomName();
+        return this.shopName == null ? "Unknown" : this.shopName;
+    }
+
+    public void setShopName(String customName) {
+        this.shopName = customName;
     }
 
     public void setShopfrontSize(int shopSize) {

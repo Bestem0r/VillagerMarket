@@ -12,8 +12,10 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 
 public class EditItemMenu extends Menu {
@@ -101,15 +103,34 @@ public class EditItemMenu extends Menu {
         }
 
         if (shopItem.getMode() == ItemMode.COMMAND) {
-            String command = shopItem.getCommand() == null || shopItem.getCommand().equals("") ? "none" : shopItem.getCommand();
-            ItemStack commandItem =  ConfigManager.getItem("menus.edit_item.items.command").replace("%command%", command).build();
+            ItemStack commandItem =  ConfigManager.getItem("menus.edit_item.items.command").build();
+            ItemMeta meta = commandItem.getItemMeta();
+            List<String> lore = meta.getLore();
+
+            String commandLine = lore.stream().filter(l -> l.contains("%command%")).findFirst().get();
+            int index = lore.indexOf(commandLine);
+            lore.removeIf(l -> l.contains("%command%"));
+
+            for (String command : shopItem.getCommands()) {
+                lore.add(index, commandLine.replace("%command%", command));
+                index++;
+            }
+            meta.setLore(lore);
+            commandItem.setItemMeta(meta);
+
             content.setClickable(31, Clickable.of(commandItem, (event) -> {
+
+                if (event.getClick() == ClickType.RIGHT) {
+                    shopItem.resetCommand();
+                    update();
+                    return;
+                }
 
                 event.getView().close();
                 Player player = (Player) event.getWhoClicked();
                 player.sendMessage(ConfigManager.getMessage("messages.type_command"));
                 plugin.getChatListener().addStringListener(player, (result) -> {
-                    shopItem.setCommand(result);
+                    shopItem.addCommand(result);
                     update();
                     open(player);
                 });
