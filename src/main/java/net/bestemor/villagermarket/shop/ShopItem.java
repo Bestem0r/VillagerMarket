@@ -19,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -195,8 +196,8 @@ public class ShopItem {
         resetCooldown();
     }
 
-    public void openEditor(Player player, VillagerShop shop) {
-        new EditItemMenu(plugin, shop, this).open(player);
+    public void openEditor(Player player, VillagerShop shop, int page) {
+        new EditItemMenu(plugin, shop, this, page).open(player);
     }
 
     public void cycleTradeMode() {
@@ -341,14 +342,14 @@ public class ShopItem {
                 .replace("%reset%", reset)
                 .replace("%limit%", limitInfo);
 
-
-
         if (isItemTrade()) {
             builder.replace("%price%", itemTrade.getAmount() + "x" + " " + getItemName(itemTrade));
         } else if (getPrice().equals(BigDecimal.ZERO)) {
             builder.replace("%price%", ConfigManager.getString("quantity.free"));
+            builder.replace("%price_per_unit%", ConfigManager.getString("quantity.free"));
         } else {
             builder.replaceCurrency("%price%", getPrice());
+            builder.replaceCurrency("%price_per_unit%", getPrice().divide(BigDecimal.valueOf(getAmount()), RoundingMode.HALF_UP));
         }
         List<String> lore = builder.build();
 
@@ -372,6 +373,7 @@ public class ShopItem {
         ItemStack i = getRawItem();
         ItemMeta m = i.getItemMeta();
         if (m != null && editorLore != null) {
+
             m.setLore(editorLore);
             i.setItemMeta(m);
         }

@@ -290,7 +290,7 @@ public class Shopfront {
                             ShopItem shopItem = shop.getShopfrontHolder().getItemList().get(slot);
                             if (shopItem != null) {
                                 player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-                                shopItem.openEditor(player, shop);
+                                shopItem.openEditor(player, shop, page);
                             }
                         }
                         

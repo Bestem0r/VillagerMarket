@@ -43,12 +43,16 @@ public class VMPlugin extends JavaPlugin {
         setupEconomy();
 
         Metrics metrics = new Metrics(this, 8922);
-
-        getConfig().options().copyDefaults();
+        getConfig().options().copyDefaults(true);
         saveDefaultConfig();
-        reloadConfiguration();
 
         ConfigManager.setConfig(getConfig());
+        ConfigManager.updateConfig(this);
+
+        ConfigManager.setLanguagePath("language");
+        ConfigManager.setLanguagesFolder(new File(getDataFolder(), "language"));
+        ConfigManager.loadLanguages(this, "en_US");
+
         ConfigManager.setPrefixPath("plugin_prefix");
 
         this.chatListener = new ChatListener(this);
@@ -62,7 +66,7 @@ public class VMPlugin extends JavaPlugin {
         this.playerListener = new PlayerListener(this);
         registerEvents();
 
-        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.0-#1 of VillagerMarket! Please expect and report all bugs in my discord server");
+        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.0-#2 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {

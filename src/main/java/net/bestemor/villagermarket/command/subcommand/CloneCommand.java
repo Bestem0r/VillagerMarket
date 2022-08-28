@@ -1,14 +1,10 @@
 package net.bestemor.villagermarket.command.subcommand;
 
-import jdk.nashorn.internal.runtime.regexp.joni.Config;
 import net.bestemor.core.command.ISubCommand;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
-import net.bestemor.villagermarket.listener.PlayerListener;
-import net.bestemor.villagermarket.shop.ShopManager;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

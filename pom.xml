@@ -121,9 +121,17 @@
         <dependency>
             <groupId>com.github.Bestem0r</groupId>
             <artifactId>BestemorCore</artifactId>
-            <version>9fcbba6cb2</version>
+            <version>afa576d5a9</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

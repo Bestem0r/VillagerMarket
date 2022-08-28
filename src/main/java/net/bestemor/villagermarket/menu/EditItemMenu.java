@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -23,10 +24,12 @@ public class EditItemMenu extends Menu {
     private final VMPlugin plugin;
     private final ShopItem shopItem;
     private final VillagerShop shop;
+    private final int page;
 
-    public EditItemMenu(VMPlugin plugin, VillagerShop shop, ShopItem shopItem) {
+    public EditItemMenu(VMPlugin plugin, VillagerShop shop, ShopItem shopItem, int page) {
         super(plugin.getMenuListener(), 54, ConfigManager.getString("menus.edit_item.title"));
 
+        this.page = page;
         this.plugin = plugin;
         this.shopItem = shopItem;
         this.shop = shop;
@@ -35,13 +38,12 @@ public class EditItemMenu extends Menu {
     @Override
     protected void onCreate(MenuContent content) {
         content.fillEdges(ConfigManager.getItem("items.filler").build());
-
         shopItem.reloadMeta(shop);
         
         content.setClickable(53, Clickable.of(ConfigManager.getItem("items.back").build(), (event) -> {
             Player player = (Player) event.getWhoClicked(); 
             player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-            shop.openInventory(player, ShopMenu.EDIT_SHOPFRONT);
+            shop.getShopfrontHolder().open(player, Shopfront.Type.EDITOR, this.page);
         }));
         
         content.setClickable(49, Clickable.of(ConfigManager.getItem("menus.edit_item.items.delete").build(), (event) -> {
@@ -173,6 +175,11 @@ public class EditItemMenu extends Menu {
         if (event.getRawSlot() > 53) {
             event.setCancelled(false);
         }
+    }
+
+    @Override
+    protected void onDrag(InventoryDragEvent event) {
+        event.setCancelled(true);
     }
 
     private void typeAmount(Player player) {
