@@ -1,6 +1,8 @@
 package net.bestemor.villagermarket.shop;
 
+import net.bestemor.core.config.VersionUtils;
 import net.bestemor.villagermarket.VMPlugin;
+import net.bestemor.villagermarket.utils.VMUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -18,7 +20,7 @@ public class EntityInfo {
     private final VillagerShop shop;
 
     private String name = "Villager Shop";
-    private Villager.Profession profession = Villager.Profession.NONE;
+    private Villager.Profession profession = VersionUtils.getMCVersion() > 13 ? Villager.Profession.NONE : Villager.Profession.FARMER;
     private int chunkX = 0;
     private int chunkZ = 0;
     private Location location = null;
@@ -70,7 +72,7 @@ public class EntityInfo {
     }
 
     private void saveSync() {
-        Entity entity = Bukkit.getEntity(shop.getEntityUUID());
+        Entity entity = VMUtils.getEntity(shop.getEntityUUID());
         if (entity != null) {
             if (plugin.isEnabled()) {
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> saveInfo(entity));
@@ -104,11 +106,11 @@ public class EntityInfo {
     }
 
     public boolean exists() {
-        return (Bukkit.getEntity(shop.getEntityUUID()) != null);
+        return (VMUtils.getEntity(shop.getEntityUUID()) != null);
     }
 
     public void appendToExisting() {
-        Entity entity = Bukkit.getEntity(shop.getEntityUUID());
+        Entity entity = VMUtils.getEntity(shop.getEntityUUID());
         if (entity instanceof Villager) {
             Villager villager = (Villager) entity;
             villager.setCustomName(name);

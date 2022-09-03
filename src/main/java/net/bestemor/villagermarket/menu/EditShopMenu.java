@@ -9,6 +9,7 @@ import net.bestemor.villagermarket.shop.AdminShop;
 import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.ShopMenu;
 import net.bestemor.villagermarket.shop.VillagerShop;
+import net.bestemor.villagermarket.utils.VMUtils;
 import net.citizensnpcs.api.CitizensAPI;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -127,7 +128,7 @@ public class EditShopMenu extends Menu {
                         .replace("%custom_name%", name) : name;
 
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    Entity villager = Bukkit.getEntity(shop.getEntityUUID());
+                    Entity villager = VMUtils.getEntity(shop.getEntityUUID());
                     shop.setShopName(customName);
                     if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(villager)) {
                         CitizensAPI.getNPCRegistry().getNPC(villager).setName(customName);

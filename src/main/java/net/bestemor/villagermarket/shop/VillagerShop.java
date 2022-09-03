@@ -83,7 +83,7 @@ public abstract class VillagerShop {
 
         this.shopfrontHolder = new ShopfrontHolder(plugin, this);
 
-        Entity entity = Bukkit.getEntity(entityUUID);
+        Entity entity = VMUtils.getEntity(entityUUID);
         this.shopName = entity == null ? null : entity.getCustomName();
     }
 
@@ -174,7 +174,7 @@ public abstract class VillagerShop {
     }
 
     public void setProfession(Villager.Profession profession) {
-        Entity entity = Bukkit.getEntity(entityUUID);
+        Entity entity = VMUtils.getEntity(entityUUID);
         if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(entity)) {
             Entity spawned = plugin.getShopManager().spawnShop(entity.getLocation(), "player");
             spawned.setCustomName(CitizensAPI.getNPCRegistry().getNPC(entity).getName());
@@ -184,7 +184,7 @@ public abstract class VillagerShop {
             setUUID(spawned.getUniqueId());
         }
 
-        Villager villagerObject = (Villager) Bukkit.getEntity(entityUUID);
+        Villager villagerObject = (Villager) VMUtils.getEntity(entityUUID);
         if (villagerObject != null) {
             villagerObject.setProfession(profession);
         }
@@ -265,7 +265,7 @@ public abstract class VillagerShop {
     }
 
     public void setCitizensSkin(String skin) {
-        Entity entity = Bukkit.getEntity(entityUUID);
+        Entity entity = VMUtils.getEntity(entityUUID);
         if (entity != null) {
             String name = entity.getCustomName();
             if (CitizensAPI.getNPCRegistry().isNPC(entity)) {
@@ -348,7 +348,7 @@ public abstract class VillagerShop {
             return shopName;
         }
 
-        Entity entity = Bukkit.getEntity(entityUUID);
+        Entity entity = VMUtils.getEntity(entityUUID);
         this.shopName = entity == null ? null : entity.getCustomName();
         return this.shopName == null ? "Unknown" : this.shopName;
     }

@@ -1,10 +1,12 @@
 package net.bestemor.villagermarket.shop;
 
 import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.config.VersionUtils;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.event.AbandonShopEvent;
 import net.bestemor.villagermarket.menu.BuyShopMenu;
 import net.bestemor.villagermarket.menu.StorageHolder;
+import net.bestemor.villagermarket.utils.VMUtils;
 import net.citizensnpcs.api.CitizensAPI;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -68,7 +70,7 @@ public class PlayerShop extends VillagerShop {
 
     public void updateRedstone(boolean forceOff) {
         if (!plugin.getShopManager().isRedstoneEnabled() || cost == -1) { return; }
-        Entity entity = Bukkit.getEntity(entityUUID);
+        Entity entity = VMUtils.getEntity(entityUUID);
 
         if (entity != null) {
             Location location = entity.getLocation();
@@ -293,14 +295,14 @@ public class PlayerShop extends VillagerShop {
             }
         }
 
-        Entity entity = Bukkit.getEntity(entityUUID);
+        Entity entity = VMUtils.getEntity(entityUUID);
         if (entity != null) {
             if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(entity)) {
                 CitizensAPI.getNPCRegistry().getNPC(entity).setName(ConfigManager.getString("villager.name_available"));
             } else if (entity instanceof Villager) {
                 entity.setCustomName(ConfigManager.getString("villager.name_available"));
             }
-            setProfession(Villager.Profession.NONE);
+            setProfession(VersionUtils.getMCVersion() < 14 ? Villager.Profession.FARMER : Villager.Profession.NONE);
         }
 
 
@@ -359,7 +361,7 @@ public class PlayerShop extends VillagerShop {
 
     /** Sets owner and changes name */
     public void setOwner(Player player) {
-        Entity villager = Bukkit.getEntity(entityUUID);
+        Entity villager = VMUtils.getEntity(entityUUID);
         String name = ConfigManager.getString("villager.name_taken").replace("%player%", player.getName());
         this.expireDate = (seconds == 0 ? null : Instant.now().plusSeconds(seconds));
 

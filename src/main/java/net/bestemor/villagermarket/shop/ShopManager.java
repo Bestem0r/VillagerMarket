@@ -1,7 +1,10 @@
 package net.bestemor.villagermarket.shop;
 
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.config.VersionUtils;
 import net.bestemor.villagermarket.VMPlugin;
+import net.bestemor.villagermarket.utils.VMUtils;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
@@ -18,6 +21,8 @@ import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,10 +87,16 @@ public class ShopManager {
     public Entity spawnShop(Location location, String type) {
         Villager villager = (Villager) location.getWorld().spawnEntity(location, EntityType.VILLAGER);
 
-        villager.setInvulnerable(!plugin.getConfig().getBoolean("villager.killable"));
-        villager.setCollidable(false);
-        villager.setSilent(true);
-        villager.setAI(plugin.getConfig().getBoolean("villager.ai"));
+        if (VersionUtils.getMCVersion() >= 14) {
+            villager.setInvulnerable(!plugin.getConfig().getBoolean("villager.killable"));
+            villager.setCollidable(false);
+            villager.setRemoveWhenFarAway(false);
+            villager.setSilent(true);
+            villager.setAI(plugin.getConfig().getBoolean("villager.ai"));
+        } else {
+            villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 128, false, false));
+        }
+
         villager.setProfession(Villager.Profession.valueOf(ConfigManager.getString("villager.default_profession")));
         String namePath = (type.equalsIgnoreCase("player") ? "name_available" : "name_admin");
         villager.setCustomName(ConfigManager.getString("villager." + namePath));
@@ -167,7 +178,7 @@ public class ShopManager {
         File file = new File(Objects.requireNonNull(Bukkit.getServer().getPluginManager().getPlugin("VillagerMarket")).getDataFolder() + "/Shops/", uuid.toString() + ".yml");
         file.delete();
 
-        Entity entity = Bukkit.getEntity(uuid);
+        Entity entity = VMUtils.getEntity(uuid);
         if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(entity)) {
             NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
             npc.destroy();
@@ -252,11 +263,10 @@ public class ShopManager {
 
     public List<Entity> getEntities() {
         return shops.values().stream()
-                .map(s -> Bukkit.getEntity(s.entityUUID))
+                .map(s -> VMUtils.getEntity(s.entityUUID))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
-
 
     /** Thread updates redstone output for all Villagers */
     private void beginRedstoneThread() {
@@ -303,11 +313,17 @@ public class ShopManager {
 
         ItemStack shopItem = ConfigManager.getItem("shop_item").replace("%shop_size%", shopString).replace("%storage_size%", storageString).build();
 
-        ItemMeta shopMeta = shopItem.getItemMeta();
-        shopMeta.getPersistentDataContainer().set(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING, shopSize + "-" + storageSize);
         shopItem.setAmount(maxAmount);
-        shopItem.setItemMeta(shopMeta);
-        return shopItem;
+        if (VersionUtils.getMCVersion() >= 14) {
+            ItemMeta shopMeta = shopItem.getItemMeta();
+            shopMeta.getPersistentDataContainer().set(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING, shopSize + "-" + storageSize);
+            shopItem.setItemMeta(shopMeta);
+            return shopItem;
+        } else {
+            NBTItem nbtItem = new NBTItem(shopItem);
+            nbtItem.setString("vm-item", shopSize + "-" + storageSize);
+            return nbtItem.getItem();
+        }
     }
 
     public int getMaxShops(Player player) {

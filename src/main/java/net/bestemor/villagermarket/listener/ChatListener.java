@@ -1,6 +1,7 @@
 package net.bestemor.villagermarket.listener;
 
 import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.config.VersionUtils;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import net.bestemor.villagermarket.utils.VMUtils;
@@ -35,7 +36,7 @@ public class ChatListener implements Listener {
         this.cancelInput = ConfigManager.getString("cancel");
     }
 
-    @EventHandler (ignoreCancelled = false, priority = EventPriority.LOWEST)
+    @EventHandler (priority = EventPriority.LOWEST)
     public void onChat(AsyncPlayerChatEvent event) {
 
         UUID uuid = event.getPlayer().getUniqueId();
@@ -88,7 +89,8 @@ public class ChatListener implements Listener {
     public void onEntityInteract(PlayerInteractEntityEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
 
-        if (event.getHand() == EquipmentSlot.OFF_HAND) { return; }
+        Bukkit.getLogger().info(VersionUtils.getMCVersion() + "");
+        if (VersionUtils.getMCVersion() >= 9 && event.getHand() == EquipmentSlot.OFF_HAND) { return; }
 
         if (!stringListeners.containsKey(uuid) && !decimalListeners.containsKey(uuid)) { return; }
 

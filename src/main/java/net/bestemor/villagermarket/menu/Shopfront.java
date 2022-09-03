@@ -57,7 +57,7 @@ public class Shopfront {
 
         String editorTitle = ConfigManager.getString("menus.edit_shopfront.title").replace("%shop%", shop.getShopName());
         String detailedTitle =  (ConfigManager.getString("menus.shopfront.title") + " " + ConfigManager.getString("menus.shopfront.detail_suffix"))
-                .replace("%shop%", shop.getShopName());;
+                .replace("%shop%", shop.getShopName());
 
         if (isInfinite) {
             editorTitle += " | " + (page + 1);
@@ -278,7 +278,7 @@ public class Shopfront {
                         int slot = event.getSlot() + page * 45;
                         ItemStack cursor = event.getCursor();
                         
-                        if (current == null && cursor != null && cursor.getType() != Material.AIR) {
+                        if (cursor != null && cursor.getType() != Material.AIR) {
                             if (plugin.getShopManager().isBlackListed(cursor.getType())) {
                                 player.sendMessage(ConfigManager.getMessage("messages.blacklisted"));
 

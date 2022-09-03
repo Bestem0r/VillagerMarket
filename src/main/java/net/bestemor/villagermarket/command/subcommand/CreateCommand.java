@@ -3,6 +3,7 @@ package net.bestemor.villagermarket.command.subcommand;
 import net.bestemor.core.command.ISubCommand;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
+import net.bestemor.villagermarket.utils.VMUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -120,11 +121,12 @@ public class CreateCommand implements ISubCommand {
         }
         Entity entity = plugin.getShopManager().spawnShop(player.getLocation(), type);
         player.sendMessage(ConfigManager.getMessage("messages.id").replace("%id%", entity.getUniqueId().toString()));
-        if (Bukkit.getEntity(entity.getUniqueId()) != null) {
-            plugin.getShopManager().createShopConfig(entity.getUniqueId(), storageSize, shopSize, cost, type.toUpperCase(Locale.ROOT), duration);
-        } else {
+        if (VMUtils.getEntity(entity.getUniqueId()) == null) {
             Bukkit.getLogger().severe(ChatColor.RED + "Unable to spawn Villager! Does WorldGuard deny mobs pawn?");
+            return;
         }
+
+        plugin.getShopManager().createShopConfig(entity.getUniqueId(), storageSize, shopSize, cost, type.toUpperCase(Locale.ROOT), duration);
         player.playSound(player.getLocation(), ConfigManager.getSound("sounds.create_shop"), 1, 1);
     }
 

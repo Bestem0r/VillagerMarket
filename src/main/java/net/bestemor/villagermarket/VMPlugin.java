@@ -1,23 +1,20 @@
 package net.bestemor.villagermarket;
 
+import net.bestemor.core.CorePlugin;
 import net.bestemor.core.command.CommandModule;
 import net.bestemor.core.config.ConfigManager;
-import net.bestemor.core.menu.MenuListener;
 import net.bestemor.villagermarket.command.subcommand.*;
 import net.bestemor.villagermarket.listener.ChatListener;
 import net.bestemor.villagermarket.listener.EntityListener;
 import net.bestemor.villagermarket.listener.PlayerListener;
 import net.bestemor.villagermarket.shop.ShopManager;
-import net.bestemor.villagermarket.utils.UpdateChecker;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class VMPlugin extends JavaPlugin {
+public class VMPlugin extends CorePlugin {
 
     private Economy econ = null;
 
@@ -34,24 +31,14 @@ public class VMPlugin extends JavaPlugin {
     private boolean citizensEnabled;
 
     private ShopManager shopManager;
-    private MenuListener menuListener;
     private ChatListener chatListener;
     private PlayerListener playerListener;
 
     @Override
-    public void onEnable() {
+    protected void onPluginEnable() {
         setupEconomy();
 
         Metrics metrics = new Metrics(this, 8922);
-        getConfig().options().copyDefaults(true);
-        saveDefaultConfig();
-
-        ConfigManager.setConfig(getConfig());
-        ConfigManager.updateConfig(this);
-
-        ConfigManager.setLanguagePath("language");
-        ConfigManager.setLanguagesFolder(new File(getDataFolder(), "language"));
-        ConfigManager.loadLanguages(this, "en_US");
 
         ConfigManager.setPrefixPath("plugin_prefix");
 
@@ -60,13 +47,12 @@ public class VMPlugin extends JavaPlugin {
         setupCommands();
 
         this.shopManager = new ShopManager(this);
-        this.menuListener = new MenuListener(this);
         shopManager.load();
 
         this.playerListener = new PlayerListener(this);
         registerEvents();
 
-        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.0-#2 of VillagerMarket! Please expect and report all bugs in my discord server");
+        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.0-#4 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
@@ -75,40 +61,28 @@ public class VMPlugin extends JavaPlugin {
             }
         }, 31);
 
-        new UpdateChecker(this, 82965).getVersion(version -> {
-            String currentVersion = this.getDescription().getVersion();
-            if (!currentVersion.equalsIgnoreCase(version)) {
-                String foundVersion = ChatColor.AQUA + "A new version of VillagerMarket was found!";
-                String latestVersion = ChatColor.AQUA + "Latest version: " + ChatColor.GREEN + version;
-                String yourVersion = ChatColor.AQUA + "Your version: " + ChatColor.RED + currentVersion;
-                String downloadVersion = ChatColor.AQUA + "Get it here for the latest features and bug fixes: " + ChatColor.YELLOW + "https://www.spigotmc.org/resources/82965/";
-
-                getLogger().warning(foundVersion);
-                getLogger().warning(latestVersion);
-                getLogger().warning(yourVersion);
-                getLogger().warning(downloadVersion);
-            }
-        });
-
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
             new PlaceholderManager(this).register();
         }
 
         VillagerMarketAPI.init(this);
-
-        super.onEnable();
     }
 
     @Override
-    public void onDisable() {
+    protected String[] getLanguages() {
+        return new String[]{"en_US"};
+    }
 
-        menuListener.closeAll();
+    @Override
+    protected String getLanguageFolder() {
+        return "language";
+    }
+
+    @Override
+    protected void onPluginDisable() {
         shopManager.closeAllShopfronts();
         shopManager.saveAll();
-        Bukkit.getScheduler().cancelTasks(this);
         if (getConfig().getBoolean("auto_log")) saveLog();
-
-        super.onDisable();
     }
 
     private void setupCommands() {
@@ -133,9 +107,7 @@ public class VMPlugin extends JavaPlugin {
     }
 
     public void reloadConfiguration() {
-        ConfigManager.clearCache();
         reloadConfig();
-        ConfigManager.setConfig(getConfig());
         this.citizensEnabled = Bukkit.getPluginManager().getPlugin("Citizens") != null;
     }
 
@@ -154,7 +126,6 @@ public class VMPlugin extends JavaPlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new EntityListener(this), this);
         pluginManager.registerEvents(playerListener, this);
-        pluginManager.registerEvents(menuListener, this);
         pluginManager.registerEvents(chatListener, this);
     }
 
@@ -175,9 +146,6 @@ public class VMPlugin extends JavaPlugin {
 
     public ShopManager getShopManager() {
         return shopManager;
-    }
-    public MenuListener getMenuListener() {
-        return menuListener;
     }
     public ChatListener getChatListener() {
         return chatListener;

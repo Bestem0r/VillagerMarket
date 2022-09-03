@@ -8,7 +8,9 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.config.VersionUtils;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.event.PlaceShopEggEvent;
 import net.bestemor.villagermarket.menu.Shopfront;
@@ -16,7 +18,7 @@ import net.bestemor.villagermarket.shop.AdminShop;
 import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.ShopMenu;
 import net.bestemor.villagermarket.shop.VillagerShop;
-import net.bestemor.villagermarket.utils.UpdateChecker;
+import net.bestemor.villagermarket.utils.VMUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -64,7 +66,7 @@ public class PlayerListener implements Listener {
     public void playerRightClick(PlayerInteractEntityEvent event) {
         Player p = event.getPlayer();
 
-        if (event.getHand() == EquipmentSlot.OFF_HAND) { return; }
+        if (VersionUtils.getMCVersion() >= 9 && event.getHand() == EquipmentSlot.OFF_HAND) { return; }
 
         if (cancelledPlayers.contains(p.getUniqueId())) {
             return;
@@ -121,10 +123,31 @@ public class PlayerListener implements Listener {
         }
 
         ItemMeta itemMeta = itemStack.getItemMeta();
-        PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-        Location clickedLoc = event.getClickedBlock().getLocation();
 
-        if (dataContainer.has(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING)) {
+        boolean isVMItem;
+        int storageSize = 1;
+        int shopSize = 1;
+
+        String data = null;
+        if (VersionUtils.getMCVersion() >= 14) {
+            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            isVMItem = dataContainer.has(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING);
+            if (isVMItem) {
+                data = dataContainer.get(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING);
+            }
+        } else {
+            NBTItem nbtItem = new NBTItem(itemStack);
+            data = nbtItem.getString("vm-item");
+            isVMItem = data != null;
+        }
+
+        if (isVMItem && data != null) {
+            shopSize = Integer.parseInt(data.split("-")[0]);
+            storageSize = Integer.parseInt(data.split("-")[1]);
+        }
+
+        if (isVMItem) {
+            Location clickedLoc = event.getClickedBlock().getLocation();
             event.setCancelled(true);
 
             int max = plugin.getShopManager().getMaxShops(player);
@@ -174,10 +197,6 @@ public class PlayerListener implements Listener {
                 player.sendMessage(ConfigManager.getMessage("messages.no_permission_use_item"));
                 return;
             }
-
-            String data = dataContainer.get(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING);
-            int shopSize = Integer.parseInt(data.split("-")[0]);
-            int storageSize = Integer.parseInt(data.split("-")[1]);
             Location location = clickedLoc.clone().add(0.5, 1, 0.5);
 
             PlaceShopEggEvent eggEvent = new PlaceShopEggEvent(player, location, shopSize, storageSize);
@@ -188,7 +207,7 @@ public class PlayerListener implements Listener {
 
 
             Entity entity = plugin.getShopManager().spawnShop(location, "player");
-            if (Bukkit.getEntity(entity.getUniqueId()) != null) {
+            if (VMUtils.getEntity(entity.getUniqueId()) != null) {
                 plugin.getShopManager().createShopConfig(entity.getUniqueId(), storageSize, shopSize, -1, "player", "infinite");
                 PlayerShop playerShop = (PlayerShop) plugin.getShopManager().getShop(entity.getUniqueId());
                 playerShop.setOwner(player);
@@ -209,7 +228,7 @@ public class PlayerListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
 
         Player player = event.getPlayer();
-        if (player.hasPermission("villagermarket.admin") && !ConfigManager.getBoolean("disable_update_announce")) {
+        /*if (player.hasPermission("villagermarket.admin") && !ConfigManager.getBoolean("disable_update_announce")) {
             new UpdateChecker(plugin, 82965).getVersion(version -> {
                 String currentVersion = plugin.getDescription().getVersion();
                 if (!currentVersion.equalsIgnoreCase(version)) {
@@ -220,7 +239,7 @@ public class PlayerListener implements Listener {
                     player.sendMessage(ConfigManager.getString("plugin_prefix") + " " + downloadVersion);
                 }
             });
-        }
+        }*/
         if (plugin.getShopManager().getExpiredStorages().containsKey(player.getUniqueId())) {
             player.sendMessage(ConfigManager.getMessage("messages.expired"));
         }

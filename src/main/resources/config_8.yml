@@ -90,24 +90,24 @@ expire_check_interval: 10
 #----------------------- Sounds -----------------------#
 
 sounds:
-  create_shop: ENTITY_VILLAGER_TRADE
-  open_shop: ENTITY_VILLAGER_TRADE
-  menu_click: UI_BUTTON_CLICK
-  buy_shop: ENTITY_EXPERIENCE_ORB_PICKUP
-  add_item: ENTITY_EXPERIENCE_ORB_PICKUP
-  remove_item: BLOCK_LAVA_EXTINGUISH
-  buy_item: ENTITY_ITEM_PICKUP
-  sell_item: ENTITY_EXPERIENCE_ORB_PICKUP
-  back: UI_BUTTON_CLICK
-  change_profession: ITEM_ARMOR_EQUIP_LEATHER
-  sell_shop: ENTITY_EXPERIENCE_ORB_PICKUP
-  remove_villager: BLOCK_LAVA_EXTINGUISH
-  quick_add: ENTITY_ITEM_PICKUP
-  expired: BLOCK_ANVIL_DESTROY
-  increase_time: ENTITY_EXPERIENCE_ORB_PICKUP
-  collect_money: ENTITY_EXPERIENCE_ORB_PICKUP
-  max_shops: BLOCK_ANVIL_DESTROY
-  give_shop_item: ENTITY_ITEM_PICKUP
+  create_shop: VILLAGER_YES
+  open_shop: VILLAGER_YES
+  menu_click: CLICK
+  buy_shop: ORB_PICKUP
+  add_item: ORB_PICKUP
+  remove_item: FIZZ
+  buy_item: ITEM_PICKUP
+  sell_item: ORB_PICKUP
+  back: CLICK
+  change_profession: HORSE_ARMOR
+  sell_shop: ORB_PICKUP
+  remove_villager: FIZZ
+  quick_add: ITEM_PICKUP
+  expired: ANVIL_DESTROY
+  increase_time: ORB_PICKUP
+  collect_money: ORB_PICKUP
+  max_shops: ANVIL_DESTROY
+  give_shop_item: ITEM_PICKUP
 
 #----------------------- Other settings -----------------------#
 

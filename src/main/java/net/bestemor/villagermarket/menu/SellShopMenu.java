@@ -8,11 +8,9 @@ import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.ShopMenu;
 import net.bestemor.villagermarket.shop.VillagerShop;
-import org.bukkit.Bukkit;
+import net.bestemor.villagermarket.utils.VMUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.math.BigDecimal;
@@ -50,7 +48,7 @@ public class SellShopMenu extends Menu {
             if (playerShop.getCost() != -1) {
                 player.sendMessage(ConfigManager.getMessage("messages.sold_shop"));
             } else if (plugin.getConfig().getBoolean("drop_spawn_egg")) {
-                Location location = Bukkit.getEntity(playerShop.getEntityUUID()).getLocation();
+                Location location = VMUtils.getEntity(playerShop.getEntityUUID()).getLocation();
                 location.getWorld().dropItemNaturally(location, plugin.getShopManager().getShopItem(plugin, shop.getShopSize() / 9, shop.getStorageSize() / 9, 1));
                 plugin.getShopManager().removeShop(shop.getEntityUUID());
             }

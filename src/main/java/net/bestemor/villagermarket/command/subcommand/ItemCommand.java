@@ -1,10 +1,10 @@
 package net.bestemor.villagermarket.command.subcommand;
 
 import net.bestemor.core.command.ISubCommand;
+import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -67,7 +67,7 @@ public class ItemCommand implements ISubCommand {
             amount = Integer.parseInt(args[5]);
         }
         target.getInventory().addItem(plugin.getShopManager().getShopItem(plugin, shopSize, storageSize, amount));
-        target.playSound(target.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 1);
+        target.playSound(target.getLocation(), ConfigManager.getSound("sounds.give_shop_item"), 1, 1);
     }
 
     private boolean canConvert(String string) {

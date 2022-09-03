@@ -129,7 +129,7 @@ items:
     material: ARROW
   filler:
     name: ""
-    material: GRAY_STAINED_GLASS_PANE
+    material: STAINED_GLASS_PANE:7
   next:
     name: "&eNext"
     material: FEATHER
@@ -155,7 +155,7 @@ menus:
       storage_size:
         #Placeholders: %amount%
         name: "&a%amount%&7 storage slots"
-        material: WRITABLE_BOOK
+        material: BOOK_AND_QUILL 
       buy_shop:
         material: EMERALD
         name: "&aBuy this shop!"
@@ -171,7 +171,7 @@ menus:
     items:
       #Edit items for sale item
       edit_shopfront:
-        material: WRITABLE_BOOK
+        material: BOOK_AND_QUILL 
         name: "&bEdit shopfront"
         lore:
           - "&7Click to edit the items for"
@@ -190,7 +190,7 @@ menus:
           - "&7Click to edit shop storage"
       #Edit villager item
       edit_villager:
-        material: VILLAGER_SPAWN_EGG
+        material: MONSTER_EGG
         name: "&eEdit villager"
         lore:
           - "&7Click to edit the profession"
@@ -411,7 +411,7 @@ menus:
     title: "&8Edit villager"
     #This requires citizens to be on the server
     citizens_item:
-      material: PLAYER_HEAD
+      material: SKULL_ITEM
       name: "&eSet skin instead"
       lore:
         - "&7Click to set player skin for this shop"
@@ -420,7 +420,7 @@ menus:
         material: IRON_CHESTPLATE
         name: "&7Armorer"
       butcher:
-        material: PORKCHOP
+        material: PORK
         name: "&cButcher"
       cartographer:
         material: MAP
@@ -459,7 +459,7 @@ menus:
         material: IRON_SWORD
         name: "&7Weapon Smith"
       none:
-        material: VILLAGER_SPAWN_EGG
+        material: MONSTER_EGG
         name: "&cNone"
       #Legacy versions
       blacksmith:
@@ -474,11 +474,11 @@ menus:
     title: "&8Are you sure?"
     items:
       no_cancel:
-        material: RED_TERRACOTTA
+        material: STAINED_CLAY:14
         name: "&cNo, cancel"
       #If the Shop is reusable (created by command)
       yes_sell:
-        material: LIME_TERRACOTTA
+        material: STAINED_CLAY:5
         name: "&aYes, sell shop"
         #Placeholders: %amount%
         lore:
@@ -488,7 +488,7 @@ menus:
           - ""
       #If the Shop isn't reusable (created using a spawn egg)
       yes_remove:
-        material: LIME_TERRACOTTA
+        material: STAINED_CLAY:5
         name: "&aYes, remove shop"
         lore:
           - "&7This will &cremove &7the"
@@ -516,7 +516,7 @@ menus:
 
     items:
       mode:
-        material: OAK_SIGN
+        material: SIGN
         name: "&eMode&7: %mode%"
         #%cycle% is replaced with cycle values above
         lore:
@@ -555,7 +555,7 @@ menus:
         lore:
           - "&7Click to edit"
       player_limit:
-        material: PLAYER_HEAD
+        material: SKULL_ITEM
         name: "&ePlayer Limit&7: &f%limit%"
         lore:
           - "&7>> Right click to cycle:"
@@ -563,7 +563,7 @@ menus:
           - ""
           - "&7>> Left click to edit"
       limit_cooldown:
-        material: CLOCK
+        material: WATCH
         name: "&eLimit cooldown&7: &f%cooldown%"
         lore:
           - "&7Next limit reset: &e%next%"
@@ -574,10 +574,10 @@ menus:
     title: "&8Are you sure?"
     items:
       accept:
-        material: GREEN_TERRACOTTA
+        material: STAINED_CLAY:5
         name: "&aYes, confirm"
       cancel:
-        material: RED_TERRACOTTA
+        material: STAINED_CLAY:14
         name: "&cNo, cancel"
 
 
@@ -588,7 +588,7 @@ menus:
 #----------------- Villager Shop Item settings -----------------#
 
 shop_item:
-  material: VILLAGER_SPAWN_EGG
+  material: MONSTER_EGG
   name: "&b&lCreate Villager Shop!"
   #Placeholders: %shop_size%, %storage_size%
   lore:

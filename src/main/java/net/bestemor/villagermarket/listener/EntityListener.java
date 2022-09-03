@@ -1,11 +1,14 @@
 package net.bestemor.villagermarket.listener;
 
+import net.bestemor.core.config.VersionUtils;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.shop.ShopMenu;
 import net.bestemor.villagermarket.shop.VillagerShop;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -19,6 +22,16 @@ public class EntityListener implements Listener {
     
     public EntityListener(VMPlugin plugin) {
         this.plugin = plugin;
+        if (VersionUtils.getMCVersion() > 13) {
+            Bukkit.getPluginManager().registerEvents(new Listener() {
+                @EventHandler
+                public void onCareerChange(VillagerCareerChangeEvent event) {
+                    if (plugin.getShopManager().getShop(event.getEntity().getUniqueId()) != null) {
+                        event.setCancelled(true);
+                    }
+                }
+            }, plugin);
+        }
     }
     
     @EventHandler
@@ -29,9 +42,9 @@ public class EntityListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.HIGH)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (event.getEntity().isInvulnerable() && plugin.getShopManager().getShop(event.getEntity().getUniqueId()) != null) {
+        if (plugin.getShopManager().getShop(event.getEntity().getUniqueId()) != null) {
             event.setCancelled(true);
         }
     }
@@ -59,12 +72,4 @@ public class EntityListener implements Listener {
             }
         }
     }
-
-    @EventHandler
-    public void onCareerChange(VillagerCareerChangeEvent event) {
-        if (plugin.getShopManager().getShop(event.getEntity().getUniqueId()) != null) {
-            event.setCancelled(true);
-        }
-    }
-
 }
