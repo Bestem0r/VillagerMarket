@@ -129,6 +129,11 @@ public class VMPlugin extends CorePlugin {
         pluginManager.registerEvents(chatListener, this);
     }
 
+    @Override
+    protected int getSpigotResourceID() {
+        return 82965;
+    }
+
     /** Saves log to /log/ folder and clears log */
     public void saveLog() {
         String fileName = new Date().toString().replace(":","-");
