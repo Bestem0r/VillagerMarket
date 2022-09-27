@@ -18,6 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 public class EditItemMenu extends Menu {
 
@@ -99,7 +100,7 @@ public class EditItemMenu extends Menu {
                     .replace("%limit%", limit)
                     .replace("%cycle%", ConfigManager.getString("menus.edit_item.limit_cycle." + cycleName)).build(), this::handleLimit));
 
-        } else if (shopItem.getMode() == ItemMode.BUY) {
+        } else if (shopItem.getMode() == ItemMode.BUY || shopItem.getMode() == ItemMode.BUY_AND_SELL) {
             content.setClickable(31, Clickable.of(ConfigManager.getItem("menus.edit_item.items.buy_limit")
                     .replace("%limit%", limit).build(), this::handleLimit));
         }
@@ -109,13 +110,15 @@ public class EditItemMenu extends Menu {
             ItemMeta meta = commandItem.getItemMeta();
             List<String> lore = meta.getLore();
 
-            String commandLine = lore.stream().filter(l -> l.contains("%command%")).findFirst().get();
-            int index = lore.indexOf(commandLine);
-            lore.removeIf(l -> l.contains("%command%"));
+            Optional<String> commandLine = lore.stream().filter(l -> l.contains("%command%")).findFirst();
+            if (commandLine.isPresent()) {
+                int index = lore.indexOf(commandLine.get());
+                lore.removeIf(l -> l.contains("%command%"));
 
-            for (String command : shopItem.getCommands()) {
-                lore.add(index, commandLine.replace("%command%", command));
-                index++;
+                for (String command : shopItem.getCommands()) {
+                    lore.add(index, commandLine.get().replace("%command%", command));
+                    index++;
+                }
             }
             meta.setLore(lore);
             commandItem.setItemMeta(meta);

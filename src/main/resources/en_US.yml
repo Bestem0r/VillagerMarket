@@ -12,16 +12,24 @@ time:
   never: "never"
   indefinitely: "indefinitely"
   less_than_a_minute: "Less than a minute"
+
 #Quantity localization
 quantity:
   free: "free"
   infinite: "infinite"
   unlimited: "unlimited"
+
 #Villager status (Used for PAPI placeholders)
 status:
   available: "&aAvailable"
   bought: "&cBought"
   no_owner: "&7None"
+
+#Villager name settings
+villager:
+  name_admin: "&cAdmin Shop"
+  name_available: "&aAvailable shop!"
+  name_taken: "&b%player%'s shop" #Placeholders: %player%
 
 
 #----------------------- Messages -----------------------#

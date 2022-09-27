@@ -46,10 +46,6 @@ language: en_US
 #----------------------- Villager settings -----------------------#
 
 villager:
-  #These are the default settings for created Villager Shops
-  name_admin: "&cAdmin Shop"
-  name_available: "&aAvailable shop!"
-  name_taken: "&b%player%'s shop" #Placeholders: %player%
   name_always_display: false
   killable: false
   #Enabling this will make the villagers move around like normal

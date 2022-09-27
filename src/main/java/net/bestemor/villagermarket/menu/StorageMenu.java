@@ -90,7 +90,7 @@ public class StorageMenu extends Menu {
     @Override
     protected void onClick(InventoryClickEvent event) {
         int size = event.getView().getTopInventory().getSize();
-        if (isInfinite ? (event.getRawSlot() < size - 9 || event.getRawSlot() > size) : (event.getRawSlot() != size - 1)) {
+        if (isInfinite ? (event.getRawSlot() < size - 9 || event.getRawSlot() > size - 1) : (event.getRawSlot() != size - 1)) {
             event.setCancelled(false);
         }
     }

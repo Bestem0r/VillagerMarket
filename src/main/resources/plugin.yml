@@ -17,6 +17,7 @@ softdepend:
   - PlaceholderAPI
   - Citizens
   - Towny
+  - NBTApi
 commands:
   vm:
     description: List all Villager Market commands
