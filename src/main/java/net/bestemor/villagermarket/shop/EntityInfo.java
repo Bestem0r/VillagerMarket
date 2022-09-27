@@ -41,7 +41,7 @@ public class EntityInfo {
             if (isProfession(professionString)) {
                 this.profession = Villager.Profession.valueOf(professionString);
             } else {
-                this.profession = Villager.Profession.NONE;
+                this.profession = VersionUtils.getMCVersion() < 14 ? Villager.Profession.FARMER : Villager.Profession.NONE;
             }
             World world = Bukkit.getWorld(config.getString("entity.location.world"));
             if (world != null) {

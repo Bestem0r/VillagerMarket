@@ -89,7 +89,6 @@ public class ChatListener implements Listener {
     public void onEntityInteract(PlayerInteractEntityEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
 
-        Bukkit.getLogger().info(VersionUtils.getMCVersion() + "");
         if (VersionUtils.getMCVersion() >= 9 && event.getHand() == EquipmentSlot.OFF_HAND) { return; }
 
         if (!stringListeners.containsKey(uuid) && !decimalListeners.containsKey(uuid)) { return; }

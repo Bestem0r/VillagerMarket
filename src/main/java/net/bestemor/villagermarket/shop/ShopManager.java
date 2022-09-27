@@ -97,7 +97,9 @@ public class ShopManager {
             villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 128, false, false));
         }
 
-        villager.setProfession(Villager.Profession.valueOf(ConfigManager.getString("villager.default_profession")));
+        String defaultProfession = ConfigManager.getString("villager.default_profession");
+        defaultProfession = VersionUtils.getMCVersion() < 14 && defaultProfession.equals("NONE") ? "FARMER" : defaultProfession;
+        villager.setProfession(Villager.Profession.valueOf(defaultProfession));
         String namePath = (type.equalsIgnoreCase("player") ? "name_available" : "name_admin");
         villager.setCustomName(ConfigManager.getString("villager." + namePath));
         villager.setCustomNameVisible(plugin.getConfig().getBoolean("villager.name_always_display"));
