@@ -48,11 +48,8 @@ public class PlayerListener implements Listener {
     private final List<UUID> cancelledPlayers = new ArrayList<>();
     private final Map<UUID, Entity> cachedEntities = new HashMap<>();
 
-    private final boolean performanceMode;
-
     public PlayerListener(VMPlugin plugin) {
         this.plugin = plugin;
-        this.performanceMode = ConfigManager.getBoolean("look_close_caching");
     }
 
     public void addCancelledPlayer(UUID uuid) {
@@ -109,7 +106,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         Player p = event.getPlayer();
-        for (Entity e : performanceMode ? cachedEntities.values() : plugin.getShopManager().getEntities()) {
+        for (Entity e : cachedEntities.values()) {
             if (p.getWorld().getName().equals(e.getWorld().getName()) && p.getLocation().distanceSquared(e.getLocation()) < 25) {
                 e.teleport(e.getLocation().setDirection(p.getLocation().subtract(e.getLocation()).toVector()));
             }

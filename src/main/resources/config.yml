@@ -35,9 +35,6 @@ per_adminshop_permissions: false
 buy_shop_permission: false
 #Will drop spawn egg when a shops created with spawn egg is removed
 drop_spawn_egg: true
-#Shops must be interacted with before shopkeeper will look at nearby players
-#Enable if you are experiencing lag issues on large servers
-look_close_caching: false
 #Will disable announcing new updates when joining
 disable_update_announce: false
 #Language to use

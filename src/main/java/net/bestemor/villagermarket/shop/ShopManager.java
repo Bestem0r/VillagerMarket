@@ -242,7 +242,7 @@ public class ShopManager {
 
     /** Thread check if rent time has expired and runs abandon() method */
     private void beginExpireThread() {
-        long interval = 20 * ConfigManager.getLong("expire_check_interval");
+        long interval = 20L * ConfigManager.getInt("expire_check_interval");
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             for (VillagerShop villagerShop : shops.values()) {
@@ -263,16 +263,16 @@ public class ShopManager {
         }, 20L, interval);
     }
 
-    public List<Entity> getEntities() {
+    public List<UUID> geEntityUUIDs() {
         return shops.values().stream()
-                .map(s -> VMUtils.getEntity(s.entityUUID))
+                .map(VillagerShop::getEntityUUID)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
     /** Thread updates redstone output for all Villagers */
     private void beginRedstoneThread() {
-        long interval = 20 * ConfigManager.getLong("redstone_update_interval");
+        long interval = 20L * ConfigManager.getInt("redstone_update_interval");
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
             for (VillagerShop villagerShop : shops.values()) {

@@ -312,6 +312,8 @@ public class PlayerShop extends VillagerShop {
             player.sendMessage(ConfigManager.getMessage("messages.expired"));
         }
 
+        VMPlugin.log.add(new Date() + ": " + offlinePlayer.getName() + " abandoned shop: " + entityUUID.toString());
+
         storageHolder.clear();
         trustedPlayers.clear();
         shopfrontHolder.closeAll();
@@ -323,7 +325,6 @@ public class PlayerShop extends VillagerShop {
         super.timesRented = 0;
         super.updateMenu(ShopMenu.EDIT_SHOP);
 
-        VMPlugin.log.add(new Date() + ": " + offlinePlayer.getName() + " abandoned shop: " + entityUUID.toString());
         updateRedstone(false);
     }
 
