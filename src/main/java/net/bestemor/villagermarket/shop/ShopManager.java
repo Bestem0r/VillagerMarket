@@ -1,6 +1,6 @@
 package net.bestemor.villagermarket.shop;
 
-import de.tr7zw.changeme.nbtapi.NBTItem;
+import de.tr7zw.nbtapi.NBTItem;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.config.VersionUtils;
 import net.bestemor.villagermarket.VMPlugin;
