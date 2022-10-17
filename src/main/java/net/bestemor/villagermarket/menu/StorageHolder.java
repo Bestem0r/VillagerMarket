@@ -19,6 +19,7 @@ public class StorageHolder {
 
     private final int size;
     private final boolean isInfinite;
+    private boolean addAllowed = true;
 
     public StorageHolder(VMPlugin plugin, PlayerShop shop) {
         this.plugin = plugin;
@@ -127,6 +128,20 @@ public class StorageHolder {
                 storage.addItem(i);
                 break;
             }
+        }
+    }
+
+    public void setAddingAllowed(boolean b) {
+        this.addAllowed = b;
+    }
+
+    public boolean isAddAllowed() {
+        return addAllowed;
+    }
+
+    public void closeAll() {
+        for (StorageMenu storageMenu : storageMenus) {
+            storageMenu.close();
         }
     }
 }

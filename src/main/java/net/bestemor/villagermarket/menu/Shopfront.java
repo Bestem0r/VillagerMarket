@@ -111,7 +111,9 @@ public class Shopfront {
                 customerInventories.get(uuid).setContents(getCustomerInventory(p).getContents());
             }
         }
-        updateDetailedInventory();
+        if (!ConfigManager.getBoolean("disable_lore_toggle")) {
+            updateDetailedInventory();
+        }
         updateEditorInventory();
     }
 
@@ -130,7 +132,9 @@ public class Shopfront {
             customerInventory.setItem(slot, item.getCustomerItem(player));
         }
         buildBottom(customerInventory);
-        customerInventory.setItem(size - 1, details);
+        if (!ConfigManager.getBoolean("disable_lore_toggle")) {
+            customerInventory.setItem(size - 1, details);
+        }
 
         return customerInventory;
     }
@@ -144,7 +148,6 @@ public class Shopfront {
             detailedInventory.setItem(slot, item.getRawItem());
         }
         buildBottom(detailedInventory);
-        detailedInventory.setItem(size - 1, details);
     }
     private void updateEditorInventory() {
         editorInventory.clear();
@@ -219,8 +222,6 @@ public class Shopfront {
         public void onClick(InventoryClickEvent event) {
             if (this.player != event.getWhoClicked()) { return; }
             if (event.getRawSlot() < 0) { return; }
-
-            ItemStack current = event.getCurrentItem();
 
             if (type == Type.DETAILED || type == Type.CUSTOMER) {
                 event.setCancelled(true);

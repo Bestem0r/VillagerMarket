@@ -29,7 +29,7 @@ require_collect: false
 #Enable per-adminshop permission requirements. The required
 #permission will be based on the UUID of the shop:
 #e.g. villagermarket.adminshop.01b0be53-aa98-471c-86c7-a12fbf4e7482
-#You can retrieve a shop"s UUID with /vm getid
+#You can retrieve a shop's UUID with /vm getid
 per_adminshop_permissions: false
 #Will require villagermarket.buy_shop to buy shops
 buy_shop_permission: false
@@ -37,6 +37,8 @@ buy_shop_permission: false
 drop_spawn_egg: true
 #Will disable announcing new updates when joining
 disable_update_announce: false
+#Will disable the 'toggle lore' button for shopfronts
+disable_lore_toggle: false
 #Language to use
 language: en_US
 

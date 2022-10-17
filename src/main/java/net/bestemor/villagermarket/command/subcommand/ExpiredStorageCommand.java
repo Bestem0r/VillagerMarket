@@ -31,6 +31,7 @@ public class ExpiredStorageCommand implements ISubCommand {
 
             if (plugin.getShopManager().getExpiredStorages().containsKey(player.getUniqueId())) {
                 final StorageHolder holder = new StorageHolder(plugin, 0);
+                holder.setAddingAllowed(false);
                 holder.loadItems(plugin.getShopManager().getExpiredStorages().get(player.getUniqueId()));
 
                 holder.setCloseEvent(() -> {

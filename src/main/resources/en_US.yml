@@ -111,7 +111,7 @@ messages:
   name_blacklisted: "&cYou are not allowed to use this shop name!"
   max_item_price: "&cItem price too high! Please retry with a lower price."
   shopfront_cooldown: "&cPlease wait before buying/selling again!"
-  max_name_length: "&cThis name is too long! Maximum name length is 12 characters."
+  max_name_length: "&cThis name is too long! Maximum name length is %limit% characters."
   clone_shop: "&7Right click the &bVillager Shop &7you want to clone."
   shop_cloned: "&aVillager Shop successfully cloned. Move it using &e/vm move&a."
   set_size: "&7Right click the &bVillager Shop &7you want to set size for."

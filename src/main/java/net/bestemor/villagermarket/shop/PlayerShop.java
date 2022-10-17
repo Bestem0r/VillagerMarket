@@ -280,6 +280,8 @@ public class PlayerShop extends VillagerShop {
     public void abandon() {
         Bukkit.getPluginManager().callEvent(new AbandonShopEvent(this));
 
+        closeAllMenus();
+
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ownerUUID);
         Economy economy = plugin.getEconomy();
 
@@ -347,6 +349,12 @@ public class PlayerShop extends VillagerShop {
     /** Returns true if rent has expired, false if not */
     public boolean hasExpired() {
         return seconds != 0 && expireDate != null && expireDate.isBefore(Instant.now());
+    }
+
+    @Override
+    public void closeAllMenus() {
+        storageHolder.closeAll();
+        super.closeAllMenus();
     }
 
     @Override

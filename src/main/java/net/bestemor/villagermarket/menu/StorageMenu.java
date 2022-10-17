@@ -6,7 +6,9 @@ import net.bestemor.core.menu.Menu;
 import net.bestemor.core.menu.MenuContent;
 import net.bestemor.core.menu.MenuListener;
 import net.bestemor.villagermarket.utils.VMUtils;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
@@ -90,6 +92,16 @@ public class StorageMenu extends Menu {
     @Override
     protected void onClick(InventoryClickEvent event) {
         int size = event.getView().getTopInventory().getSize();
+        if (!holder.isAddAllowed()) {
+            if (event.getRawSlot() >= size && event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                event.setCancelled(true);
+                return;
+            }
+            if (event.getRawSlot() < size && event.getCursor() != null && event.getCursor().getType() != Material.AIR) {
+                event.setCancelled(true);
+                return;
+            }
+        }
         if (isInfinite ? (event.getRawSlot() < size - 9 || event.getRawSlot() > size - 1) : (event.getRawSlot() != size - 1)) {
             event.setCancelled(false);
         }

@@ -118,7 +118,8 @@ public class EditShopMenu extends Menu {
                     }
                 }
                 if (result.length() > ConfigManager.getInt("villager.max_name_length")) {
-                    player.sendMessage(ConfigManager.getMessage("messages.max_name_length"));
+                    player.sendMessage(ConfigManager.getMessage("messages.max_name_length")
+                            .replace("%limit%", String.valueOf(ConfigManager.getInt("villager.max_name_length"))));
                     return;
                 }
 
