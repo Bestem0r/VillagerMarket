@@ -28,7 +28,7 @@ public class AdminShop extends VillagerShop {
 
         BigDecimal price = shopItem.getPrice();
 
-        if (!shopItem.verifyPurchase(player)) {
+        if (!shopItem.verifyPurchase(player, ItemMode.SELL)) {
             return;
         }
         ConfigManager.CurrencyBuilder message = ConfigManager.getCurrencyBuilder("messages.bought_item_as_customer")
@@ -72,7 +72,7 @@ public class AdminShop extends VillagerShop {
         int amount = shopItem.getAmount();
         BigDecimal price = shopItem.getPrice();
 
-        if (!shopItem.verifyPurchase(player)) {
+        if (!shopItem.verifyPurchase(player, ItemMode.BUY)) {
             return;
         }
 

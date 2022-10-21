@@ -282,43 +282,43 @@ public class ShopItem {
         return getItemName(item);
     }
 
-    public boolean verifyPurchase(Player player) {
-        return verifyPurchase(player, null,null);
+    public boolean verifyPurchase(Player player, ItemMode verifyMode) {
+        return verifyPurchase(player, verifyMode, null,null);
     }
-    public boolean verifyPurchase(Player customer, OfflinePlayer owner, StorageHolder storage) {
+    public boolean verifyPurchase(Player customer, ItemMode verifyMode, OfflinePlayer owner, StorageHolder storage) {
 
         if (owner != null && customer.getUniqueId().equals(owner.getUniqueId())) {
-            customer.sendMessage(ConfigManager.getMessage("messages.cannot_" + (mode == SELL ?  "buy_from" :"sell_to") + "_yourself"));
+            customer.sendMessage(ConfigManager.getMessage("messages.cannot_" + (verifyMode == SELL ?  "buy_from" :"sell_to") + "_yourself"));
             return false;
         }
         Economy economy = plugin.getEconomy();
-        if (mode == SELL && isItemTrade() && getAmountInventory(itemTrade, customer.getInventory()) < itemTrade.getAmount()) {
+        if (verifyMode == SELL && isItemTrade() && getAmountInventory(itemTrade, customer.getInventory()) < itemTrade.getAmount()) {
             customer.sendMessage(ConfigManager.getMessage("messages.not_enough_in_inventory"));
             return false;
         }
-        if (!isItemTrade() && mode == SELL && storage != null && storage.getAmount(item.clone()) < getAmount()) {
+        if (!isItemTrade() && verifyMode == SELL && storage != null && storage.getAmount(item.clone()) < getAmount()) {
             customer.sendMessage(ConfigManager.getMessage("messages.not_enough_stock"));
             return false;
         }
-        if (!isItemTrade() && mode == SELL && itemTrade == null && economy.getBalance(customer) < getPrice().doubleValue()) {
+        if (!isItemTrade() && verifyMode == SELL && itemTrade == null && economy.getBalance(customer) < getPrice().doubleValue()) {
             customer.sendMessage(ConfigManager.getMessage("messages.not_enough_money"));
             return false;
         }
-        if (!isItemTrade() && mode == BUY && owner != null && itemTrade == null && economy.getBalance(owner) < getPrice().doubleValue()) {
+        if (!isItemTrade() && verifyMode == BUY && owner != null && itemTrade == null && economy.getBalance(owner) < getPrice().doubleValue()) {
             customer.sendMessage(ConfigManager.getMessage("messages.owner_not_enough_money"));
             return false;
         }
-        if (mode == ItemMode.BUY && getAmountInventory(item.clone(), customer.getInventory()) < getAmount()) {
+        if (verifyMode == ItemMode.BUY && getAmountInventory(item.clone(), customer.getInventory()) < getAmount()) {
             customer.sendMessage(ConfigManager.getMessage("messages.not_enough_in_inventory"));
             return false;
         }
-        if ((mode == BUY || isItemTrade()) && available != -1 && getAmount() > available) {
+        if ((verifyMode == BUY || isItemTrade()) && available != -1 && getAmount() > available) {
             customer.sendMessage(ConfigManager.getMessage("messages.reached_" + (isItemTrade() ? "buy" : "sell") + "_limit"));
             return false;
         }
         boolean bypass = customer.hasPermission("villagermarket.bypass_limit");
         if (isAdmin && !bypass && limit > 0 && ((limitMode == LimitMode.SERVER && serverTrades >= limit) || (limitMode == LimitMode.PLAYER && getPlayerLimit(customer) >= limit))) {
-            customer.sendMessage(ConfigManager.getMessage("messages.reached_" + (mode == BUY ? "sell" : "buy") + "_limit"));
+            customer.sendMessage(ConfigManager.getMessage("messages.reached_" + (verifyMode == BUY ? "sell" : "buy") + "_limit"));
             return false;
         }
         return true;

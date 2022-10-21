@@ -28,8 +28,6 @@ public class VMPlugin extends CorePlugin {
 
     public static final List<String> log = new ArrayList<>();
 
-    private boolean citizensEnabled;
-
     private ShopManager shopManager;
     private ChatListener chatListener;
     private PlayerListener playerListener;
@@ -52,7 +50,7 @@ public class VMPlugin extends CorePlugin {
         this.playerListener = new PlayerListener(this);
         registerEvents();
 
-        //Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.2-#1 of VillagerMarket! Please expect and report all bugs in my discord server");
+        //Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.3-#1 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
@@ -108,7 +106,6 @@ public class VMPlugin extends CorePlugin {
 
     public void reloadConfiguration() {
         reloadConfig();
-        this.citizensEnabled = Bukkit.getPluginManager().getPlugin("Citizens") != null;
     }
 
     /** Setup Vault integration */
@@ -163,6 +160,6 @@ public class VMPlugin extends CorePlugin {
         return econ;
     }
     public boolean isCitizensEnabled() {
-        return citizensEnabled;
+        return Bukkit.getPluginManager().isPluginEnabled("Citizens");
     }
 }

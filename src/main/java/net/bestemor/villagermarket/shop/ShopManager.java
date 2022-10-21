@@ -1,5 +1,6 @@
 package net.bestemor.villagermarket.shop;
 
+import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.config.VersionUtils;
@@ -20,6 +21,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -96,6 +99,7 @@ public class ShopManager {
         } else {
             villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 128, false, false));
         }
+        villager.setMetadata("villagershop", new FixedMetadataValue(plugin, true));
 
         String defaultProfession = ConfigManager.getString("villager.default_profession");
         defaultProfession = VersionUtils.getMCVersion() < 14 && defaultProfession.equals("NONE") ? "FARMER" : defaultProfession;

@@ -98,7 +98,7 @@ public class PlayerShop extends VillagerShop {
         BigDecimal price = shopItem.getPrice();
         int amount = shopItem.getAmount();
         OfflinePlayer owner = Bukkit.getOfflinePlayer(ownerUUID);
-        if (!shopItem.verifyPurchase(player, owner, storageHolder)) {
+        if (!shopItem.verifyPurchase(player, ItemMode.SELL, owner, storageHolder)) {
             return;
         }
 
@@ -179,7 +179,7 @@ public class PlayerShop extends VillagerShop {
         BigDecimal taxAmount = tax.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP).multiply(price);
 
         int amount = shopItem.getAmount();
-        if (!shopItem.verifyPurchase(player, Bukkit.getOfflinePlayer(ownerUUID), storageHolder)) {
+        if (!shopItem.verifyPurchase(player, ItemMode.BUY, Bukkit.getOfflinePlayer(ownerUUID), storageHolder)) {
             return;
         }
 
