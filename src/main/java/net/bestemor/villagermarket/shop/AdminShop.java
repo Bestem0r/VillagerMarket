@@ -1,6 +1,7 @@
 package net.bestemor.villagermarket.shop;
 
 import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.config.CurrencyBuilder;
 import net.bestemor.villagermarket.VMPlugin;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -31,7 +32,7 @@ public class AdminShop extends VillagerShop {
         if (!shopItem.verifyPurchase(player, ItemMode.SELL)) {
             return;
         }
-        ConfigManager.CurrencyBuilder message = ConfigManager.getCurrencyBuilder("messages.bought_item_as_customer")
+        CurrencyBuilder message = ConfigManager.getCurrencyBuilder("messages.bought_item_as_customer")
                 .replace("%amount%", String.valueOf(shopItem.getAmount()))
                 .replace("%item%", shopItem.getItemName())
                 .replace("%shop%", getShopName());

@@ -65,6 +65,8 @@ villager:
 
 #Allow shop egg placing only in regions where the player is a member or owner
 world_guard: false
+#Enable PlotSquared support
+plot_squared: true
 towny:
   #Enable towny support
   enabled: true

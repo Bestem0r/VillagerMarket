@@ -1,6 +1,7 @@
 package net.bestemor.villagermarket.shop;
 
 import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.config.CurrencyBuilder;
 import net.bestemor.core.config.VersionUtils;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.event.AbandonShopEvent;
@@ -124,7 +125,7 @@ public class PlayerShop extends VillagerShop {
 
             if (owner.isOnline() && owner.getPlayer() != null) {
                 Player ownerOnline = owner.getPlayer();
-                ConfigManager.CurrencyBuilder builder = ConfigManager.getCurrencyBuilder("messages.sold_item_as_owner")
+                CurrencyBuilder builder = ConfigManager.getCurrencyBuilder("messages.sold_item_as_owner")
                         .replace("%player%", player.getName())
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%item%", shopItem.getItemName()).addPrefix();
@@ -151,7 +152,7 @@ public class PlayerShop extends VillagerShop {
         giveShopItem(player, shopItem);
         storageHolder.removeItem(shopItem.getRawItem());
 
-        ConfigManager.CurrencyBuilder message = ConfigManager.getCurrencyBuilder("messages.bought_item_as_customer")
+        CurrencyBuilder message = ConfigManager.getCurrencyBuilder("messages.bought_item_as_customer")
                 .replace("%amount%", String.valueOf(shopItem.getAmount()))
                 .replace("%item%", shopItem.getItemName())
                 .replace("%shop%", getShopName());
@@ -201,7 +202,7 @@ public class PlayerShop extends VillagerShop {
         economy.withdrawPlayer(owner, price.doubleValue());
         if (owner.isOnline() && owner.getPlayer() != null) {
             Player ownerOnline = owner.getPlayer();
-            ConfigManager.CurrencyBuilder builder =ConfigManager.getCurrencyBuilder("messages.bought_item_as_owner")
+            CurrencyBuilder builder = ConfigManager.getCurrencyBuilder("messages.bought_item_as_owner")
                     .replace("%player%", player.getName())
                     .replace("%amount%", String.valueOf(amount))
                     .replace("%item%", shopItem.getType().name().replaceAll("_", " ").toLowerCase()).addPrefix();

@@ -11,7 +11,7 @@
 
     <groupId>me.bestemor.villagermarket</groupId>
     <artifactId>VillagerMarket</artifactId>
-    <version>1.11.3-SNAPSHOT</version>
+    <version>1.11.4-SNAPSHOT</version>
 
     <repositories>
         <repository>
@@ -54,8 +54,25 @@
             <layout>default</layout>
         </repository>
 
+        <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+
 
     </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.intellectualsites.bom</groupId>
+                <artifactId>bom-1.18.x</artifactId>
+                <version>1.18</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- Spigot -->
@@ -128,8 +145,14 @@
         <dependency>
             <groupId>com.github.Bestem0r</groupId>
             <artifactId>BestemorCore</artifactId>
-            <version>fda7d50f98</version>
+            <version>d70f08ba50</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.plotsquared</groupId>
+            <artifactId>PlotSquared-Core</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -160,10 +183,10 @@
                             <pattern>org.bstats</pattern>
                             <shadedPattern>net.bestemor.villagermarket.utils.bstats</shadedPattern>
                         </relocation>
-                        <relocation>
+                        <!--<relocation>
                             <pattern>net.bestemor.core</pattern>
                             <shadedPattern>net.bestemor.core</shadedPattern>
-                        </relocation>
+                        </relocation>-->
                     </relocations>
                 </configuration>
                 <executions>

@@ -1,6 +1,7 @@
 package net.bestemor.villagermarket.menu;
 
 import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.config.ItemBuilder;
 import net.bestemor.core.menu.Clickable;
 import net.bestemor.core.menu.Menu;
 import net.bestemor.core.menu.MenuContent;
@@ -72,7 +73,7 @@ public class EditItemMenu extends Menu {
 
         ItemStack modeItem = ConfigManager.getItem("menus.edit_item.items.mode").replace("%cycle%", modeCycle).replace("%mode%", modeName).build();
         ItemStack amountItem = ConfigManager.getItem("menus.edit_item.items.amount").replace("%amount%", String.valueOf(shopItem.getAmount())).build();
-        ConfigManager.ItemBuilder priceBuilder = ConfigManager.getItem("menus.edit_item.items.price");
+        ItemBuilder priceBuilder = ConfigManager.getItem("menus.edit_item.items.price");
 
         if (shopItem.isItemTrade()) {
             priceBuilder.replace("%price%", shopItem.getItemTrade().getAmount() + "x " + shopItem.getItemTradeName());

@@ -1,6 +1,8 @@
 package net.bestemor.villagermarket.shop;
 
 import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.config.ListBuilder;
+import net.bestemor.core.config.VersionUtils;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.menu.EditItemMenu;
 import net.bestemor.villagermarket.menu.StorageHolder;
@@ -333,7 +335,7 @@ public class ShopItem {
         String limitInfo = limit == 0 ? ConfigManager.getString("quantity.unlimited") : String.valueOf(limit);
 
         String lorePath = "menus." + path + "." + typePath + (isAdmin && path.startsWith("edit") ? "standard" : modePath)  + "_lore";
-        ConfigManager.ListBuilder builder = ConfigManager.getListBuilder(lorePath)
+        ListBuilder builder = ConfigManager.getListBuilder(lorePath)
                 .replace("%amount%", String.valueOf(this.item.getAmount()))
                 .replace("%stock%", String.valueOf(storageAmount))
                 .replace("%bought%", bought)
@@ -413,7 +415,7 @@ public class ShopItem {
         ItemMeta m = i.getItemMeta();
         if (m != null && m.hasDisplayName()) {
             return m.getDisplayName();
-        } else if (m != null && m.hasLocalizedName()) {
+        } else if (m != null && VersionUtils.getMCVersion() > 11 && m.hasLocalizedName()) {
             return m.getLocalizedName();
         } else {
             return WordUtils.capitalizeFully(i.getType().name().replaceAll("_", " "));

@@ -3,6 +3,9 @@ package net.bestemor.villagermarket.listener;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.utils.ShopPlotUtil;
+import com.plotsquared.core.PlotAPI;
+import com.plotsquared.core.plot.Plot;
+import com.plotsquared.core.plot.PlotArea;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -60,7 +63,7 @@ public class PlayerListener implements Listener {
         cancelledPlayers.remove(uuid);
     }
 
-    @EventHandler (ignoreCancelled = false, priority = EventPriority.LOWEST)
+    @EventHandler (priority = EventPriority.LOWEST)
     public void playerRightClick(PlayerInteractEntityEvent event) {
         Player p = event.getPlayer();
 
@@ -136,12 +139,17 @@ public class PlayerListener implements Listener {
         } else {
             NBTItem nbtItem = new NBTItem(itemStack);
             data = nbtItem.getString("vm-item");
-            isVMItem = data != null;
+            isVMItem = data != null && data.split("-").length > 0;
         }
 
-        if (isVMItem && data != null) {
-            shopSize = Integer.parseInt(data.split("-")[0]);
-            storageSize = Integer.parseInt(data.split("-")[1]);
+        if (isVMItem && data != null && data.split("-").length > 0) {
+            String[] split = data.split("-");
+            if (VMUtils.isInteger(split[0]) && VMUtils.isInteger(split[1])) {
+                shopSize = Integer.parseInt(data.split("-")[0]);
+                storageSize = Integer.parseInt(data.split("-")[1]);
+            } else {
+                isVMItem = false;
+            }
         }
 
         if (isVMItem) {
@@ -191,6 +199,25 @@ public class PlayerListener implements Listener {
                     return;
                 }
             }
+
+            //PlotSquared check
+            if (Bukkit.getPluginManager().isPluginEnabled("PlotSquared") && ConfigManager.getBoolean("plot_squared")) {
+                PlotAPI plotAPI = new PlotAPI();
+
+                com.plotsquared.core.location.Location wrappedLoc = com.plotsquared.core.location.Location.at(
+                        clickedLoc.getWorld().getName(), clickedLoc.getBlockX(), clickedLoc.getBlockY(), clickedLoc.getBlockZ());
+
+                PlotArea area = plotAPI.getPlotSquared().getPlotAreaManager().getPlotArea(wrappedLoc);
+                if (area != null) {
+                    Plot plot = area.getPlot(wrappedLoc);
+                    UUID uuid = player.getUniqueId();
+                    if (plot != null && (plot.isDenied(uuid) || (!plot.isOwner(uuid) && !plot.getMembers().contains(uuid) && !plot.getTrusted().contains(uuid)))) {
+                        player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
+                        return;
+                    }
+                }
+            }
+
             if (!player.hasPermission("villagermarket.use_spawn_item")) {
                 player.sendMessage(ConfigManager.getMessage("messages.no_permission_use_item"));
                 return;

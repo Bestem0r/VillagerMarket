@@ -70,7 +70,6 @@ public class Shopfront {
         loadItemsFromConfig();
 
         loadItems();
-        update();
     }
 
     public void loadItemsFromConfig() {
@@ -188,7 +187,7 @@ public class Shopfront {
             if (page != 0) {
                 inventory.setItem(48, previous);
             }
-            if (page != holder.getSize() - 1) {
+            if (page < holder.getSize() - 1) {
                 inventory.setItem(50, next);
             }
         }
@@ -353,7 +352,7 @@ public class Shopfront {
                     shopItem.setPrice(price);
 
                     shop.getShopfrontHolder().getItemList().put(shopItem.getSlot(), shopItem);
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, Shopfront.this::update);
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, Shopfront.this.holder::update);
 
                     player.sendMessage(ConfigManager.getMessage("messages.add_successful"));
 

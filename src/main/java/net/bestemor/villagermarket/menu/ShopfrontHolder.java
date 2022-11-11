@@ -51,6 +51,7 @@ public class ShopfrontHolder {
             this.shopfronts.add(new Shopfront(plugin, this, shop, page));
         }
         this.shopfronts.add(new Shopfront(plugin, this, shop,  (midPages + 1)));
+        shopfronts.forEach(Shopfront::update);
     }
 
     private void loadItems() {
@@ -74,11 +75,6 @@ public class ShopfrontHolder {
         update();
     }
 
-    public void reload() {
-        shopfronts.forEach(Shopfront::loadItemsFromConfig);
-        update();
-    }
-
     public void closeAll() {
         shopfronts.forEach(Shopfront::close);
     }
@@ -91,7 +87,7 @@ public class ShopfrontHolder {
     public void update() {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (isInfinite) {
-                int updatedMidPages = shop.getShopfrontHolder().getItemList().keySet().stream().mapToInt(v -> v).max().orElse(0) / 45;
+                int updatedMidPages = getItemList().keySet().stream().mapToInt(v -> v).max().orElse(0) / 45;
                 if (updatedMidPages > midPages) {
                     shopfronts.add(shopfronts.size(), new Shopfront(plugin, this, shop, shopfronts.size()));
                 }
