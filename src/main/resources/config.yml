@@ -41,6 +41,8 @@ disable_update_announce: false
 disable_lore_toggle: false
 #Language to use
 language: en_US
+#Enables placing shop eggs on non-solid blocks (E.g. slabs, grass, doors)
+enable_non_solid_placement: false
 
 #----------------------- Villager settings -----------------------#
 

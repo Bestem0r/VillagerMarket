@@ -145,7 +145,7 @@
         <dependency>
             <groupId>com.github.Bestem0r</groupId>
             <artifactId>BestemorCore</artifactId>
-            <version>d70f08ba50</version>
+            <version>328787c3d7</version>
             <scope>compile</scope>
         </dependency>
 

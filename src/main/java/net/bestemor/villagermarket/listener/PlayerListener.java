@@ -156,6 +156,10 @@ public class PlayerListener implements Listener {
             Location clickedLoc = event.getClickedBlock().getLocation();
             event.setCancelled(true);
 
+            if (!ConfigManager.getBoolean("enable_non_solid_placement") && !clickedLoc.getBlock().getType().isSolid()) {
+                return;
+            }
+
             int max = plugin.getShopManager().getMaxShops(player);
             int owned = plugin.getShopManager().getOwnedShops(player).size();
             if (max != -1 && owned >= max) {

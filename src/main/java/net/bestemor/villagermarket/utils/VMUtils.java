@@ -1,18 +1,11 @@
 package net.bestemor.villagermarket.utils;
 
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.UUID;
 
 public class VMUtils {
@@ -40,7 +33,10 @@ public class VMUtils {
         }
     }
 
-    /** Properly checks if the two ItemStacks are equal  */
+    /** Properly checks if two ItemStacks are equal.
+     * @param item1 An ItemStack.
+     * @param item2 An ItemStack.
+     * @return Whether the two provided ItemStacks are equal or not. */
     public static boolean compareItems(ItemStack item1, ItemStack item2) {
         if (item1 == null || item2 == null) { return false; }
         ItemStack item1clone = item1.clone();
@@ -49,7 +45,7 @@ public class VMUtils {
         item1clone.setAmount(1);
         item2clone.setAmount(1);
 
-        return item1clone.toString().equals(item2clone.toString());
+        return (item1clone.toString() + item1clone.getDurability()).equals((item2clone.toString() + item2clone.getDurability()));
     }
 
     public static boolean hasComma(String s) {
@@ -85,45 +81,5 @@ public class VMUtils {
             }
         }
         return null;
-    }
-
-    public static void updateConfig(JavaPlugin plugin, String origin, String target) {
-
-        // Do not update configs which are not yet created
-        if (!new File(plugin.getDataFolder() + "/" + target + ".yml").exists()) {
-            return;
-        }
-
-        File targetFile = new File(plugin.getDataFolder() + "/" + target + ".yml");
-        FileConfiguration targetConfig = YamlConfiguration.loadConfiguration(targetFile);
-
-        // Create temporary file to load as FileConfiguration
-        InputStream inputStream = plugin.getResource(origin + ".yml");
-        File originFile = new File(plugin.getDataFolder(), origin + "_tmp.yml");
-        try {
-            FileUtils.copyInputStreamToFile(inputStream, originFile);
-        } catch (IOException | NullPointerException e) {
-            e.printStackTrace();
-        }
-        FileConfiguration originConfig = YamlConfiguration.loadConfiguration(originFile);
-        // Delete temporary file after loaded
-        originFile.delete();
-
-        boolean changes = false;
-        // Check if any keys are missing in the target config
-        for (String key : originConfig.getKeys(true)) {
-            if (!targetConfig.contains(key)) {
-                targetConfig.set(key, originConfig.get(key));
-                changes = true;
-            }
-        }
-
-        if (changes) {
-            try {
-                targetConfig.save(targetFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }
