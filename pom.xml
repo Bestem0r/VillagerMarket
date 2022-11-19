@@ -183,10 +183,10 @@
                             <pattern>org.bstats</pattern>
                             <shadedPattern>net.bestemor.villagermarket.utils.bstats</shadedPattern>
                         </relocation>
-                        <!--<relocation>
+                        <relocation>
                             <pattern>net.bestemor.core</pattern>
-                            <shadedPattern>net.bestemor.core</shadedPattern>
-                        </relocation>-->
+                            <shadedPattern>net.bestemor.villagermarket.core</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
                 <executions>

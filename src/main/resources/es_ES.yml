@@ -476,6 +476,9 @@ menus:
       priest:
         material: POTION
         name: "&dPriest"
+      normal:
+        material: VILLAGER_SPAWN_EGG
+        name: "&cNone"
 
   #-------------------- Sell Shop --------------------#
   sell_shop:

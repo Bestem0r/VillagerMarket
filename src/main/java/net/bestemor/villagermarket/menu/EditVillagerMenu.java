@@ -10,10 +10,11 @@ import net.bestemor.villagermarket.shop.VillagerShop;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 public class EditVillagerMenu extends Menu {
@@ -29,19 +30,20 @@ public class EditVillagerMenu extends Menu {
 
     @Override
     public void onCreate(MenuContent content) {
-        Villager.Profession[] professions = Villager.Profession.values();
+        List<Villager.Profession> professions = new ArrayList<>(Arrays.asList(Villager.Profession.values()));
+        professions.removeIf(profession -> profession.name().equals("HUSK"));
 
         ItemStack filler = ConfigManager.getItem("items.filler").build();
         content.fillSlots(filler, 0, 1, 2, 3, 4, 5, 6, 7, 8);
         content.fillBottom(filler);
 
-        for (int i = 0; i < professions.length; i++) {
-            String profession = professions[i].name().toLowerCase(Locale.ROOT);
+        for (int i = 0; i < professions.size(); i++) {
+            String profession = professions.get(i).name().toLowerCase(Locale.ROOT);
             int finalI = i;
             content.setClickable(i + 9, Clickable.of(ConfigManager.getItem("menus.edit_villager.items." + profession).build(), event -> {
 
                 Player player = (Player) event.getWhoClicked();
-                shop.setProfession(professions[finalI]);
+                shop.setProfession(professions.get(finalI));
                 event.getView().close();
                 player.playSound(player.getLocation(), ConfigManager.getSound("sounds.change_profession"), 0.5f, 1);
 
