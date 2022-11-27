@@ -1,0 +1,605 @@
+#----------------------- General -----------------------#
+
+#Time localization
+time:
+  seconds: 秒
+  minutes: 分钟
+  minute: 分钟
+  hours: 小时
+  hour: 小时
+  days: 天
+  day: 天
+  never: 永不
+  indefinitely: 无法识别
+  less_than_a_minute: 小于一分钟
+
+#Quantity localization
+quantity:
+  free: 免费
+  infinite: 无限
+  unlimited: 无限制
+
+#Villager status (Used for PAPI placeholders)
+status:
+  available: '&a可用'
+  bought: '&c售卖'
+  no_owner: '&7无'
+
+#Villager name settings
+villager:
+  name_admin: '&c服务器商店'
+  name_available: '&a可用商店'
+  name_taken: '&b%player%的商店'
+
+
+#----------------------- Messages -----------------------#
+
+messages:
+  invalid_command_usage: '&c错误的命令使用方法，请见&e/vm help'
+  reloaded: '&a插件已重载。'
+  cancelled: '&c操作已经取消！'
+  not_number: '&c你必须输入一个数字！'
+  use_dot: '&c请用点号而不是逗号来输入小数。'
+  not_valid_range: '&c数量必须至少为1最大为64！'
+  amount_successful: '&a成功设置数量！'
+  price_successful: '&a成功设置价格！'
+  negative_price: '&c价格不能为负数！'
+  add_successful: '&a成功添加物品！'
+  type_price: '&b请在聊天框内输入物品单价...'
+  type_amount: '&b请在聊天框内输入你想购买或出售的数量...'
+  #Placeholder: %cancel% (see cancel option above)
+  type_cancel: '&b或者输入&c%cancel%&b来取消操作'
+  sold_shop: '&b商店已经出售，它现在已经准备好又被出售了。Shop sold! It is now available for purchase again.'
+  not_enough_money: '&c你没有足够钱来买这个！'
+  not_enough_stock: '&c商店目前库存不足！'
+  remove_villager: '&c右键点击你想删除的&b商店&c...'
+  no_villager_shop: '&c这不是一个商店！'
+  villager_removed: '&c商店已经删除'
+  blacklisted: '&c这个物品在黑名单中不可交易！'
+  owner_not_enough_money: '&c这家商店的拥有者没有足够的钱！'
+  not_enough_in_inventory: '&c你的库存里没有足够的物品！'
+  #Placeholders: %player%, %amount%, %item%, %price%
+  bought_item_as_owner: '&b%player%&7以&a%price%&7的价格卖了&b%amount%个%item%&7给你。'
+  #Placeholders: %player%, %amount%, %material%, %price%
+  sold_item_as_owner: '&b%player%&7买了&b%amount%个%item%&7，并付给你&a%price%&7。'
+  change_name: '&b请在聊天框内输入商店名称...'
+  change_name_set: '&a成功将商店改名为: &r%name%&a'
+  must_be_menulore: '&cPlease toggle back to &e&nmenu lore&c to sell/buy items!'
+  cannot_buy_from_yourself: '&c你不可以从你自己那买东西！'
+  cannot_sell_to_yourself: '&c你不能把东西卖给你自己！'
+  tax: '你支付了税款: &a%tax% &7'
+  expired: '&c你的商店已经过期。库存可以提取，请使用命令: &e/vm expiredstorage&7'
+  move_villager: '&7右键点击你想移动的&b商店&7...'
+  move_villager_to: '&7点击你想将&b商店&7移动到的位置...'
+  max_rent_time: '&c不能进一步增加时间。已经达到最长租期！'
+  search_result: '&7在附近找到了&b%amount%个&7商店。'
+  search_shop_info: '&7>>  %name% &7at location: &c%location%'
+  get_stats: '&7Right click a &bVillagerShop &7to get the statistics.,'
+  not_owner: '&c你不是这个商店的拥有者！'
+  type_limit_player: '&b请在聊天框中输入你想购买或出售的最大限制数量(输入&c0&b代表无限制)...'
+  type_limit_admin: '&b请在聊天框中输入你想购买或出售的最大限制数量(输入&c0&b代表无限制)...'
+  reached_sell_limit: '&c你无法出售更多这个物品！'
+  reached_buy_limit: '&c你无法购买更多这个物品'
+  reached_command_limit: '&c你已经达到了购买这个命令的限制'
+  money_left: '&a你的钱还剩%amount%。'
+  money_currently: '&a你当前的钱有%amount%.'
+  type_command: '&b请输入一个命令，但不要包含前置的''/''。(玩家名称请用%player%代替)...'
+  finish_process: '&c请先完成商店的物品添加流程！ (输入''cancel''来取消)'
+  collected_money: '&b收集到了&a%amount%。'
+  not_playershop: '&c这不是一个玩家商店！'
+  add_trusted: '&7点击一个你自己的想信任的&b商店&7'
+  remove_trusted: '&7点击一个你自己的想放弃信任的&商店&7'
+  trusted_added: '&a已添加玩家!'
+  trusted_removed: '&c已移除玩家！'
+  region_no_access: '&c仅可以在城镇的商店区块放置玩家商店。(使用/plot set shop来将一个默认城镇区块改为商店区块)'
+  no_permission_adminshop: '&cYou do not have permission to use this Admin Shop!'
+  no_permission_change_name: '&cYou do not have permission to change name!'
+  no_permission_command: '&cYou do not have permission to use this command!'
+  no_permission_buy_shop: '&cYou do not have permission to buy shops!'
+  no_permission_use_item: '&cYou do not have permission to use this item!'
+  no_permission_citizens: '&cYou do not have permission to turn your shop into an NPC!'
+  max_shops: '&c当前你已经拥有了&e%current%&c/&e%max%&c个可用商店！'
+  get_id: '&7右键点击&b商店&7来获取ID！'
+  #Placeholders: %id%
+  id: '&7商店ID: &b%id%'
+  type_skin: '&b请在聊天框内输入皮肤名称...'
+  skin_set: '&a成功设置皮肤'
+  no_expired_storage: '&c你没有过期的库存！'
+  type_limit_cooldown: '&b请在聊天框输入交易冷却时间(m/h/d)，输入''never''表示没有冷却...'
+  limit_cooldown_set: '&a交易限额的冷却时间设置为: &e%time%'
+  limits_cleared: '&c交易限额已经取消！'
+  name_blacklisted: '&c你无法使用这个名字！'
+  max_item_price: '&c物品价格太高了，请降低一些。'
+  shopfront_cooldown: '&c当前交易正在冷却中，请待会儿再来。'
+  max_name_length: '&c这个名字太长了，最多只能有%limit%个字符。'
+  clone_shop: '&7右键点击你想克隆的&b商店&7。'
+  shop_cloned: '&a商店已经成功克隆。移动请使用&e/vm move&a.'
+  set_size: '&7右键点击你想设置库容的&b商店&7...'
+  size_set: '&a库容已经设置为&e%size%&a。'
+  #Placeholders: %amount%, %item%, %price%, %shop%
+  bought_item_as_customer: '&7你在%shop%&r购买了&b%amount%个%item%&7，花费了&a%price%&7&r。'
+  #Placeholders: %amount%, %item%, %price%, %shop%
+  sold_item_as_customer: '&7你在%shop%&r出售了&b%amount%个%item%&7，赚取了&a%price%&7&r。'
+
+stats_message:
+- '&b商店状况: '
+- '&7>>  已售物品: &a%items_sold%'
+- '&7>>  已购物品: &a%items_bought%'
+- '&7>>  收入: &a%money_earned%'
+- '&7>>  支出: &a%money_spent%'
+
+
+#--------------------- Menu items settings ---------------------#
+
+items:
+  back:
+    name: '&c&l返回'
+    material: ARROW
+  filler:
+    name: ''
+    material: GRAY_STAINED_GLASS_PANE
+  next:
+    name: '&e下一页'
+    material: FEATHER
+    lore:
+    - '&7点击查看下一页物品'
+  previous:
+    name: '&e上一页'
+    material: FEATHER
+    lore:
+    - '&7点击查看上一页物品'
+
+#----------------------- Menu settings -----------------------#
+
+menus:
+  #-------------------- Buy Shop --------------------#
+  buy_shop:
+    title: '&8购买可用的商店'
+    items:
+      shop_size:
+        #Placeholders: %amount%
+        name: '&a%amount%&7店面容量'
+        material: CHEST
+      storage_size:
+        #Placeholders: %amount%
+        name: '&a%amount%&7库存容量'
+        material: WRITABLE_BOOK
+      buy_shop:
+        material: EMERALD
+        name: '&a买下这家商店！'
+        lore:
+        - '&7点击来花费&a%price%&7买下这个商店！'
+        - ''
+        - '&7这家商店直到&b%time%&7前'
+        - '&7都会是你的'
+  
+  #-------------------- Edit Shop --------------------#
+  edit_shop:
+    title: '&8编辑商店'
+    items:
+      #Edit items for sale item
+      edit_shopfront:
+        material: WRITABLE_BOOK
+        name: '&b编辑店面'
+        lore:
+        - '&7点击来编辑'
+        - '&7商店内交易的物品'
+      #Preview shop item
+      preview_shop:
+        material: BOOK
+        name: '&e预览商店'
+        lore:
+        - '&7点击来预览你的店面'
+      #Edit storage item
+      edit_storage:
+        material: CHEST
+        name: '&c调整库存'
+        lore:
+        - '&7点击来调整你商店的库存'
+      #Edit villager item
+      edit_villager:
+        material: VILLAGER_SPAWN_EGG
+        name: '&e修改职业'
+        lore:
+        - '&7点击来改变你店员的职业'
+      #Change villager name item
+      change_name:
+        material: NAME_TAG
+        name: '&e修改名称'
+        lore:
+        - '&7点击来修改这个商店的名称'
+      #Sell shop item
+      sell_shop:
+        material: FEATHER
+        name: '&c出售/放弃 商店'
+        lore:
+        - '&7点击来出售或者放弃这个商店'
+      #Collect money (this needs to be enabled in general settings)
+      collect_money:
+        material: GOLD_INGOT
+        name: '&a收集货款'
+        #Placeholders: %worth%
+        lore:
+        - '&7点击来收集&a%worth%$'
+      #Add more time item
+      increase_time:
+        material: EMERALD
+        name: '&a增加租赁市场'
+        #Placeholders: %expire%, %time%, %price%
+        lore:
+        - '&7这个商店将会在&e%expire%过期'
+        - ''
+        - '&7点击来增加租赁时长'
+        - '&7每&b%time%&7租金&a%price%&7！'
+  
+  #-------------------- Shopfront --------------------#
+  shopfront:
+    title: '&7%shop%'
+    #Placeholders: %item_name%, %mode%
+    item_name: '&f%item_name% %mode%'
+    detail_suffix: '&8(详情)'
+    #Cooldown between selling/buying items (milliseconds)
+    cooldown: 500
+    items:
+      toggle_details:
+        name: '&e切换展示详情'
+        material: BOOK
+        lore:
+        - '&7>> 左键点击来切换'
+        - '&7&e物品说明'
+        - '&7&e菜单说明&7'
+        - ''
+        - '&7>> 右键点击来返回'
+    modes:
+      buy: '&8[&a购买&8]'
+      sell: '&8[&a出售&8]'
+      buy_and_sell: '&8[&a买&7/&a售&8]'
+      command: '&8[&e命令&8]'
+      trade: '&8[&e交易&8]'
+    player_shop:
+      #Placeholders: %amount%, %price%, %stock%, %mode%
+      trade_lore:
+      - '&7交易模式&f: %mode%'
+      - ''
+      - '&7数量&f: &e%amount%'
+      - '&7金额&f: &a%price%'
+      - '&7你还能交易&b%available%&7'
+      - ''
+      - '&7>>  点击来交易'
+      #Placeholders: %amount%, %price%, %stock%, %mode%
+      buy_lore:
+      - '&7交易模式&f: %mode%'
+      - ''
+      - '&7数量&f: &e%amount%'
+      - '&7金额&f: &a%price%'
+      - '&7单价&f: &a%price_per_unit%'
+      - '&7当前库存: &b%stock%&7'
+      - ''
+      - '&7>> 点击购买'
+      #Placeholders: %amount%, %price%, %available%, %mode%
+      sell_lore:
+      - '&7交易模式&f: %mode%'
+      - ''
+      - '&7数量&f: &e%amount%'
+      - '&7金额&f: &a%price%'
+      - '&7你还能出售&b%available%&7'
+      - ''
+      - '&7>>  点击来出售'
+      #Placeholders: %amount%, %price%, %available%, %mode%
+      buy_and_sell_lore:
+      - '&7交易模式&f: %mode%'
+      - ''
+      - '&7数量&f: &e%amount%'
+      - '&7金额&f: &a%price%'
+      - '&7当前库存: &b%stock% &7'
+      - '&7你还能出售&b%available% &7more'
+      - ''
+      - '&7>>  左键点击来购买'
+      - '&7>>  右键点击来出售'
+    admin_shop:
+      buy_and_sell_lore:
+      - '&7交易模式&f: %mode%'
+      - ''
+      - '&7数量&f: &e%amount%'
+      - '&7金额&f: &a%price%'
+      - '%limit_lore%'
+      - ''
+      - '&7>> 左键点击来购买'
+      - '&7>> 右键点击来出售'
+      trade_lore:
+      - '&7交易模式&f: %mode%'
+      - ''
+      - '&7数量&f: &e%amount%'
+      - '&7金额&f: &a%price%'
+      - '%limit_lore%'
+      - ''
+      - '&7>> 点击来交易'
+      sell_lore:
+      - '&7交易模式&f: %mode%'
+      - ''
+      - '&7数量&f: &e%amount%'
+      - '&7金额&f: &a%price%'
+      - '%limit_lore%'
+      - ''
+      - '&7>> 点击出售'
+      buy_lore:
+      - '&7交易模式&f: %mode%'
+      - ''
+      - '&7数量&f: &e%amount%'
+      - '&7金额&f: &a%price%'
+      - '%limit_lore%'
+      - ''
+      - '&7>> 点击购买'
+      command_lore:
+      - '&7交易模式&f: %mode%'
+      - ''
+      - '&7数量&f: &e%amount%'
+      - '&7金额&f: &a%price%'
+      - '%limit_lore%'
+      - ''
+      - '&7>> 点击来购买命令'
+      buy_limit_lore:
+      - ''
+      - '&7购买限额: (&e%bought%&7/&e%limit%&7)'
+      - '&7重置时间: &e%reset%'
+      sell_limit_lore:
+      - ''
+      - '&7出售限额: (&e%bought%&7/&e%limit%&7)'
+      - '&7重置时间: &e%reset%'
+      buy_and_sell_limit_lore:
+      - ''
+      - '&7交易限额: (&e%bought%&7/&e%limit%&7)'
+      - '&7重置时间: &e%reset%'
+  
+  #------------------ Edit Shopfront ------------------#
+  edit_shopfront:
+    title: '&8添加要售卖的物品'
+    #Placeholders: %item_name%, %mode%
+    item_name: '&f%item_name% %mode%'
+    modes:
+      buy: '&8[&a购买&8]'
+      sell: '&8[&a出售&8]'
+      buy_and_sell: '&8[&a出售&7/&a购买&8]'
+      command: '&8[&e命令&8]'
+      trade: '&8[&e以物易物&8]'
+    player_shop:
+      trade_lore:
+      - '&7交易模式&f: %mode%'
+      - ''
+      - '&7数量&f: &e%amount%'
+      - '&7金额&f: &a%price%'
+      - '&7你还能交易&b%available%&7'
+      - ''
+      - '&7>> 点击来编辑'
+      #Placeholders: %amount%, %price%, %stock%
+      sell_lore:
+      - '&7交易模式&f: %mode%'
+      - ''
+      - '&7数量&f: &e%amount%'
+      - '&7金额&f: &a%price%'
+      - '&7当前库存: &b%stock%&7'
+      - ''
+      - '&7>> 点击来编辑'
+      #Placeholders: %amount%, %price%, %available%
+      buy_lore:
+      - '&7交易模式&f: %mode%'
+      - ''
+      - '&7数量&f: &e%amount%'
+      - '&7金额&f: &a%price%'
+      - '&7你还可购买&c%available%&7'
+      - ''
+      - '&7>> 点击来编辑'
+      buy_and_sell_lore:
+      - '&7交易模式&f: %mode%'
+      - ''
+      - '&7数量&f: &e%amount%'
+      - '&7金额&f: &a%price%'
+      - '&7你还可购买&c%available%&7'
+      - '&7当前库存: &b%stock%&7'
+      - ''
+      - '&7>> 点击来编辑'
+    admin_shop:
+      standard_lore:
+      - '&7交易模式&f: %mode%'
+      - ''
+      - '&7数量&f: &e%amount%'
+      - '&7金额&f: &a%price%'
+      - '&7玩家限制&f: &a%limit%'
+      - ''
+      - '&7>> 点击来编辑'
+  
+  #--------------------- Storage ---------------------#
+  storage:
+    title: '&8商店库存'
+  
+  #------------------ Edit Villager ------------------#
+  edit_villager:
+    title: '&8编辑商店'
+    #This requires citizens to be on the server
+    citizens_item:
+      material: PLAYER_HEAD
+      name: '&e用皮肤替代'
+      lore:
+      - '&7点击来用玩家皮肤替换商店皮肤'
+    items:
+      armorer:
+        material: IRON_CHESTPLATE
+        name: '&7Armorer'
+      butcher:
+        material: PORKCHOP
+        name: '&cButcher'
+      cartographer:
+        material: MAP
+        name: '&bCartographer'
+      cleric:
+        material: POTION
+        name: '&dCleric'
+      farmer:
+        material: WHEAT
+        name: '&eFarmer'
+      fisherman:
+        material: COD
+        name: '&bFisherman'
+      fletcher:
+        material: FLETCHING_TABLE
+        name: '&eFletcher'
+      leatherworker:
+        material: LEATHER
+        name: '&cLeatherworker'
+      librarian:
+        material: BOOK
+        name: '&6Librarian'
+      mason:
+        material: BRICK
+        name: '&cMason'
+      nitwit:
+        material: PAPER
+        name: '&fNitwit'
+      shepherd:
+        material: WHITE_WOOL
+        name: '&fShepherd'
+      toolsmith:
+        material: IRON_AXE
+        name: '&7Tool Smith'
+      weaponsmith:
+        material: IRON_SWORD
+        name: '&7Weapon Smith'
+      none:
+        material: VILLAGER_SPAWN_EGG
+        name: '&cNone'
+      #Legacy versions
+      blacksmith:
+        material: ANVIL
+        name: '&7Blacksmith'
+      priest:
+        material: POTION
+        name: '&dPriest'
+  
+  #-------------------- Sell Shop --------------------#
+  sell_shop:
+    title: '&8你确认吗？'
+    items:
+      no_cancel:
+        material: RED_TERRACOTTA
+        name: '&c不，取消吧'
+      #If the Shop is reusable (created by command)
+      yes_sell:
+        material: LIME_TERRACOTTA
+        name: '&a是的，出售商店'
+        #Placeholders: %amount%
+        lore:
+        - '&7当你放弃或出售这个商店时'
+        - '&7你会得到所花费的&a50%&7(&a%amount%&7)'
+        - ''
+      #If the Shop isn't reusable (created using a spawn egg)
+      yes_remove:
+        material: LIME_TERRACOTTA
+        name: '&a是的，删除商店'
+        lore:
+        - '&7这个操作将会&c删除&7这个'
+        - '&7商店，并给你一个新的'
+        - '&7商店怪物蛋'
+  
+  #-------------------- Edit Item --------------------#
+  edit_item:
+    title: '&8编辑物品'
+    limit_cycle:
+      player: '&e玩家&7 | 服务器'
+      server: '&7玩家 |&e 服务器'
+    mode_cycle:
+      player_shop:
+        item_trade: '&e出售 &7(Trading for item)'
+        sell: '&e出售 &7| 购买 | 购买 & 出售'
+        buy: '&7出售 | &e购买 &7| 购买 & 出售'
+        buy_and_sell: '&7出售 | 购买 | &e购买 & 出售'
+      admin_shop:
+        item_trade: '&e出售 &7(Trading for item)'
+        sell: '&e出售 &7| 购买 | 购买&出售 | 命令'
+        buy: '&7出售 | &e购买 &7| 购买&出售 | 命令'
+        command: '&7出售 | 购买 | 购买&出售 | &e命令'
+        buy_and_sell: '&7出售 | 购买 | &e购买&出售 &7| 命令'
+    
+    items:
+      mode:
+        material: OAK_SIGN
+        name: '&e交易模式&7: %mode%'
+        #%cycle% is replaced with cycle values above
+        lore:
+        - '&7点击来循环:'
+        - '%cycle%'
+      amount:
+        material: CHEST
+        name: '&e数量&7: &r%amount%'
+        lore:
+        - '&7点击来编辑'
+      price:
+        material: GOLD_INGOT
+        name: '&e金额&7: &r%price%'
+        lore:
+        - '&7点击来编辑价格'
+        - ''
+        - '&7>> 使用一个物品来点击'
+        - '&7  表示以物易物'
+        - '&7  而不是用钱交易'
+      delete:
+        material: BARRIER
+        name: '&cRemove'
+        lore:
+        - '&7点击来&c移除&7物品'
+      command:
+        material: COMMAND_BLOCK
+        name: '&e命令'
+        lore:
+        - '&7当前的命令:'
+        - '&7- &e%command%&7'
+        - ''
+        - '&7>> 左键点击添加'
+        - '&7>> 右键点击重置'
+      buy_limit:
+        material: FEATHER
+        name: '&e购买限额&7: %limit%'
+        lore:
+        - '&7点击来编辑'
+      player_limit:
+        material: PLAYER_HEAD
+        name: '&e玩家限额&7: &f%limit%'
+        lore:
+        - '&7>> 右键点击来循环:'
+        - '%cycle%'
+        - ''
+        - '&7>> 左键点击来编辑'
+      limit_cooldown:
+        material: CLOCK
+        name: '&e限额重置时间&7: &f%cooldown%'
+        lore:
+        - '&7下一次限额重置: &e%next%'
+        - ''
+        - '&7>> 左键点击来编辑冷却时间'
+        - '&7>> 右键点击来&c清除&7限额'
+  confirm_action:
+    title: '&8你确认吗？'
+    items:
+      accept:
+        material: GREEN_TERRACOTTA
+        name: '&a是的'
+      cancel:
+        material: RED_TERRACOTTA
+        name: '&c不，取消吧'
+  
+  
+  #-------------------- Expired Storage --------------------#
+  expired_storage:
+    title: '&8过期的库存'
+
+#----------------- Villager Shop Item settings -----------------#
+
+shop_item:
+  material: VILLAGER_SPAWN_EGG
+  name: '&b&l创建一个玩家商店'
+  #Placeholders: %shop_size%, %storage_size%
+  lore:
+  - '&a放置&7这个村民蛋来'
+  - '&7创建你自己的&a商店'
+  - ''
+  - '&7>> &a店面尺寸&7: &c%shop_size%'
+  - '&7>> &a库存尺寸&7: &c%storage_size%'
