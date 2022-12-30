@@ -8,7 +8,6 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.LookClose;
 import net.citizensnpcs.trait.SkinTrait;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.*;
@@ -156,8 +155,8 @@ public abstract class VillagerShop {
         }
     }
 
-    protected void removeItems(Inventory inventory, ItemStack item) {
-        int count = item.getAmount();
+    protected void removeItems(Inventory inventory, ItemStack item, int amount) {
+        int count = amount;
 
         for (int i = 0; i < inventory.getContents().length; i ++) {
             ItemStack stored = inventory.getItem(i);
@@ -207,7 +206,10 @@ public abstract class VillagerShop {
             ShopItem shopItem = shopfrontHolder.getItemList().get(slot);
             if (shopItem == null || slot == null) { continue; }
             config.set("items_for_sale." + slot + ".item", shopItem.getRawItem());
-            config.set("items_for_sale." + slot + ".price", shopItem.isItemTrade() ? shopItem.getItemTrade() : shopItem.getPrice());
+            config.set("items_for_sale." + slot + ".amount", shopItem.getAmount());
+            config.set("items_for_sale." + slot + ".trade_amount", shopItem.getItemTradeAmount());
+            config.set("items_for_sale." + slot + ".price", shopItem.isItemTrade() ? shopItem.getItemTrade() : shopItem.getSellPrice());
+            config.set("items_for_sale." + slot + ".buy_price", shopItem.getBuyPrice());
             config.set("items_for_sale." + slot + ".mode", shopItem.getMode().toString());
             config.set("items_for_sale." + slot + ".buy_limit", shopItem.getLimit());
             config.set("items_for_sale." + slot + ".command", shopItem.getCommands());
@@ -244,8 +246,8 @@ public abstract class VillagerShop {
     /** Adds shopItem to player's inventory and drops overflowing items */
     protected void giveShopItem(Player player, ShopItem shopItem) {
         ItemStack itemStack = shopItem.getRawItem();
-        int stacks = (int) Math.floor((double) itemStack.getAmount() / itemStack.getMaxStackSize());
-        int rest = itemStack.getAmount() - (stacks * itemStack.getMaxStackSize());
+        int stacks = (int) Math.floor((double) shopItem.getAmount() / itemStack.getMaxStackSize());
+        int rest = shopItem.getAmount() - (stacks * itemStack.getMaxStackSize());
 
         List<ItemStack> itemsLeft = new ArrayList<>();
         for (int stack = 0; stack < stacks; stack++) {

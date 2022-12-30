@@ -50,7 +50,7 @@ public class VMPlugin extends CorePlugin {
         this.playerListener = new PlayerListener(this);
         registerEvents();
 
-        //Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.4-#1 of VillagerMarket! Please expect and report all bugs in my discord server");
+        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.5-#2 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
@@ -68,7 +68,7 @@ public class VMPlugin extends CorePlugin {
 
     @Override
     protected String[] getLanguages() {
-        return new String[]{"en_US", "de_DE", "es_ES", "pt_BR"};
+        return new String[]{"en_US", "de_DE", "es_ES", "pt_BR", "zh_CN"};
     }
 
     @Override
@@ -125,11 +125,11 @@ public class VMPlugin extends CorePlugin {
         pluginManager.registerEvents(playerListener, this);
         pluginManager.registerEvents(chatListener, this);
     }
-
+/*
     @Override
     protected int getSpigotResourceID() {
         return 82965;
-    }
+    }*/
 
     /** Saves log to /log/ folder and clears log */
     public void saveLog() {

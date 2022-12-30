@@ -160,10 +160,14 @@ menus:
         #Placeholders: %amount%
         name: "&a%amount%&7 shop slots"
         material: CHEST
+        lore:
+          - ""
       storage_size:
         #Placeholders: %amount%
         name: "&a%amount%&7 storage slots"
         material: WRITABLE_BOOK
+        lore:
+          - ""
       buy_shop:
         material: EMERALD
         name: "&aBuy this shop!"
@@ -292,7 +296,8 @@ menus:
         - "&7Mode&f: %mode%"
         - ""
         - "&7Amount&f: &e%amount%"
-        - "&7Price&f: &a%price%"
+        - "&7Buy price&f: &a%buy_price%"
+        - "&7Sell price&f: &a%sell_price%"
         - "&7Currently &b%stock% &7in stock"
         - "&7You can sell &b%available% &7more"
         - ""
@@ -303,7 +308,8 @@ menus:
         - "&7Mode&f: %mode%"
         - ""
         - "&7Amount&f: &e%amount%"
-        - "&7Price&f: &a%price%"
+        - "&7Buy price&f: &a%buy_price%"
+        - "&7Sell price&f: &a%sell_price%"
         - "%limit_lore%"
         - ""
         - "&7>> Left click to buy"
@@ -395,7 +401,8 @@ menus:
         - "&7Mode&f: %mode%"
         - ""
         - "&7Amount&f: &e%amount%"
-        - "&7Price&f: &a%price%"
+        - "&7Buy price&f: &a%buy_price%"
+        - "&7Sell price&f: &a%sell_price%"
         - "&7You can buy &c%available% &7more!"
         - "&7Currently &b%stock% &7in stock!"
         - ""
@@ -546,6 +553,12 @@ menus:
           - ""
           - "&7>> Click with an item to trade"
           - "&7for item instead of money"
+        buy_and_sell_lore:
+          - "&7>> Left click to set buy price"
+          - "&7>> Right click to set sell price"
+          - ""
+          - "&7>> Click with an item to trade"
+          - "&7for item instead of money"
       delete:
         material: BARRIER
         name: "&cRemove"
@@ -558,8 +571,8 @@ menus:
           - "&7Current command(s):"
           - "&7- &e%command%&7"
           - ""
-          - "&7>> Left to add"
-          - "&7>> Right to reset"
+          - "&7>> Left click to add"
+          - "&7>> Right click to reset"
       buy_limit:
         material: FEATHER
         name: "&eBuy Limit&7: %limit%"

@@ -96,7 +96,7 @@ public class PlayerShop extends VillagerShop {
         Economy economy = plugin.getEconomy();
         ShopItem shopItem = shopfrontHolder.getItemList().get(slot);
 
-        BigDecimal price = shopItem.getPrice();
+        BigDecimal price = shopItem.getSellPrice();
         int amount = shopItem.getAmount();
         OfflinePlayer owner = Bukkit.getOfflinePlayer(ownerUUID);
         if (!shopItem.verifyPurchase(player, ItemMode.SELL, owner, storageHolder)) {
@@ -104,13 +104,13 @@ public class PlayerShop extends VillagerShop {
         }
 
         if (shopItem.isItemTrade()) {
-            removeItems(player.getInventory(), shopItem.getItemTrade());
-            storageHolder.addItem(shopItem.getItemTrade());
+            removeItems(player.getInventory(), shopItem.getItemTrade(), shopItem.getItemTradeAmount());
+            storageHolder.addItem(shopItem.getItemTrade(), shopItem.getItemTradeAmount());
 
             if (owner.isOnline() && owner.getPlayer() != null) {
                 Player ownerOnline = owner.getPlayer();
                 ownerOnline.sendMessage(ConfigManager.getCurrencyBuilder("messages.sold_item_as_owner")
-                        .replace("%price%", shopItem.getItemTrade().getAmount() + "x " + " " + shopItem.getItemTradeName())
+                        .replace("%price%", shopItem.getItemTradeAmount() + "x " + " " + shopItem.getItemTradeName())
                         .replace("%player%", player.getName())
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%item%", shopItem.getItemName()).addPrefix().build());
@@ -120,7 +120,7 @@ public class PlayerShop extends VillagerShop {
             BigDecimal taxAmount = tax.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP).multiply(price);
 
             depositOwner(price.subtract(taxAmount));
-            economy.withdrawPlayer(player, shopItem.getPrice().doubleValue());
+            economy.withdrawPlayer(player, shopItem.getSellPrice().doubleValue());
             shopStats.addEarned(price.doubleValue());
 
             if (owner.isOnline() && owner.getPlayer() != null) {
@@ -150,7 +150,7 @@ public class PlayerShop extends VillagerShop {
         shopStats.addSold(amount);
 
         giveShopItem(player, shopItem);
-        storageHolder.removeItem(shopItem.getRawItem());
+        storageHolder.removeItem(shopItem.getRawItem(), shopItem.getAmount());
 
         CurrencyBuilder message = ConfigManager.getCurrencyBuilder("messages.bought_item_as_customer")
                 .replace("%amount%", String.valueOf(shopItem.getAmount()))
@@ -158,7 +158,7 @@ public class PlayerShop extends VillagerShop {
                 .replace("%shop%", getShopName());
 
         if (shopItem.isItemTrade()) {
-            message.replace("%price%", shopItem.getItemTrade().getAmount() + "x " + shopItem.getItemTradeName());
+            message.replace("%price%", shopItem.getItemTradeAmount() + "x " + shopItem.getItemTradeName());
         } else {
             message.replaceCurrency("%price%", price);
         }
@@ -176,7 +176,7 @@ public class PlayerShop extends VillagerShop {
         OfflinePlayer owner = Bukkit.getOfflinePlayer(ownerUUID);
 
         BigDecimal tax = BigDecimal.valueOf(ConfigManager.getDouble("tax"));
-        BigDecimal price = shopItem.getPrice();
+        BigDecimal price = shopItem.getBuyPrice();
         BigDecimal taxAmount = tax.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP).multiply(price);
 
         int amount = shopItem.getAmount();
@@ -184,11 +184,11 @@ public class PlayerShop extends VillagerShop {
             return;
         }
 
-        removeItems(player.getInventory(), shopItem.getRawItem());
+        removeItems(player.getInventory(), shopItem.getRawItem(), shopItem.getAmount());
         economy.depositPlayer(player, price.subtract(taxAmount).doubleValue());
 
         BigDecimal moneyLeft = BigDecimal.valueOf(economy.getBalance(player));
-        storageHolder.addItem(shopItem.getRawItem());
+        storageHolder.addItem(shopItem.getRawItem(), shopItem.getAmount());
         shopStats.addBought(amount);
         shopStats.addSpent(price.doubleValue());
 
@@ -250,7 +250,7 @@ public class PlayerShop extends VillagerShop {
         }
     }
 
-    /** Returns how many more of an certain ShopItem the owner wants to buy */
+    /** Returns how many more of a certain ShopItem the owner can buy */
     @Override
     public int getAvailable(ShopItem shopItem) {
         Economy economy = plugin.getEconomy();
@@ -264,14 +264,14 @@ public class PlayerShop extends VillagerShop {
             available = Math.min(shopItem.getLimit() - inStorage, available);
         }
 
-        if (owner != null) {
-            available = Math.max(0, Math.min(available, (int) Math.floor(economy.getBalance(owner) / shopItem.getPrice().doubleValue()) * shopItem.getAmount()));
+        if (owner != null && !shopItem.isItemTrade()) {
+            available = Math.max(0, Math.min(available, (int) Math.floor(economy.getBalance(owner) / shopItem.getBuyPrice().doubleValue()) * shopItem.getAmount()));
         }
 
         if (shopItem.isItemTrade()) {
             int inStorage = storageHolder.getAmount(shopItem.getRawItem());
+            available = available < shopItem.getItemTradeAmount() ? 0 : available;
             available = Math.min(inStorage, available);
-            available = available < shopItem.getItemTrade().getAmount() ? 0 : available;
         } else {
             available = available < shopItem.getAmount() ? 0 : available;
         }

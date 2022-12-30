@@ -43,6 +43,8 @@ disable_lore_toggle: false
 language: en_US
 #Enables placing shop eggs on non-solid blocks (E.g. slabs, grass, doors)
 enable_non_solid_placement: false
+#Maximum amount of items that can be sold in one transaction
+max_sell_amount: 64
 
 #----------------------- Villager settings -----------------------#
 

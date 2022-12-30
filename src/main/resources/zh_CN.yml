@@ -160,10 +160,14 @@ menus:
         #Placeholders: %amount%
         name: '&a%amount%&7店面容量'
         material: CHEST
+        lore:
+          - ""
       storage_size:
         #Placeholders: %amount%
         name: '&a%amount%&7库存容量'
         material: WRITABLE_BOOK
+        lore:
+          - ""
       buy_shop:
         material: EMERALD
         name: '&a买下这家商店！'
@@ -290,7 +294,8 @@ menus:
       - '&7交易模式&f: %mode%'
       - ''
       - '&7数量&f: &e%amount%'
-      - '&7金额&f: &a%price%'
+      - '&7买入价&f: &a%buy_price%'
+      - '&7售价&f: &a%sell_price%'
       - '&7当前库存: &b%stock% &7'
       - '&7你还能出售&b%available% &7more'
       - ''
@@ -301,7 +306,8 @@ menus:
       - '&7交易模式&f: %mode%'
       - ''
       - '&7数量&f: &e%amount%'
-      - '&7金额&f: &a%price%'
+      - '&7买入价&f: &a%buy_price%'
+      - '&7售价&f: &a%sell_price%'
       - '%limit_lore%'
       - ''
       - '&7>> 左键点击来购买'
@@ -393,7 +399,8 @@ menus:
       - '&7交易模式&f: %mode%'
       - ''
       - '&7数量&f: &e%amount%'
-      - '&7金额&f: &a%price%'
+      - '&7买入价&f: &a%buy_price%'
+      - '&7售价&f: &a%sell_price%'
       - '&7你还可购买&c%available%&7'
       - '&7当前库存: &b%stock%&7'
       - ''
@@ -541,6 +548,13 @@ menus:
         - '&7>> 使用一个物品来点击'
         - '&7  表示以物易物'
         - '&7  而不是用钱交易'
+        buy_and_sell_lore:
+          - '&7>> 左键点击设置买入价'
+          - '&7>> 右键设置卖出价'
+          - ''
+          - '&7>> 使用一个物品来点击'
+          - '&7  表示以物易物'
+          - '&7  而不是用钱交易'
       delete:
         material: BARRIER
         name: '&cRemove'

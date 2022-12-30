@@ -154,8 +154,19 @@ public class StorageMenu extends Menu {
         return items;
     }
 
-    public void addItem(ItemStack i) {
-        getInventory().addItem(i);
+    public void addItem(ItemStack item, int amount) {
+        int stacks = amount / item.getType().getMaxStackSize();
+        int remainder = amount % item.getType().getMaxStackSize();
+        for (int i = 0; i < stacks; i ++) {
+            ItemStack clone = item.clone();
+            clone.setAmount(item.getType().getMaxStackSize());
+            getInventory().addItem(clone);
+        }
+        if (remainder > 0) {
+            ItemStack clone = item.clone();
+            clone.setAmount(remainder);
+            getInventory().addItem(clone);
+        }
     }
 
     public int removeItem(ItemStack i, int amount) {

@@ -111,8 +111,8 @@ public class StorageHolder {
         return storageMenus.stream().mapToInt(s -> s.getAvailableSpace(i)).sum();
     }
 
-    public void removeItem(ItemStack i) {
-        int amountLeft = i.getAmount();
+    public void removeItem(ItemStack i, int amount) {
+        int amountLeft = amount;
         for (StorageMenu menu : storageMenus) {
             amountLeft -= menu.removeItem(i, amountLeft);
             if (amountLeft <= 0) {
@@ -121,11 +121,11 @@ public class StorageHolder {
         }
     }
 
-    public void addItem(ItemStack i) {
+    public void addItem(ItemStack i, int amount) {
         for (StorageMenu storage : storageMenus) {
             int available = storage.getAvailableSpace(i);
-            if (available >= i.getAmount()) {
-                storage.addItem(i);
+            if (available >= amount) {
+                storage.addItem(i, amount);
                 break;
             }
         }

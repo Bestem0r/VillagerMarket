@@ -160,10 +160,14 @@ menus:
         #Placeholders: %amount%
         name: "&a%amount%&7 Casillas de la tienda"
         material: CHEST
+        lore:
+          - ""
       storage_size:
         #Placeholders: %amount%
         name: "&a%amount%&7 Casillas de guardado"
         material: WRITABLE_BOOK
+        lore:
+          - ""
       buy_shop:
         material: EMERALD
         name: "&aCompra esta tienda!"
@@ -292,7 +296,8 @@ menus:
       - "&7Modo&f: %mode%"
       - ""
       - "&7Cantidad&f: &e%amount%"
-      - "&7Precio&f: &a%price%"
+      - "&7Precio de compra&f: &a%buy_price%"
+      - "&7Precio de venta&f: &a%sell_price%"
       - "&7Actualmente &b%stock% &7en stock"
       - "&7Puedes vender &b%available% &7mas"
       - ""
@@ -303,7 +308,8 @@ menus:
       - "&7Modo&f: %mode%"
       - ""
       - "&7Cantidad&f: &e%amount%"
-      - "&7Precio&f: &a%price%"
+      - "&7Precio de compra&f: &a%buy_price%"
+      - "&7Precio de venta&f: &a%sell_price%"
       - "%limit_lore%"
       - ""
       - "&7>> Clic izquierdo para comprar"
@@ -395,7 +401,8 @@ menus:
       - "&7Modo&f: %mode%"
       - ""
       - "&7Cantidad&f: &e%amount%"
-      - "&7Precio&f: &a%price%"
+      - "&7Precio de compra&f: &a%buy_price%"
+      - "&7Precio de venta&f: &a%sell_price%"
       - "&7Puedes comprar &c%available% &7mas!"
       - "&7Actualmente &b%stock% &7en stock!"
       - ""
@@ -546,6 +553,12 @@ menus:
         - ""
         - "&7>> Haz clic con un item para intercambiarlo"
         - "&7por un item en lugar de dinero"
+        buy_and_sell_lore:
+          - "&7>> Izquierdo para establecer el precio de compra"
+          - "&7>> Derecho para establecer el precio de venta"
+          - ""
+          - "&7>> Haz clic con un item para intercambiarlo"
+          - "&7por un item en lugar de dinero"
       delete:
         material: BARRIER
         name: "&cQuitar"

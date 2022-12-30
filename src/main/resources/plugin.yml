@@ -1,6 +1,6 @@
 name: VillagerMarket
 main: net.bestemor.villagermarket.VMPlugin
-version: 1.11.4
+version: 1.11.5
 
 author: Bestem0r
 description: A plugin made by Bestem0r to create Villager Shops
@@ -105,6 +105,3 @@ permissions:
   villagermarket.bypass_price:
     default: op
     description: Buypass max price
-  villagermarket.change_size:
-    default: op
-    description: Change shop and storage size

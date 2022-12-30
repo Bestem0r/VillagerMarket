@@ -161,10 +161,14 @@ menus:
         #Placeholders: %amount%
         name: '&a%amount%&7 Verkaufsplätze'
         material: CHEST
+        lore:
+          - ""
       storage_size:
         #Placeholders: %amount%
         name: '&a%amount%&7 Lagerplätze'
         material: WRITABLE_BOOK
+        lore:
+          - ""
       buy_shop:
         material: EMERALD
         name: '&aKaufe diesen Shop!'
@@ -293,7 +297,8 @@ menus:
       - '&7Modus&f: %mode%'
       - ''
       - '&7Menge&f: &e%amount%'
-      - '&7Preis&f: &a%price%'
+      - '&7Kaufpreis&f: &a%buy_price%'
+      - '&7Verkaufspreis&f: &a%sell_price%'
       - '&7Aktuell &b%stock% &7verfügbar'
       - '&7Du kannst &b%available% &7weitere verkaufen'
       - ''
@@ -304,7 +309,8 @@ menus:
       - '&7Modus&f: %mode%'
       - ''
       - '&7Menge&f: &e%amount%'
-      - '&7Preis&f: &a%price%'
+      - '&7Kaufpreis&f: &a%buy_price%'
+      - '&7Verkaufspreis&f: &a%sell_price%'
       - '%limit_lore%'
       - ''
       - '&7>> Linksklick, um zu kaufen'
@@ -396,7 +402,8 @@ menus:
       - '&7Modus&f: %mode%'
       - ''
       - '&7Menge&f: &e%amount%'
-      - '&7Preis&f: &a%price%'
+      - '&7Kaufpreis&f: &a%buy_price%'
+      - '&7Verkaufspreis&f: &a%sell_price%'
       - '&7Du kannst &c%available% &7ankaufen!'
       - '&7Aktuell &b%stock% &7im Lager!'
       - ''
@@ -547,6 +554,12 @@ menus:
         - ''
         - '&7>> Klicke mit einem Gegenstand,'
         - '&7um mit diesen anstatt von Geld zu handeln.'
+        buy_and_sell_lore:
+          - '&7>> Linksklick, um den Kaufpreis festzulegen'
+          - '&7>> Rechtsklick, um den Verkaufspreis festzulegen'
+          - ''
+          - '&7>> Klicke mit einem Gegenstand,'
+          - '&7um mit diesen anstatt von Geld zu handeln.'
       delete:
         material: BARRIER
         name: '&cEntfernen'

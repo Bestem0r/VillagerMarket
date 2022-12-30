@@ -76,16 +76,32 @@ public class EditItemMenu extends Menu {
         ItemBuilder priceBuilder = ConfigManager.getItem("menus.edit_item.items.price");
 
         if (shopItem.isItemTrade()) {
-            priceBuilder.replace("%price%", shopItem.getItemTrade().getAmount() + "x " + shopItem.getItemTradeName());
-        } else if (shopItem.getPrice().equals(BigDecimal.ZERO)) {
+            priceBuilder.replace("%price%", shopItem.getItemTradeAmount() + "x " + shopItem.getItemTradeName());
+        } else if (shopItem.getSellPrice().equals(BigDecimal.ZERO)) {
             priceBuilder.replace("%price%", ConfigManager.getString("quantity.free"));
+        } else if (shopItem.getMode() == ItemMode.BUY_AND_SELL) {
+            String price;
+            String currency = ConfigManager.getString("currency");
+            String buyPrice = shopItem.getBuyPrice().stripTrailingZeros().toPlainString();
+            String sellPrice = shopItem.getSellPrice().stripTrailingZeros().toPlainString();
+            if (ConfigManager.getBoolean("currency_before")) {
+                price = currency + buyPrice + " / " + currency + sellPrice;
+            } else {
+                price = buyPrice + currency + " / " + sellPrice + currency;
+            }
+            priceBuilder.replace("%price%", price);
         } else {
-            priceBuilder.replaceCurrency("%price%",  shopItem.getPrice());
+            priceBuilder.replaceCurrency("%price%",  shopItem.getSellPrice());
         }
         ItemStack priceItem = priceBuilder.build();
+        if (shopItem.getMode() == ItemMode.BUY_AND_SELL) {
+            ItemMeta meta = priceItem.getItemMeta();
+            meta.setLore(ConfigManager.getStringList("menus.edit_item.items.price.buy_and_sell_lore"));
+            priceItem.setItemMeta(meta);
+        }
 
         if (shopItem.isItemTrade()) {
-            priceItem.setAmount(shopItem.getItemTrade().getAmount());
+            priceItem.setAmount(shopItem.getItemTradeAmount() > shopItem.getItemTrade().getAmount() ? 1 : shopItem.getItemTrade().getAmount());
             priceItem.setType(shopItem.getItemTrade().getType());
         }
 
@@ -156,12 +172,23 @@ public class EditItemMenu extends Menu {
             Player player = (Player) event.getWhoClicked(); 
             player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
             if (event.getCursor() != null && event.getCursor().getType() != Material.AIR) {
-                shopItem.setItemTrade(event.getCursor().clone());
-                update();
-            } else {
-                shopItem.setItemTrade(null);
+                player.sendMessage(ConfigManager.getMessage("messages.type_amount"));
+                ItemStack clone = event.getCursor().clone();
                 event.getView().close();
-                typePrice(player);
+                plugin.getChatListener().addDecimalListener(player, (amount -> {
+                    if (amount.intValue() > ConfigManager.getInt("max_sell_amount") || amount.intValue() < 1) {
+                        player.sendMessage(ConfigManager.getMessage("messages.not_valid_range"));
+                        return;
+                    }
+                    clone.setAmount(amount.intValue() > clone.getMaxStackSize() ? 1 : amount.intValue());
+                    shopItem.setItemTrade(clone, amount.intValue());
+                    update();
+                    open(player);
+                }));
+            } else {
+                shopItem.setItemTrade(null, 0);
+                event.getView().close();
+                typePrice(player, event.getClick().isRightClick());
             }
         }));
     }
@@ -189,7 +216,7 @@ public class EditItemMenu extends Menu {
     private void typeAmount(Player player) {
         player.sendMessage(ConfigManager.getMessage("messages.type_amount"));
         plugin.getChatListener().addDecimalListener(player, (result) -> {
-            if (result.intValue() > 64 || result.intValue() < 1) {
+            if (result.intValue() > ConfigManager.getInt("max_sell_amount") || result.intValue() < 1) {
                 player.sendMessage(ConfigManager.getMessage("messages.not_valid_range"));
                 return;
             }
@@ -200,7 +227,7 @@ public class EditItemMenu extends Menu {
         });
     }
 
-    private void typePrice(Player player) {
+    private void typePrice(Player player, boolean isBuy) {
         player.sendMessage(ConfigManager.getMessage("messages.type_price"));
         plugin.getChatListener().addDecimalListener(player, (result) -> {
 
@@ -211,7 +238,11 @@ public class EditItemMenu extends Menu {
             }
 
             player.sendMessage(ConfigManager.getMessage("messages.price_successful"));
-            shopItem.setPrice(result);
+            if (isBuy) {
+                shopItem.setBuyPrice(result);
+            } else {
+                shopItem.setSellPrice(result);
+            }
             update();
             open(player);
         });

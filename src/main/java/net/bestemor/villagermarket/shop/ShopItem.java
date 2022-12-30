@@ -9,16 +9,13 @@ import net.bestemor.villagermarket.menu.StorageHolder;
 import net.bestemor.villagermarket.utils.VMUtils;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -44,7 +41,10 @@ public class ShopItem {
 
     private List<String> editorLore = new ArrayList<>();
 
-    private BigDecimal price;
+    private BigDecimal sellPrice;
+    private BigDecimal buyPrice;
+    private int amount = 0;
+    private int itemTradeAmount = 0;
     private ItemStack itemTrade;
 
     //Limit variables
@@ -66,6 +66,7 @@ public class ShopItem {
         this.plugin = plugin;
         this.slot = slot;
         this.item = item;
+        this.amount = item.getAmount();
     }
     public ShopItem(VMPlugin plugin, ConfigurationSection section) {
         this.plugin = plugin;
@@ -75,16 +76,19 @@ public class ShopItem {
         if (item == null) {
             throw new NullPointerException("ItemStack is null!");
         }
+        this.amount = section.getInt("amount") == 0 ? item.getAmount() : section.getInt("amount");
 
         Object trade = section.get("price");
         double d = section.getDouble("price");
 
         if (d != 0) {
-            this.price = new BigDecimal(String.valueOf(d));
+            this.sellPrice = new BigDecimal(String.valueOf(d));
         } else if (trade instanceof ItemStack) {
             this.itemTrade = (ItemStack) trade;
-            this.price = BigDecimal.ZERO;
+            this.itemTradeAmount = section.getInt("trade_amount") == 0 ? itemTrade.getAmount() : section.getInt("trade_amount");
+            this.sellPrice = BigDecimal.ZERO;
         }
+        this.buyPrice = new BigDecimal(String.valueOf(section.getDouble("buy_price")));
 
         section.getStringList("command");
         for (String command : section.getStringList("command")) {
@@ -101,16 +105,6 @@ public class ShopItem {
             this.nextReset = Instant.ofEpochSecond(section.getLong("next_reset"));
         }
 
-        try {
-            if (Bukkit.getVersion().contains("1.18") || Integer.parseInt(Bukkit.getVersion().split("\\.")[1]) > 13) {
-                NamespacedKey key = new NamespacedKey(plugin, "villagermarket-command");
-                ItemMeta m = item.getItemMeta();
-                if (m != null && m.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
-                    addCommand(m.getPersistentDataContainer().get(key, PersistentDataType.STRING));
-                }
-            }
-        } catch (Exception ignore) {}
-
         ConfigurationSection limits = section.getConfigurationSection("limits");
         if (limits != null) {
             for (String uuid : limits.getKeys(false)) {
@@ -119,8 +113,11 @@ public class ShopItem {
         }
     }
 
-    public BigDecimal getPrice() {
-        return price == null ? BigDecimal.ZERO : price;
+    public BigDecimal getSellPrice() {
+        return sellPrice == null ? BigDecimal.ZERO : sellPrice;
+    }
+    public BigDecimal getBuyPrice() {
+        return mode != BUY_AND_SELL ? getSellPrice() : buyPrice == null ? BigDecimal.ZERO : buyPrice;
     }
     public Material getType() { return item.getType(); }
     public int getSlot() {
@@ -132,7 +129,7 @@ public class ShopItem {
     public int getLimit() {
         return limit;
     }
-    public int getAmount() { return item.getAmount(); }
+    public int getAmount() { return amount; }
     public List<String> getCommands() {
         return commands;
     }
@@ -154,6 +151,9 @@ public class ShopItem {
     public Instant getNextReset() {
         return nextReset;
     }
+    public int getItemTradeAmount() {
+        return itemTradeAmount;
+    }
 
     public Map<UUID, Integer> getPlayerLimits() {
         return playerLimits;
@@ -161,21 +161,26 @@ public class ShopItem {
     public void setAdmin(boolean admin) {
         isAdmin = admin;
     }
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setSellPrice(BigDecimal sellPrice) {
+        this.sellPrice = sellPrice;
+    }
+    public void setBuyPrice(BigDecimal buyPrice) {
+        this.buyPrice = buyPrice;
     }
     public void setLimit(int limit) {
         this.limit = limit;
     }
     public void setAmount(int amount) {
-        this.item.setAmount(amount);
+        this.item.setAmount(amount > item.getMaxStackSize() ? 1 : amount);
+        this.amount = amount;
     }
     public void addCommand(String command) {
         this.mode = ItemMode.COMMAND;
         this.commands.add(command);
     }
-    public void setItemTrade(ItemStack itemTrade) {
+    public void setItemTrade(ItemStack itemTrade, int amount) {
         this.itemTrade = itemTrade;
+        this.itemTradeAmount = amount;
         if (itemTrade != null) {
             this.mode = SELL;
         }
@@ -291,10 +296,10 @@ public class ShopItem {
 
         if (owner != null && customer.getUniqueId().equals(owner.getUniqueId())) {
             customer.sendMessage(ConfigManager.getMessage("messages.cannot_" + (verifyMode == SELL ?  "buy_from" :"sell_to") + "_yourself"));
-            return false;
+            //return false;
         }
         Economy economy = plugin.getEconomy();
-        if (verifyMode == SELL && isItemTrade() && getAmountInventory(itemTrade, customer.getInventory()) < itemTrade.getAmount()) {
+        if (verifyMode == SELL && isItemTrade() && getAmountInventory(itemTrade, customer.getInventory()) < itemTradeAmount) {
             customer.sendMessage(ConfigManager.getMessage("messages.not_enough_in_inventory"));
             return false;
         }
@@ -302,11 +307,11 @@ public class ShopItem {
             customer.sendMessage(ConfigManager.getMessage("messages.not_enough_stock"));
             return false;
         }
-        if (!isItemTrade() && verifyMode == SELL && itemTrade == null && economy.getBalance(customer) < getPrice().doubleValue()) {
+        if (!isItemTrade() && verifyMode == SELL && itemTrade == null && economy.getBalance(customer) < getSellPrice().doubleValue()) {
             customer.sendMessage(ConfigManager.getMessage("messages.not_enough_money"));
             return false;
         }
-        if (!isItemTrade() && verifyMode == BUY && owner != null && itemTrade == null && economy.getBalance(owner) < getPrice().doubleValue()) {
+        if (!isItemTrade() && verifyMode == BUY && owner != null && itemTrade == null && economy.getBalance(owner) < getBuyPrice().doubleValue()) {
             customer.sendMessage(ConfigManager.getMessage("messages.owner_not_enough_money"));
             return false;
         }
@@ -336,7 +341,7 @@ public class ShopItem {
 
         String lorePath = "menus." + path + "." + typePath + (isAdmin && path.startsWith("edit") ? "standard" : modePath)  + "_lore";
         ListBuilder builder = ConfigManager.getListBuilder(lorePath)
-                .replace("%amount%", String.valueOf(this.item.getAmount()))
+                .replace("%amount%", String.valueOf(amount))
                 .replace("%stock%", String.valueOf(storageAmount))
                 .replace("%bought%", bought)
                 .replace("%available%", String.valueOf(available))
@@ -345,13 +350,17 @@ public class ShopItem {
                 .replace("%limit%", limitInfo);
 
         if (isItemTrade()) {
-            builder.replace("%price%", itemTrade.getAmount() + "x" + " " + getItemName(itemTrade));
-        } else if (getPrice().equals(BigDecimal.ZERO)) {
+            builder.replace("%price%", getItemTradeAmount() + "x" + " " + getItemName(itemTrade));
+        } else if (getSellPrice().equals(BigDecimal.ZERO)) {
             builder.replace("%price%", ConfigManager.getString("quantity.free"));
             builder.replace("%price_per_unit%", ConfigManager.getString("quantity.free"));
+        } else if (mode != BUY_AND_SELL) {
+            builder.replaceCurrency("%price%", getSellPrice());
+            builder.replaceCurrency("%price_per_unit%", getSellPrice().divide(BigDecimal.valueOf(getAmount()), RoundingMode.HALF_UP));
         } else {
-            builder.replaceCurrency("%price%", getPrice());
-            builder.replaceCurrency("%price_per_unit%", getPrice().divide(BigDecimal.valueOf(getAmount()), RoundingMode.HALF_UP));
+            boolean isCustomerMenu = path.equals("shopfront");
+            builder.replaceCurrency("%buy_price%", isCustomerMenu ? getSellPrice() : getBuyPrice());
+            builder.replaceCurrency("%sell_price%", isCustomerMenu ? getBuyPrice() : getSellPrice());
         }
         List<String> lore = builder.build();
 

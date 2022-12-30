@@ -27,7 +27,7 @@ public class AdminShop extends VillagerShop {
         ShopItem shopItem = shopfrontHolder.getItemList().get(slot);
         Economy economy = plugin.getEconomy();
 
-        BigDecimal price = shopItem.getPrice();
+        BigDecimal price = shopItem.getSellPrice();
 
         if (!shopItem.verifyPurchase(player, ItemMode.SELL)) {
             return;
@@ -38,14 +38,14 @@ public class AdminShop extends VillagerShop {
                 .replace("%shop%", getShopName());
 
         if (shopItem.isItemTrade()) {
-            message.replace("%price%", shopItem.getItemTrade().getAmount() + "x " + shopItem.getItemTradeName());
+            message.replace("%price%", shopItem.getItemTradeAmount() + "x " + shopItem.getItemTradeName());
         } else {
             message.replaceCurrency("%price%", price);
         }
         player.sendMessage(message.build());
 
         if (shopItem.isItemTrade()) {
-            removeItems(player.getInventory(), shopItem.getItemTrade());
+            removeItems(player.getInventory(), shopItem.getItemTrade(), shopItem.getItemTradeAmount());
         } else {
             economy.withdrawPlayer(player, price.doubleValue());
             BigDecimal left = BigDecimal.valueOf(economy.getBalance(player));
@@ -71,7 +71,7 @@ public class AdminShop extends VillagerShop {
         Economy economy = plugin.getEconomy();
 
         int amount = shopItem.getAmount();
-        BigDecimal price = shopItem.getPrice();
+        BigDecimal price = shopItem.getBuyPrice();
 
         if (!shopItem.verifyPurchase(player, ItemMode.BUY)) {
             return;
@@ -84,7 +84,7 @@ public class AdminShop extends VillagerShop {
                 .replace("%shop%", getShopName()).build());
 
         economy.depositPlayer(player, price.doubleValue());
-        removeItems(player.getInventory(), shopItem.getRawItem());
+        removeItems(player.getInventory(), shopItem.getRawItem(), shopItem.getAmount());
         shopItem.incrementPlayerTrades(player);
         shopItem.incrementServerTrades();
         shopStats.addBought(amount);
@@ -113,7 +113,7 @@ public class AdminShop extends VillagerShop {
     public void buyCommand(Player player, ShopItem shopItem) {
         Economy economy = plugin.getEconomy();
 
-        BigDecimal price = shopItem.getPrice();
+        BigDecimal price = shopItem.getSellPrice();
         if (economy.getBalance(player) < price.doubleValue()) {
             player.sendMessage(ConfigManager.getMessage("messages.not_enough_money"));
             return;

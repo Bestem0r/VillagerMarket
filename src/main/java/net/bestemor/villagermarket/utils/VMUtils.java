@@ -39,6 +39,8 @@ public class VMUtils {
      * @return Whether the two provided ItemStacks are equal or not. */
     public static boolean compareItems(ItemStack item1, ItemStack item2) {
         if (item1 == null || item2 == null) { return false; }
+        if (item1.getType() != item2.getType()) { return false; }
+        if (item1.hasItemMeta() != item2.hasItemMeta()) { return false; }
         ItemStack item1clone = item1.clone();
         ItemStack item2clone = item2.clone();
 

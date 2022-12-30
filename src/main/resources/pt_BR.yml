@@ -160,10 +160,14 @@ menus:
         #Placeholders: %amount%
         name: "&a%amount%&7 slots de loja"
         material: CHEST
+        lore:
+          - ""
       storage_size:
         #Placeholders: %amount%
         name: "&a%amount%&7 slots de armazém"
         material: WRITABLE_BOOK
+        lore:
+          - ""
       buy_shop:
         material: EMERALD
         name: "&aCompre essa loja!"
@@ -292,7 +296,8 @@ menus:
         - "&7Modo&f: %mode%"
         - ""
         - "&7Quantidade&f: &e%amount%"
-        - "&7Preço&f: &a%price%"
+        - "&7Preço de compra&f: &a%buy_price%"
+        - "&7Vender preço&f: &a%sell_price%"
         - "&7Atualmente &b%stock% &7em estoque"
         - "&7Você pode vender &b%available% &7mais"
         - ""
@@ -303,7 +308,8 @@ menus:
         - "&7Modo&f: %mode%"
         - ""
         - "&7Quantidade&f: &e%amount%"
-        - "&7Preço&f: &a%price%"
+        - "&7Preço de compra&f: &a%buy_price%"
+        - "&7Vender preço&f: &a%sell_price%"
         - "%limit_lore%"
         - ""
         - "&7>> Clique esquerdo para comprar"
@@ -395,7 +401,8 @@ menus:
         - "&7Modo&f: %mode%"
         - ""
         - "&7Quantidade&f: &e%amount%"
-        - "&7Preço&f: &a%price%"
+        - "&7Preço de compra&f: &a%buy_price%"
+        - "&7Vender preço&f: &a%sell_price%"
         - "&7Você pode comprar &c%available% &7mais!"
         - "&7Atualmente &b%stock% &7em estoque!"
         - ""
@@ -543,6 +550,12 @@ menus:
         name: "&ePriço&7: &r%price%"
         lore:
           - "&7Clique para editar o preço"
+          - ""
+          - "&7>> Clique com um item para trocar"
+          - "&7por um item ao invés de dinheiro"
+        buy_and_sell_lore:
+          - "&7>> Esquerda para definir o preço de compra"
+          - "&7>> Direita para definir o preço de venda"
           - ""
           - "&7>> Clique com um item para trocar"
           - "&7por um item ao invés de dinheiro"

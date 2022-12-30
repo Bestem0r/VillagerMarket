@@ -4,12 +4,15 @@ import net.bestemor.core.command.ISubCommand;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.menu.StorageHolder;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ExpiredStorageCommand implements ISubCommand {
 
@@ -29,17 +32,33 @@ public class ExpiredStorageCommand implements ISubCommand {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
-            if (plugin.getShopManager().getExpiredStorages().containsKey(player.getUniqueId())) {
+            UUID storageUUID = player.getUniqueId();
+            if (args.length > 1) {
+                if (!player.hasPermission("villagermarket.admin")) {
+                    player.sendMessage(ConfigManager.getMessage("messages.no_permission_command"));
+                    return;
+                }
+
+                OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+                if (!target.hasPlayedBefore()) {
+                    player.sendMessage(ConfigManager.getMessage("messages.player_not_found"));
+                    return;
+                }
+                storageUUID = target.getUniqueId();
+            }
+
+            if (plugin.getShopManager().getExpiredStorages().containsKey(storageUUID)) {
                 final StorageHolder holder = new StorageHolder(plugin, 0);
                 holder.setAddingAllowed(false);
-                holder.loadItems(plugin.getShopManager().getExpiredStorages().get(player.getUniqueId()));
+                holder.loadItems(plugin.getShopManager().getExpiredStorages().get(storageUUID));
 
+                UUID finalStorageUUID = storageUUID;
                 holder.setCloseEvent(() -> {
                     List<ItemStack> items = holder.getItems();
                     if (items.isEmpty()) {
-                        plugin.getShopManager().getExpiredStorages().remove(player.getUniqueId());
+                        plugin.getShopManager().getExpiredStorages().remove(finalStorageUUID);
                     } else {
-                        plugin.getShopManager().getExpiredStorages().put(player.getUniqueId(), items);
+                        plugin.getShopManager().getExpiredStorages().put(finalStorageUUID, items);
                     }
                 });
 

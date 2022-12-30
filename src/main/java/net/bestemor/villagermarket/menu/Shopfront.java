@@ -332,7 +332,7 @@ public class Shopfront {
             shopItem.setAdmin(shop instanceof AdminShop);
 
             plugin.getChatListener().addDecimalListener(player, (amount) -> {
-                if (amount.intValue() > 64 || amount.intValue() < 1) {
+                if (amount.intValue() > ConfigManager.getInt("max_sell_amount") || amount.intValue() < 1) {
                     player.sendMessage(ConfigManager.getMessage("messages.not_valid_range"));
                     return;
                 }
@@ -349,7 +349,7 @@ public class Shopfront {
                         return;
                     }
 
-                    shopItem.setPrice(price);
+                    shopItem.setSellPrice(price);
 
                     shop.getShopfrontHolder().getItemList().put(shopItem.getSlot(), shopItem);
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, Shopfront.this.holder::update);
