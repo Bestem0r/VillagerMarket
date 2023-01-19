@@ -105,7 +105,7 @@ messages:
   type_skin: "&bEscribe el nombre de la skin en el chat..."
   skin_set: "&aSkin establecida con éxito."
   no_expired_storage: "&cNo tienes almacenamiento caducado!"
-  type_limit_cooldown: "&bEscriba el límite de tiempo de reutilización en el chat (m/h/d) o 'never' si es sin límite..."
+  type_limit_cooldown: "&bEscriba el límite de tiempo de reutilización en el chat (2h, 1d, etc.) o 'never' si es sin límite..."
   limit_cooldown_set: "&aTiempo de espera del comercio establecido en &e%time%"
   limits_cleared: "&cLímites limpiados!"
   name_blacklisted: "&cNo puedes usar este nombre para la tienda!"
@@ -120,6 +120,11 @@ messages:
   bought_item_as_customer: "&7Compraste &b%amount%x %item%&7 por &a%price%&7 a &r%shop%."
   #Placeholders: %amount%, %item%, %price%, %shop%
   sold_item_as_customer: "&7Vendiste &b%amount%x %item%&7 por &a%price%&7 a &r%shop%."
+  type_discount: "&bEscriba el descuento (0-100) en el chat..."
+  type_time: "&bEscriba el tiempo (2h, 1d, etc.) en el chat..."
+  not_valid_time: "&c¡No es un tiempo válido! El tiempo debe comenzar con un número y terminar con h, d o m."
+  #Placeholders: %shop_name%, %discount%, %item%
+  discount_announcement: "¡&e%shop_name% ahora tiene un descuento de &e%discount%% en &e%item%&a!"
 
 stats_message:
 - "&bEstadísticas de VillagerShop:"
@@ -262,6 +267,10 @@ menus:
       buy_and_sell: "&8[&aCOMPRAR&7/&aVENDER&8]"
       command: "&8[&eCOMANDO&8]"
       trade: "&8[&eCOMERCIO&8]"
+    discount_lore:
+      - ""
+      - "&7Descuento&f: &e%discount%%"
+      - "&7El descuento termina en&f: &e%time%"
     player_shop:
       #Placeholders: %amount%, %price%, %stock%, %mode%
       trade_lore:
@@ -577,7 +586,7 @@ menus:
         material: FEATHER
         name: "&Límite de compras&7: %limit%"
         lore:
-        - "&7Click para editar"
+        - "&7>> Click para editar"
       player_limit:
         material: PLAYER_HEAD
         name: "&eLímite de jugadores&7: &f%limit%"
@@ -594,6 +603,13 @@ menus:
         - ""
         - "&7>> Haz clic izquierdo para editar el enfriamiento"
         - "&7>> Haga clic derecho para &climpiar los &7limites"
+      discount:
+        material: EMERALD
+        name: "&eDescuento&7: &f%discount%%"
+        lore:
+          - "&7Termina: &e%discount_end%"
+          - ""
+          - "&7>> Clic para editar"
   confirm_action:
     title: "&8Estas seguro"
     items:

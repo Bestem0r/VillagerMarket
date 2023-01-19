@@ -1,11 +1,18 @@
 package net.bestemor.villagermarket.utils;
 
+import net.bestemor.core.config.ConfigManager;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 public class VMUtils {
@@ -83,5 +90,68 @@ public class VMUtils {
             }
         }
         return null;
+    }
+
+    public static Instant getTimeFromNow(String time) {
+        Instant i = Instant.now().truncatedTo(ChronoUnit.MINUTES);
+        if (time == null) {
+            return Instant.ofEpochSecond(0);
+        }
+        String s = time.substring(0, time.length() - 1);
+        if (!VMUtils.isInteger(s)) {
+            return Instant.ofEpochSecond(0);
+        }
+
+        int amount = Integer.parseInt(s);
+        switch (time.substring(time.length() - 1)) {
+            case "m":
+                i = i.plus(amount, ChronoUnit.MINUTES);
+                break;
+            case "h":
+                i = i.plus(amount, ChronoUnit.HOURS).truncatedTo(ChronoUnit.MINUTES);
+                break;
+            case "d":
+                i = i.plus(amount, ChronoUnit.DAYS).truncatedTo(ChronoUnit.HOURS);
+                break;
+            default:
+        }
+        return i;
+    }
+
+    public static ChatColor getCodeBeforePlaceholder(List<String> l, String placeholder) {
+        for (String s : l) {
+            if (s.contains(placeholder)) {
+                return getCodeBeforePlaceholder(s, placeholder);
+            }
+        }
+        return ChatColor.WHITE;
+    }
+
+    public static ChatColor getCodeBeforePlaceholder(String s, String placeholder) {
+        int index = s.indexOf(placeholder);
+        if (index == -1) {
+            return ChatColor.WHITE;
+        }
+        if (index == 0) {
+            return ChatColor.WHITE;
+        }
+        String code = s.substring(index - 2, index);
+        if (code.startsWith("&") || code.startsWith("§")) {
+            return ChatColor.getByChar(code.charAt(1));
+        }
+        return ChatColor.WHITE;
+    }
+
+    public static String formatBuySellPrice(BigDecimal buy, BigDecimal sell) {
+        String price;
+        String currency = ConfigManager.getString("currency");
+        String buyPrice = buy.stripTrailingZeros().setScale(2, RoundingMode.HALF_UP).toPlainString();
+        String sellPrice = sell.stripTrailingZeros().setScale(2, RoundingMode.HALF_UP).toPlainString();
+        if (ConfigManager.getBoolean("currency_before")) {
+            price = currency + buyPrice + " / " + currency + sellPrice;
+        } else {
+            price = buyPrice + currency + " / " + sellPrice + currency;
+        }
+        return price;
     }
 }

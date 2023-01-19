@@ -105,7 +105,7 @@ messages:
   type_skin: '&b请在聊天框内输入皮肤名称...'
   skin_set: '&a成功设置皮肤'
   no_expired_storage: '&c你没有过期的库存！'
-  type_limit_cooldown: '&b请在聊天框输入交易冷却时间(m/h/d)，输入''never''表示没有冷却...'
+  type_limit_cooldown: '&b请在聊天框输入交易冷却时间(2h, 1d, etc.)，输入''never''表示没有冷却...'
   limit_cooldown_set: '&a交易限额的冷却时间设置为: &e%time%'
   limits_cleared: '&c交易限额已经取消！'
   name_blacklisted: '&c你无法使用这个名字！'
@@ -120,6 +120,11 @@ messages:
   bought_item_as_customer: '&7你在%shop%&r购买了&b%amount%个%item%&7，花费了&a%price%&7&r。'
   #Placeholders: %amount%, %item%, %price%, %shop%
   sold_item_as_customer: '&7你在%shop%&r出售了&b%amount%个%item%&7，赚取了&a%price%&7&r。'
+  type_discount: "&b请在聊天中输入折扣 (0-100)..."
+  type_time: "&b请在聊天中输入时间（2 小时、1 天等..."
+  not_valid_time: "&c不是有效时间！时间必须以数字开头，以 h、d 或 m 结尾。"
+  #Placeholders: %shop_name%, %discount%, %item%
+  discount_announcement: "&e%shop_name% 现在对 &e%item%&a 有 &e%discount%% 折扣！"
 
 stats_message:
 - '&b商店状况: '
@@ -260,6 +265,10 @@ menus:
       buy_and_sell: '&8[&a买&7/&a售&8]'
       command: '&8[&e命令&8]'
       trade: '&8[&e交易&8]'
+    discount_lore:
+      - ""
+      - "&7折扣&f: &e%discount%%"
+      - "&7折扣结束于&f: &e%time%"
     player_shop:
       #Placeholders: %amount%, %price%, %stock%, %mode%
       trade_lore:
@@ -573,7 +582,7 @@ menus:
         material: FEATHER
         name: '&e购买限额&7: %limit%'
         lore:
-        - '&7点击来编辑'
+        - '&7>> 点击来编辑'
       player_limit:
         material: PLAYER_HEAD
         name: '&e玩家限额&7: &f%limit%'
@@ -590,6 +599,13 @@ menus:
         - ''
         - '&7>> 左键点击来编辑冷却时间'
         - '&7>> 右键点击来&c清除&7限额'
+      discount:
+        material: EMERALD
+        name: "&e折扣&7: &f%discount%%"
+        lore:
+          - "&7结束: &e%discount_end%"
+          - ""
+          - '&7>> 点击来编辑'
   confirm_action:
     title: '&8你确认吗？'
     items:

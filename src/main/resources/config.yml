@@ -80,15 +80,38 @@ towny:
   shop_plot_only: true
 
 
-#----------------------- Rent settings -----------------------#
+#---------------------- Rent settings ----------------------#
 
 #Max limit for shop renting (days)
 max_rent: 30
 #How often should temporary shops be checked? (seconds)
+#This interval is also used for limits and discounts.
 expire_check_interval: 10
 
 
-#----------------------- Sounds -----------------------#
+#-------------------- Discount settings --------------------#
+
+#Auto discounts will add random discounts to random items
+#at a set interval and duration.
+auto_discount:
+  enable: true
+  announce: true
+  discount:
+    min: 10
+    max: 20
+  #Duration of discount
+  duration: 1m
+  #How often new discounts should be added
+  interval: 2m
+  #Amount of items which should have discounts
+  item_amount: 3
+  #Amount of random shops which should have discounts applied
+  shop_amount: 1
+  #List the admin shop IDs which should use auto discounts here
+  admin_shops:
+  - "shop_id"
+
+#------------------------- Sounds -------------------------#
 
 sounds:
   create_shop: ENTITY_VILLAGER_TRADE

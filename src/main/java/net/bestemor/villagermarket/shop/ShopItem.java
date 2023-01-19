@@ -9,6 +9,7 @@ import net.bestemor.villagermarket.menu.StorageHolder;
 import net.bestemor.villagermarket.utils.VMUtils;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -20,7 +21,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static net.bestemor.villagermarket.shop.ItemMode.*;
@@ -43,16 +43,17 @@ public class ShopItem {
 
     private BigDecimal sellPrice;
     private BigDecimal buyPrice;
-    private int amount = 0;
+    private int amount;
     private int itemTradeAmount = 0;
     private ItemStack itemTrade;
 
-    //Limit variables
+    private int discount = 0;
     private int limit = 0;
     private LimitMode limitMode = LimitMode.PLAYER;
     private String cooldown = "never";
     private int serverTrades = 0;
     private Instant nextReset;
+    private Instant discountEnd;
     private final Map<UUID, Integer> playerLimits = new HashMap<>();
 
     int storageAmount = 0;
@@ -104,6 +105,10 @@ public class ShopItem {
         if (this.cooldown != null && !this.cooldown.equals("never")) {
             this.nextReset = Instant.ofEpochSecond(section.getLong("next_reset"));
         }
+        if (section.getConfigurationSection("discount") != null) {
+            this.discount = section.getInt("discount.amount");
+            this.discountEnd = Instant.ofEpochSecond(section.getLong("discount.end"));
+        }
 
         ConfigurationSection limits = section.getConfigurationSection("limits");
         if (limits != null) {
@@ -114,10 +119,30 @@ public class ShopItem {
     }
 
     public BigDecimal getSellPrice() {
-        return sellPrice == null ? BigDecimal.ZERO : sellPrice;
+        return getSellPrice(true);
+    }
+    public BigDecimal getSellPrice(boolean applyDiscount) {
+        if (sellPrice == null) {
+            return BigDecimal.ZERO;
+        } else if (!applyDiscount || discount <= 0) {
+            return sellPrice;
+        } else {
+            return sellPrice.subtract(sellPrice.multiply(BigDecimal.valueOf(discount / 100.0)));
+        }
     }
     public BigDecimal getBuyPrice() {
-        return mode != BUY_AND_SELL ? getSellPrice() : buyPrice == null ? BigDecimal.ZERO : buyPrice;
+        return getBuyPrice(true);
+    }
+    public BigDecimal getBuyPrice(boolean applyDiscount) {
+        if (mode != BUY_AND_SELL) {
+            return getSellPrice();
+        } else if (buyPrice == null) {
+            return BigDecimal.ZERO;
+        } else if (!applyDiscount || discount <= 0) {
+            return buyPrice;
+        } else {
+            return buyPrice.subtract(buyPrice.multiply(BigDecimal.valueOf(discount / 100.0)));
+        }
     }
     public Material getType() { return item.getType(); }
     public int getSlot() {
@@ -242,33 +267,21 @@ public class ShopItem {
     }
 
     private void resetCooldown() {
-        Instant i = Instant.now().truncatedTo(ChronoUnit.MINUTES);
-        if (cooldown == null) {
-            nextReset = Instant.ofEpochSecond(0);
-            return;
+        this.nextReset = VMUtils.getTimeFromNow(cooldown);
+        if (nextReset.getEpochSecond() == 0) {
+            this.cooldown = null;
         }
-        String s = cooldown.substring(0, cooldown.length() - 1);
-        if (!VMUtils.isInteger(s)) {
-            nextReset = Instant.ofEpochSecond(0);
-            cooldown = null;
-            return;
-        }
+    }
+    public void setDiscount(int discount, Instant discountEnd) {
+        this.discount = discount;
+        this.discountEnd = discountEnd;
+    }
+    public int getDiscount() {
+        return discount;
+    }
 
-        int amount = Integer.parseInt(s);
-        switch (cooldown.substring(cooldown.length() - 1)) {
-            case "m":
-                i = i.plus(amount, ChronoUnit.MINUTES);
-                break;
-            case "h":
-                i = i.plus(amount, ChronoUnit.HOURS).truncatedTo(ChronoUnit.HOURS);
-                break;
-            case "d":
-                i = i.plus(amount, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS);
-                break;
-            default:
-
-        }
-        this.nextReset = i;
+    public Instant getDiscountEnd() {
+        return discountEnd;
     }
 
     public void clearLimits() {
@@ -352,18 +365,45 @@ public class ShopItem {
         if (isItemTrade()) {
             builder.replace("%price%", getItemTradeAmount() + "x" + " " + getItemName(itemTrade));
         } else if (getSellPrice().equals(BigDecimal.ZERO)) {
+
             builder.replace("%price%", ConfigManager.getString("quantity.free"));
             builder.replace("%price_per_unit%", ConfigManager.getString("quantity.free"));
         } else if (mode != BUY_AND_SELL) {
-            builder.replaceCurrency("%price%", getSellPrice());
+            if (discount > 0) {
+                ChatColor c = VMUtils.getCodeBeforePlaceholder(ConfigManager.getStringList(lorePath), "%price%");
+                String prePrice = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", sellPrice).build();
+                String currentPrice = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getSellPrice()).build();
+                builder.replace("%price%", "§m" + prePrice + c + " " + currentPrice);
+            } else {
+                builder.replaceCurrency("%price%", getSellPrice());
+            }
             builder.replaceCurrency("%price_per_unit%", getSellPrice().divide(BigDecimal.valueOf(getAmount()), RoundingMode.HALF_UP));
         } else {
             boolean isCustomerMenu = path.equals("shopfront");
-            builder.replaceCurrency("%buy_price%", isCustomerMenu ? getSellPrice() : getBuyPrice());
-            builder.replaceCurrency("%sell_price%", isCustomerMenu ? getBuyPrice() : getSellPrice());
+            if (isAdmin && !isCustomerMenu) {
+                builder.replace("%price%", VMUtils.formatBuySellPrice(getBuyPrice(false), getSellPrice(false)));
+            } else if (discount > 0) {
+                String preSell = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", sellPrice).build();
+                String currentSell = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getSellPrice()).build();
+                String preBuy = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", buyPrice).build();
+                String currentBuy = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getBuyPrice()).build();
+
+                ChatColor cBuy = VMUtils.getCodeBeforePlaceholder(ConfigManager.getStringList(lorePath), "%buy_price%");
+                ChatColor cSell = VMUtils.getCodeBeforePlaceholder(ConfigManager.getStringList(lorePath), "%sell_price%");
+                builder.replace("%buy_price%", "§m" + (isCustomerMenu ? preSell : preBuy) + cBuy + " " + (isCustomerMenu ? currentSell : currentBuy));
+                builder.replace("%sell_price%", "§m" + (isCustomerMenu ? preBuy : preSell) + cSell + " " + (isCustomerMenu ? currentBuy : currentSell));
+            } else {
+                builder.replaceCurrency("%buy_price%", isCustomerMenu ? getSellPrice() : getBuyPrice());
+                builder.replaceCurrency("%sell_price%", isCustomerMenu ? getBuyPrice() : getSellPrice());
+            }
         }
         List<String> lore = builder.build();
 
+        if (discount > 0 && discountEnd != null) {
+            lore.addAll(ConfigManager.getListBuilder("menus.shopfront.discount_lore")
+                    .replace("%discount%", String.valueOf(discount))
+                    .replace("%time%", ConfigManager.getTimeLeft(discountEnd)).build());
+        }
         if (isAdmin && limit > 0) {
             int index = lore.indexOf("%limit_lore%");
             if (index != -1) {
@@ -424,6 +464,8 @@ public class ShopItem {
         ItemMeta m = i.getItemMeta();
         if (m != null && m.hasDisplayName()) {
             return m.getDisplayName();
+        } else if (plugin.getLocalizedMaterial(i.getType().name()) != null) {
+            return plugin.getLocalizedMaterial(i.getType().name());
         } else if (m != null && VersionUtils.getMCVersion() > 11 && m.hasLocalizedName()) {
             return m.getLocalizedName();
         } else {

@@ -7,6 +7,7 @@ import net.bestemor.core.menu.Menu;
 import net.bestemor.core.menu.MenuContent;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.shop.*;
+import net.bestemor.villagermarket.utils.VMUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -17,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -80,18 +82,9 @@ public class EditItemMenu extends Menu {
         } else if (shopItem.getSellPrice().equals(BigDecimal.ZERO)) {
             priceBuilder.replace("%price%", ConfigManager.getString("quantity.free"));
         } else if (shopItem.getMode() == ItemMode.BUY_AND_SELL) {
-            String price;
-            String currency = ConfigManager.getString("currency");
-            String buyPrice = shopItem.getBuyPrice().stripTrailingZeros().toPlainString();
-            String sellPrice = shopItem.getSellPrice().stripTrailingZeros().toPlainString();
-            if (ConfigManager.getBoolean("currency_before")) {
-                price = currency + buyPrice + " / " + currency + sellPrice;
-            } else {
-                price = buyPrice + currency + " / " + sellPrice + currency;
-            }
-            priceBuilder.replace("%price%", price);
+            priceBuilder.replace("%price%", VMUtils.formatBuySellPrice(shopItem.getBuyPrice(false), shopItem.getSellPrice(false)));
         } else {
-            priceBuilder.replaceCurrency("%price%",  shopItem.getSellPrice());
+            priceBuilder.replaceCurrency("%price%",  shopItem.getSellPrice(false));
         }
         ItemStack priceItem = priceBuilder.build();
         if (shopItem.getMode() == ItemMode.BUY_AND_SELL) {
@@ -188,9 +181,20 @@ public class EditItemMenu extends Menu {
             } else {
                 shopItem.setItemTrade(null, 0);
                 event.getView().close();
-                typePrice(player, event.getClick().isRightClick());
+                typePrice(player, shopItem.getMode() == ItemMode.BUY_AND_SELL && !event.getClick().isRightClick());
             }
         }));
+
+        if (!shopItem.isItemTrade()) {
+            ItemStack discountItem = ConfigManager.getItem("menus.edit_item.items.discount")
+                    .replace("%discount%", String.valueOf(shopItem.getDiscount()))
+                    .replace("%discount_end%", ConfigManager.getTimeLeft(shopItem.getDiscountEnd())).build();
+
+            content.setClickable(13, Clickable.of(discountItem, (event) -> {
+                event.getView().close();
+                typeDiscount((Player) event.getWhoClicked());
+            }));
+        }
     }
 
     @Override
@@ -245,6 +249,39 @@ public class EditItemMenu extends Menu {
             }
             update();
             open(player);
+        });
+    }
+
+    private void typeDiscount(Player player) {
+        player.sendMessage(ConfigManager.getMessage("messages.type_discount"));
+        plugin.getChatListener().addStringListener(player, (amountS) -> {
+            if (!VMUtils.isInteger(amountS)) {
+                player.sendMessage(ConfigManager.getMessage("messages.not_number"));
+                return;
+            }
+            int discount = Integer.parseInt(amountS);
+            if (discount < 0 || discount > 100) {
+                typeDiscount(player);
+                return;
+            }
+            if (discount == 0) {
+                shopItem.setDiscount(0, Instant.MIN);
+                update();
+                open(player);
+                return;
+            }
+            player.sendMessage(ConfigManager.getMessage("messages.type_time"));
+            plugin.getChatListener().addStringListener(player, (timeS) -> {
+                String amount = timeS.substring(0, timeS.length() - 1);
+                String unit = timeS.substring(timeS.length() - 1);
+                if (!VMUtils.isInteger(amount) || (!unit.equals("d") && !unit.equals("h") && !unit.equals("m"))) {
+                    player.sendMessage(ConfigManager.getMessage("messages.not_valid_time"));
+                    return;
+                }
+                shopItem.setDiscount(discount, VMUtils.getTimeFromNow(timeS));
+                update();
+                open(player);
+            });
         });
     }
 

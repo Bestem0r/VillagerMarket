@@ -1,5 +1,6 @@
 package net.bestemor.villagermarket.shop;
 
+import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.menu.Menu;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.menu.*;
@@ -8,6 +9,7 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.LookClose;
 import net.citizensnpcs.trait.SkinTrait;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.*;
@@ -208,14 +210,16 @@ public abstract class VillagerShop {
             config.set("items_for_sale." + slot + ".item", shopItem.getRawItem());
             config.set("items_for_sale." + slot + ".amount", shopItem.getAmount());
             config.set("items_for_sale." + slot + ".trade_amount", shopItem.getItemTradeAmount());
-            config.set("items_for_sale." + slot + ".price", shopItem.isItemTrade() ? shopItem.getItemTrade() : shopItem.getSellPrice());
-            config.set("items_for_sale." + slot + ".buy_price", shopItem.getBuyPrice());
+            config.set("items_for_sale." + slot + ".price", shopItem.isItemTrade() ? shopItem.getItemTrade() : shopItem.getSellPrice(false));
+            config.set("items_for_sale." + slot + ".buy_price", shopItem.getBuyPrice(false));
             config.set("items_for_sale." + slot + ".mode", shopItem.getMode().toString());
             config.set("items_for_sale." + slot + ".buy_limit", shopItem.getLimit());
             config.set("items_for_sale." + slot + ".command", shopItem.getCommands());
             config.set("items_for_sale." + slot + ".server_trades", shopItem.getServerTrades());
             config.set("items_for_sale." + slot + ".limit_mode", shopItem.getLimitMode().toString());
             config.set("items_for_sale." + slot + ".cooldown", shopItem.getCooldown());
+            config.set("items_for_sale." + slot + ".discount.amount", shopItem.getDiscount());
+            config.set("items_for_sale." + slot + ".discount.end", shopItem.getDiscountEnd() == null ? 0 : shopItem.getDiscountEnd().getEpochSecond());
             if (shopItem.getNextReset() != null && shopItem.getNextReset().getEpochSecond() != 0 && shopItem.getCooldown() != null) {
                 config.set("items_for_sale." + slot + ".next_reset", shopItem.getNextReset().getEpochSecond());
             } else {
@@ -357,6 +361,32 @@ public abstract class VillagerShop {
 
     public void setShopName(String customName) {
         this.shopName = customName;
+    }
+
+    public void checkDiscounts() {
+        for (ShopItem shopItem : shopfrontHolder.getItemList().values()) {
+            if (shopItem.getDiscount() > 0 && Instant.now().isAfter(shopItem.getDiscountEnd())) {
+                shopItem.setDiscount(0, null);
+            }
+        }
+    }
+
+    public void addRandomDiscount(int discount, Instant end) {
+        List<ShopItem> items = new ArrayList<>(shopfrontHolder.getItemList().values());
+        Collections.shuffle(items);
+        for (ShopItem shopItem : items) {
+            if (shopItem.getDiscount() == 0) {
+                if (ConfigManager.getBoolean("auto_discount.announce")) {
+                    Bukkit.broadcastMessage(ConfigManager.getMessage("messages.discount_announcement")
+                            .replace("%shop_name%", getShopName())
+                            .replace("%item%", shopItem.getItemName())
+                            .replace("%discount%", String.valueOf(discount))
+                    );
+                }
+                shopItem.setDiscount(discount, end);
+                break;
+            }
+        }
     }
 
     public void setShopfrontSize(int shopSize) {

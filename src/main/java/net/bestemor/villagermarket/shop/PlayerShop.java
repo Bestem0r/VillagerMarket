@@ -155,7 +155,8 @@ public class PlayerShop extends VillagerShop {
         CurrencyBuilder message = ConfigManager.getCurrencyBuilder("messages.bought_item_as_customer")
                 .replace("%amount%", String.valueOf(shopItem.getAmount()))
                 .replace("%item%", shopItem.getItemName())
-                .replace("%shop%", getShopName());
+                .replace("%shop%", getShopName())
+                .addPrefix();
 
         if (shopItem.isItemTrade()) {
             message.replace("%price%", shopItem.getItemTradeAmount() + "x " + shopItem.getItemTradeName());

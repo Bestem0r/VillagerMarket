@@ -106,7 +106,7 @@ messages:
   type_skin: '&bBitte gebe den Skin-Namen im Chat ein...'
   skin_set: '&aSkin erfolgreich eingestellt.'
   no_expired_storage: '&cDu hast keine Gegenstände im expired storage!'
-  type_limit_cooldown: '&bBitte gebe eine Handel-Abklingzeit im Chat ein (m/h/d) oder "never" für kein Limit...'
+  type_limit_cooldown: '&bBitte gebe eine Handel-Abklingzeit im Chat ein (2h, 1d, etc.) oder "never" für kein Limit...'
   limit_cooldown_set: '&aHandel-Abklingzeit auf &e%time% &afestgelegt.'
   limits_cleared: '&cEinschränkungen aufgehoben!'
   name_blacklisted: '&cDu darfst diesen Shopnamen nicht verwenden!'
@@ -121,6 +121,11 @@ messages:
   bought_item_as_customer: '&7Du hast &b%amount%x %item%&7 für &a%price%&7 von &r%shop% &7gekauft.'
   #Placeholders: %amount%, %item%, %price%, %shop%
   sold_item_as_customer: '&7Du hast &b%amount%x %item%&7 für &a%price%&7 an &r%shop% &7verkauft.'
+  type_discount: "&bBitte geben Sie den Rabatt (0-100) im Chat ein..."
+  type_time: "&bBitte geben Sie die Zeit (2h, 1d, etc.) im Chat ein..."
+  not_valid_time: "&cKeine gültige Zeit! Die Zeit muss mit einer Zahl beginnen und mit h, d oder m enden."
+  #Placeholders: %shop_name%, %discount%, %item%
+  discount_announcement: "&e%shop_name% hat jetzt einen &e%discount%% Rabatt auf &e%item%&a!"
 
 stats_message:
 - '&bVillagerShop Statistiken:'
@@ -263,6 +268,10 @@ menus:
       buy_and_sell: '&8[&aKAUFEN&7/&aVERKAUFEN&8]'
       command: '&8[&eBEFEHL&8]'
       trade: '&8[&eHANDELN&8]'
+    discount_lore:
+      - ""
+      - "&7Rabatt&f: &e%discount%%"
+      - "&7Rabatt endet in&f: &e%time%"
     player_shop:
       #Placeholders: %amount%, %price%, %stock%, %mode%
       trade_lore:
@@ -578,7 +587,7 @@ menus:
         material: FEATHER
         name: '&eKauflimit&7: %limit%'
         lore:
-        - '&7Klicke, um zu bearbeiten'
+        - '&7>> Klicke, um zu bearbeiten'
       player_limit:
         material: PLAYER_HEAD
         name: '&eSpielerlimit&7: &f%limit%'
@@ -595,6 +604,13 @@ menus:
         - ''
         - '&7>> Linksklick, um Abklingzeit zu bearbeiten.'
         - '&7>> Rechtsklick, um Abklingzeit &czurückzusetzen&7.'
+      discount:
+        material: EMERALD
+        name: "&eRabatt&7: &f%discount%%"
+        lore:
+          - "&7Endet: &e%discount_end%"
+          - ""
+          - '&7>> Klicke, um zu bearbeiten'
   confirm_action:
     title: '&8Bist du dir sicher?'
     items:

@@ -11,6 +11,7 @@ import net.bestemor.villagermarket.shop.ShopManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
@@ -18,9 +19,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class VMPlugin extends CorePlugin {
 
@@ -31,6 +30,8 @@ public class VMPlugin extends CorePlugin {
     private ShopManager shopManager;
     private ChatListener chatListener;
     private PlayerListener playerListener;
+
+    private final Map<String, String> localizedMaterials = new HashMap<>();
 
     @Override
     protected void onPluginEnable() {
@@ -50,7 +51,7 @@ public class VMPlugin extends CorePlugin {
         this.playerListener = new PlayerListener(this);
         registerEvents();
 
-        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.5-#2 of VillagerMarket! Please expect and report all bugs in my discord server");
+        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.5-#8 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
@@ -61,6 +62,17 @@ public class VMPlugin extends CorePlugin {
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
             new PlaceholderManager(this).register();
+        }
+
+        File materials = new File(getDataFolder(), "materials.yml");
+        if (materials.exists()) {
+            FileConfiguration config = YamlConfiguration.loadConfiguration(materials);
+            ConfigurationSection section = config.getConfigurationSection("materials");
+            if (section != null) {
+                for (String key : section.getKeys(false)) {
+                    localizedMaterials.put(key, section.getString(key));
+                }
+            }
         }
 
         VillagerMarketAPI.init(this);
@@ -154,6 +166,10 @@ public class VMPlugin extends CorePlugin {
     }
     public PlayerListener getPlayerEvents() {
         return playerListener;
+    }
+
+    public String getLocalizedMaterial(String material) {
+        return localizedMaterials.get(material);
     }
 
     public Economy getEconomy() {

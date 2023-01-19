@@ -1,6 +1,5 @@
 package net.bestemor.villagermarket.shop;
 
-import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.config.VersionUtils;
@@ -22,7 +21,6 @@ import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -31,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class ShopManager {
@@ -40,6 +39,8 @@ public class ShopManager {
     private final List<String> blackList;
 
     private final boolean redstoneEnabled;
+
+    private Instant nextAutoDiscount = Instant.now();
 
     private final HashMap<UUID, List<ItemStack>> expiredStorages = new HashMap<>();
 
@@ -248,30 +249,51 @@ public class ShopManager {
     private void beginExpireThread() {
         long interval = 20L * ConfigManager.getInt("expire_check_interval");
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-            for (VillagerShop villagerShop : shops.values()) {
-                if (villagerShop instanceof PlayerShop) {
-                    PlayerShop playerShop = (PlayerShop) villagerShop;
-
-                    if (playerShop.hasExpired() && playerShop.hasOwner()) {
-                        Bukkit.getScheduler().runTask(plugin, playerShop::abandon);
-                    }
-                } else {
-                    for (ShopItem item : villagerShop.getShopfrontHolder().getItemList().values()) {
-                        if (item.getCooldown() != null && item.getNextReset() != null && Instant.now().isAfter(item.getNextReset())) {
-                            item.clearLimits();
-                        }
-                    }
-                }
-            }
-        }, 20L, interval);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::checkExpirations, 20L, interval);
     }
 
-    public List<UUID> geEntityUUIDs() {
-        return shops.values().stream()
-                .map(VillagerShop::getEntityUUID)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+    private void checkExpirations() {
+        boolean addDiscount = Instant.now().isAfter(nextAutoDiscount);
+        int discountsToAdd = 0;
+        if (addDiscount) {
+            discountsToAdd = ConfigManager.getInt("auto_discount.shop_amount");
+        }
+        List<VillagerShop> shopsCopy = new ArrayList<>(shops.values());
+        Collections.shuffle(shopsCopy);
+        for (VillagerShop villagerShop : shopsCopy) {
+            villagerShop.checkDiscounts();
+            if (villagerShop instanceof PlayerShop) {
+                PlayerShop playerShop = (PlayerShop) villagerShop;
+
+                if (playerShop.hasExpired() && playerShop.hasOwner()) {
+                    Bukkit.getScheduler().runTask(plugin, playerShop::abandon);
+                }
+            } else {
+                for (ShopItem item : villagerShop.getShopfrontHolder().getItemList().values()) {
+                    if (item.getCooldown() != null && item.getNextReset() != null && Instant.now().isAfter(item.getNextReset())) {
+                        item.clearLimits();
+                    }
+                }
+                if (discountsToAdd <= 0 || !ConfigManager.getBoolean("auto_discount.enable")) {
+                    continue;
+                }
+                String uuid = villagerShop.getEntityUUID().toString();
+                if (!plugin.getConfig().getStringList("auto_discount.admin_shops").contains(uuid)) {
+                    continue;
+                }
+                for (int i = 0; i < ConfigManager.getInt("auto_discount.item_amount"); i++) {
+                    int min = ConfigManager.getInt("auto_discount.discount.min");
+                    int max = ConfigManager.getInt("auto_discount.discount.max");
+                    int discount = ThreadLocalRandom.current().nextInt(min, max + 1);
+                    Instant end = VMUtils.getTimeFromNow(ConfigManager.getString("auto_discount.duration"));
+                    villagerShop.addRandomDiscount(discount, end);
+                }
+                discountsToAdd --;
+            }
+            if (addDiscount) {
+                nextAutoDiscount = VMUtils.getTimeFromNow(ConfigManager.getString("auto_discount.interval"));
+            }
+        }
     }
 
     /** Thread updates redstone output for all Villagers */

@@ -105,7 +105,7 @@ messages:
   type_skin: "&bPor favor digite o nome da skin no chat..."
   skin_set: "&aSkin definida com sucesso."
   no_expired_storage: "&cVocê não tem armazém expirado!"
-  type_limit_cooldown: "&bPor favor digite o limite de tempo no chat (m/h/d) ou 'never' para sem limite..."
+  type_limit_cooldown: "&bPor favor digite o limite de tempo no chat (2h, 1d, etc.) ou 'never' para sem limite..."
   limit_cooldown_set: "&aTempo limite de troca definido para &e%time%"
   limits_cleared: "&cLimites redefinidos!"
   name_blacklisted: "&cVocê não tem permissão para usar esse nome de loja!"
@@ -120,6 +120,11 @@ messages:
   bought_item_as_customer: "&7Você comprou &b%amount%x %item%&7 por &a%price%&7 de &r%shop%."
   #Placeholders: %amount%, %item%, %price%, %shop%
   sold_item_as_customer: "&7Você vendeu &b%amount%x %item%&7 por &a%price%&7 para &r%shop%."
+  type_discount: "&bPor favor digite o desconto (0-100) no chat..."
+  type_time: "&bPor favor, digite o tempo (2h, 1d, etc.) no chat..."
+  not_valid_time: "&cNão é um horário válido! O tempo deve começar com um número e terminar com h, d ou m."
+  #Placeholders: %shop_name%, %discount%, %item%
+  discount_announcement: "&e%shop_name% &adoes agora têm um &e%discount%% &adesconto em &e%item%&a!"
 
 stats_message:
   - "&bLojaVillager estatísticas:"
@@ -262,6 +267,10 @@ menus:
       buy_and_sell: "&8[&aCOMPRAR&7/&aVENDER&8]"
       command: "&8[&eCOMANDO&8]"
       trade: "&8[&eTROCA&8]"
+    discount_lore:
+      - ""
+      - "&7Desconto&f: &e%discount%%"
+      - "&7Desconto termina em&f: &e%time%"
     player_shop:
       #Placeholders: %amount%, %price%, %stock%, %mode%
       trade_lore:
@@ -577,7 +586,7 @@ menus:
         material: FEATHER
         name: "&eLimite de compra&7: %limit%"
         lore:
-          - "&7Clique para editar"
+          - "&7>> Clique para editar"
       player_limit:
         material: PLAYER_HEAD
         name: "&eLimite de jogador&7: &f%limit%"
@@ -594,6 +603,13 @@ menus:
           - ""
           - "&7>> Clique esquerdo para editar o tempo limite"
           - "&7>> Clique direito para &credefinir o &7limite"
+      discount:
+        material: EMERALD
+        name: "&eDesconto&7: &f%discount%%"
+        lore:
+          - "&7Termina: &e%discount_end%"
+          - ""
+          - "&7>> Clique para editar"
   confirm_action:
     title: "&8Você tem certeza?"
     items:
