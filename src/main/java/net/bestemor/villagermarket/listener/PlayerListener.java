@@ -14,6 +14,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import de.tr7zw.nbtapi.NBTItem;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.config.VersionUtils;
+import net.bestemor.core.utils.UpdateChecker;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.event.PlaceShopEggEvent;
 import net.bestemor.villagermarket.menu.Shopfront;
@@ -256,7 +257,7 @@ public class PlayerListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
 
         Player player = event.getPlayer();
-        /*if (player.hasPermission("villagermarket.admin") && !ConfigManager.getBoolean("disable_update_announce")) {
+        if (player.hasPermission("villagermarket.admin") && !ConfigManager.getBoolean("disable_update_announce")) {
             new UpdateChecker(plugin, 82965).getVersion(version -> {
                 String currentVersion = plugin.getDescription().getVersion();
                 if (!currentVersion.equalsIgnoreCase(version)) {
@@ -267,7 +268,7 @@ public class PlayerListener implements Listener {
                     player.sendMessage(ConfigManager.getString("plugin_prefix") + " " + downloadVersion);
                 }
             });
-        }*/
+        }
         if (plugin.getShopManager().getExpiredStorages().containsKey(player.getUniqueId())) {
             player.sendMessage(ConfigManager.getMessage("messages.expired"));
         }

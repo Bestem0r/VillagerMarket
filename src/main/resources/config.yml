@@ -100,9 +100,9 @@ auto_discount:
     min: 10
     max: 20
   #Duration of discount
-  duration: 1m
+  duration: 1h
   #How often new discounts should be added
-  interval: 2m
+  interval: 12h
   #Amount of items which should have discounts
   item_amount: 3
   #Amount of random shops which should have discounts applied

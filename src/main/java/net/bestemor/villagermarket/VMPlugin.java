@@ -51,7 +51,7 @@ public class VMPlugin extends CorePlugin {
         this.playerListener = new PlayerListener(this);
         registerEvents();
 
-        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.5-#8 of VillagerMarket! Please expect and report all bugs in my discord server");
+        //Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.5-#8 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
@@ -63,17 +63,7 @@ public class VMPlugin extends CorePlugin {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
             new PlaceholderManager(this).register();
         }
-
-        File materials = new File(getDataFolder(), "materials.yml");
-        if (materials.exists()) {
-            FileConfiguration config = YamlConfiguration.loadConfiguration(materials);
-            ConfigurationSection section = config.getConfigurationSection("materials");
-            if (section != null) {
-                for (String key : section.getKeys(false)) {
-                    localizedMaterials.put(key, section.getString(key));
-                }
-            }
-        }
+        loadMappings();
 
         VillagerMarketAPI.init(this);
     }
@@ -93,6 +83,20 @@ public class VMPlugin extends CorePlugin {
         shopManager.closeAllShopfronts();
         shopManager.saveAll();
         if (getConfig().getBoolean("auto_log")) saveLog();
+    }
+
+    private void loadMappings() {
+        localizedMaterials.clear();
+        File materials = new File(getDataFolder(), "materials.yml");
+        if (materials.exists()) {
+            FileConfiguration config = YamlConfiguration.loadConfiguration(materials);
+            ConfigurationSection section = config.getConfigurationSection("materials");
+            if (section != null) {
+                for (String key : section.getKeys(false)) {
+                    localizedMaterials.put(key, section.getString(key));
+                }
+            }
+        }
     }
 
     private void setupCommands() {
@@ -118,6 +122,7 @@ public class VMPlugin extends CorePlugin {
 
     public void reloadConfiguration() {
         reloadConfig();
+        loadMappings();
     }
 
     /** Setup Vault integration */
@@ -137,11 +142,11 @@ public class VMPlugin extends CorePlugin {
         pluginManager.registerEvents(playerListener, this);
         pluginManager.registerEvents(chatListener, this);
     }
-/*
+
     @Override
     protected int getSpigotResourceID() {
         return 82965;
-    }*/
+    }
 
     /** Saves log to /log/ folder and clears log */
     public void saveLog() {
