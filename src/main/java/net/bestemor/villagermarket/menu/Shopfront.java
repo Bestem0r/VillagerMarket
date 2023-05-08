@@ -236,7 +236,8 @@ public class Shopfront {
                 return;
             }
 
-            if (event.getRawSlot() == event.getView().getTopInventory().getSize() - 1) {
+            if (event.getRawSlot() == event.getView().getTopInventory().getSize() - 1
+                    && !ConfigManager.getBoolean("disable_lore_toggle")) {
                 event.setCancelled(true);
                 boolean owner;
                 if (shop instanceof PlayerShop){
