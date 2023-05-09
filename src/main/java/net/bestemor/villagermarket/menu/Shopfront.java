@@ -236,8 +236,7 @@ public class Shopfront {
                 return;
             }
 
-            if (event.getRawSlot() == event.getView().getTopInventory().getSize() - 1
-                    && !ConfigManager.getBoolean("disable_lore_toggle")) {
+            if (event.getRawSlot() == event.getView().getTopInventory().getSize() - 1) {
                 event.setCancelled(true);
                 boolean owner;
                 if (shop instanceof PlayerShop){
@@ -256,6 +255,8 @@ public class Shopfront {
                         shop.openInventory(player, ShopMenu.EDIT_SHOP);
                     } else if (event.getClick() == ClickType.RIGHT) {
                         event.getView().close();
+                    } else if (ConfigManager.getBoolean("disable_lore_toggle")) {
+                        open(player, Type.CUSTOMER);
                     }
                     else {
                         open(player, (type == Type.CUSTOMER ? Type.DETAILED : Type.CUSTOMER));
