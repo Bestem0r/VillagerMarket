@@ -52,6 +52,7 @@ public abstract class VillagerShop {
 
     protected final VMPlugin plugin;
     protected boolean isLoaded = false;
+    private boolean requirePermission = false;
 
     public enum VillagerType {
         ADMIN,
@@ -83,9 +84,6 @@ public abstract class VillagerShop {
         this.menus.put(ShopMenu.SELL_SHOP, new SellShopMenu(plugin, this));
 
         this.shopfrontHolder = new ShopfrontHolder(plugin, this);
-
-        Entity entity = VMUtils.getEntity(entityUUID);
-        this.shopName = entity == null ? null : entity.getCustomName();
     }
 
     public void setUUID(UUID uuid) {
@@ -199,6 +197,7 @@ public abstract class VillagerShop {
         config.set("expire", expireDate == null ? 0 : expireDate.toEpochMilli());
         config.set("times_rented", timesRented);
         config.set("collected_money", collectedMoney);
+        config.set("require_permission", requirePermission);
 
         shopStats.save();
         entityInfo.save();
@@ -397,5 +396,13 @@ public abstract class VillagerShop {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setRequirePermission(boolean b) {
+        this.requirePermission = b;
+    }
+
+    public boolean isRequirePermission() {
+        return requirePermission;
     }
 }

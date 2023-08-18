@@ -79,6 +79,7 @@ public class GetIDCommand implements ISubCommand {
                 player.sendMessage(ConfigManager.getMessage("messages.id").replace("%id%", shop.getEntityUUID().toString()));
             } else {
                 player.sendMessage(ConfigManager.getMessage("messages.no_villager_shop"));
+                player.sendMessage(ConfigManager.getMessage("messages.id").replace("%id%", event.getRightClicked().getUniqueId().toString()));
             }
             plugin.getPlayerEvents().removeCancelledPlayer(player.getUniqueId());
             players.remove(player.getUniqueId());

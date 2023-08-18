@@ -3,8 +3,6 @@ package net.bestemor.villagermarket.utils;
 import net.bestemor.core.config.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
@@ -81,15 +79,7 @@ public class VMUtils {
     }
 
     public static Entity getEntity(UUID uuid) {
-        for (World world : Bukkit.getWorlds()) {
-            for (Chunk chunk : world.getLoadedChunks()) {
-                for (Entity entity : chunk.getEntities()) {
-                    if (entity.getUniqueId().equals(uuid))
-                        return entity;
-                }
-            }
-        }
-        return null;
+        return Bukkit.getEntity(uuid);
     }
 
     public static Instant getTimeFromNow(String time) {

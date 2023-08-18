@@ -1,6 +1,6 @@
 name: VillagerMarket
 main: net.bestemor.villagermarket.VMPlugin
-version: 1.11.5
+version: 1.11.6
 
 author: Bestem0r
 description: A plugin made by Bestem0r to create Villager Shops
@@ -25,8 +25,14 @@ commands:
     usage: /vm help
     aliases:
       - villagermarket
+  shop:
+    description: Open the default admin shop
+    usage: /shop
 
 permissions:
+  villagermarket.command.shop:
+    default: op
+    description: Open the default admin shop
   villagermarket.admin:
     default: op
     description: All VillagerMarket Permissions

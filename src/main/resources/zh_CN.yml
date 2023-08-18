@@ -93,6 +93,7 @@ messages:
   trusted_removed: '&c已移除玩家！'
   region_no_access: '&c仅可以在城镇的商店区块放置玩家商店。(使用/plot set shop来将一个默认城镇区块改为商店区块)'
   no_permission_adminshop: '&cYou do not have permission to use this Admin Shop!'
+  no_permission_player: '&cYou do not have permission to buy this Player Shop!'
   no_permission_change_name: '&cYou do not have permission to change name!'
   no_permission_command: '&cYou do not have permission to use this command!'
   no_permission_buy_shop: '&cYou do not have permission to buy shops!'
@@ -101,7 +102,7 @@ messages:
   max_shops: '&c当前你已经拥有了&e%current%&c/&e%max%&c个可用商店！'
   get_id: '&7右键点击&b商店&7来获取ID！'
   #Placeholders: %id%
-  id: '&7商店ID: &b%id%'
+  id: '&7Entity UUID: &b%id%'
   type_skin: '&b请在聊天框内输入皮肤名称...'
   skin_set: '&a成功设置皮肤'
   no_expired_storage: '&c你没有过期的库存！'
@@ -125,6 +126,9 @@ messages:
   not_valid_time: "&c不是有效时间！时间必须以数字开头，以 h、d 或 m 结尾。"
   #Placeholders: %shop_name%, %discount%, %item%
   discount_announcement: "&e%shop_name% 现在对 &e%item%&a 有 &e%discount%% 折扣！"
+  toggle_require_permission: "&7右键单击您想要切换权限要求的村民商店。"
+  require_permission_enabled: "&a已启用权限要求。权限：%permission%"
+  require_permission_disabled: "&c权限要求已禁用。"
 
 stats_message:
 - '&b商店状况: '
@@ -240,6 +244,18 @@ menus:
         - ''
         - '&7点击来增加租赁时长'
         - '&7每&b%time%&7租金&a%price%&7！'
+      #Enable trade notifications item
+      enable_trade_notifications:
+        material: RED_TERRACOTTA
+        name: "&e贸易通知&7: &c残疾人"
+        lore:
+          - "&7单击以启用交易通知"
+      #Disable trade notifications item
+      disable_trade_notifications:
+        material: LIME_TERRACOTTA
+        name: "&e贸易通知&7: &a已启用"
+        lore:
+          - "&7单击以禁用交易通知"
   
   #-------------------- Shopfront --------------------#
   shopfront:

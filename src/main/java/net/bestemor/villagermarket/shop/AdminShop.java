@@ -3,9 +3,11 @@ package net.bestemor.villagermarket.shop;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.config.CurrencyBuilder;
 import net.bestemor.villagermarket.VMPlugin;
+import net.bestemor.villagermarket.utils.VMUtils;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -16,9 +18,13 @@ public class AdminShop extends VillagerShop {
 
     public AdminShop(VMPlugin plugin, File file) {
         super(plugin, file);
-        shopfrontHolder.load();
 
-        isLoaded = true;
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            Entity entity = VMUtils.getEntity(entityUUID);
+            setShopName(entity == null ? null : entity.getCustomName());
+            shopfrontHolder.load();
+            isLoaded = true;
+        });
     }
 
     /** Buys item/command from the admin shop */

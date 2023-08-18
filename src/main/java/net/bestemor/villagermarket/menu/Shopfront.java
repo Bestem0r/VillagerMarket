@@ -107,7 +107,7 @@ public class Shopfront {
         for (UUID uuid : customerInventories.keySet()) {
             Player p = Bukkit.getPlayer(uuid);
             if (p != null && customerInventories.get(uuid) != null) {
-                customerInventories.get(uuid).setContents(getCustomerInventory(p).getContents());
+                Bukkit.getScheduler().runTask(plugin, () -> customerInventories.get(uuid).setContents(getCustomerInventory(p).getContents()));
             }
         }
         if (!ConfigManager.getBoolean("disable_lore_toggle")) {
@@ -123,13 +123,15 @@ public class Shopfront {
         }
 
         Inventory customerInventory = Bukkit.createInventory(null, size, customerTitle);
-        for (Integer slot : items.keySet()) {
-            ShopItem item = items.get(slot);
-            if (item == null) {
-                continue;
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            for (Integer slot : items.keySet()) {
+                ShopItem item = items.get(slot);
+                if (item == null) {
+                    continue;
+                }
+                customerInventory.setItem(slot, item.getCustomerItem(player));
             }
-            customerInventory.setItem(slot, item.getCustomerItem(player));
-        }
+        });
         buildBottom(customerInventory);
         if (!ConfigManager.getBoolean("disable_lore_toggle")) {
             customerInventory.setItem(size - 1, details);
@@ -147,6 +149,9 @@ public class Shopfront {
             detailedInventory.setItem(slot, item.getRawItem());
         }
         buildBottom(detailedInventory);
+        if (!ConfigManager.getBoolean("disable_lore_toggle")) {
+            detailedInventory.setItem(size - 1, details);
+        }
     }
     private void updateEditorInventory() {
         editorInventory.clear();
@@ -250,13 +255,12 @@ public class Shopfront {
 
                 if (type == Type.EDITOR) {
                     shop.openInventory(player, ShopMenu.EDIT_SHOP);
-                } else {
+                } else if (!ConfigManager.getBoolean("disable_lore_toggle")) {
                     if (event.getClick() == ClickType.RIGHT && owner) {
                         shop.openInventory(player, ShopMenu.EDIT_SHOP);
                     } else if (event.getClick() == ClickType.RIGHT) {
                         event.getView().close();
-                    }
-                    else {
+                    } else {
                         open(player, (type == Type.CUSTOMER ? Type.DETAILED : Type.CUSTOMER));
                     }
                 }

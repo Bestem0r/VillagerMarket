@@ -93,6 +93,7 @@ messages:
   trusted_removed: "&cPlayer removed!"
   region_no_access: "&cYou do not have access to this region!"
   no_permission_adminshop: "&cYou do not have permission to use this Admin Shop!"
+  no_permission_playershop: "&cYou do not have permission to buy this Player Shop!"
   no_permission_change_name: "&cYou do not have permission to change name!"
   no_permission_command: "&cYou do not have permission to use this command!"
   no_permission_buy_shop: "&cYou do not have permission to buy shops!"
@@ -101,7 +102,7 @@ messages:
   max_shops: "&cYou already own &e%current%&c/&e%max%&c available shops!"
   get_id: "&7Right click a &bVillager Shop &7to get it's ID!"
   #Placeholders: %id%
-  id: "&7ShopID: &b%id%"
+  id: "&7Entity UUID: &b%id%"
   type_skin: "&bPlease type the skin name in the chat..."
   skin_set: "&aSkin successfully set."
   no_expired_storage: "&cYou have no expired storage!"
@@ -125,6 +126,9 @@ messages:
   not_valid_time: "&cNot a valid time! Time must start with a number and end with h, d, or m."
   #Placeholders: %shop_name%, %discount%, %item%
   discount_announcement: "&e%shop_name% &adoes now have a &e%discount%% &adiscount on &e%item%&a!"
+  toggle_require_permission: "&7Right click the &bVillager Shop &7you want to toggle permission requirement for."
+  require_permission_enabled: "&aPermission requirement enabled. Permission: &e%permission%"
+  require_permission_disabled: "&cPermission requirement disabled."
 
 stats_message:
   - "&bVillagerShop stats:"
@@ -242,6 +246,18 @@ menus:
           - ""
           - "&7Click to increase your rent"
           - "&7time by &b%time%&7 for &a%price%&7!"
+      #Enable trade notifications item
+      enable_trade_notifications:
+        material: RED_TERRACOTTA
+        name: "&eTrade notifications&7: &cDisabled"
+        lore:
+          - "&7Click to enable trade notifications"
+      #Disable trade notifications item
+      disable_trade_notifications:
+        material: LIME_TERRACOTTA
+        name: "&eTrade notifications&7: &aEnabled"
+        lore:
+          - "&7Click to disable trade notifications"
 
   #-------------------- Shopfront --------------------#
   shopfront:

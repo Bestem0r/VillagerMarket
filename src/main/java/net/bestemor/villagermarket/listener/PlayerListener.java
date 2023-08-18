@@ -44,12 +44,15 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class PlayerListener implements Listener {
 
     private final VMPlugin plugin;
     private final List<UUID> cancelledPlayers = new ArrayList<>();
     private final Map<UUID, Entity> cachedEntities = new HashMap<>();
+
+    private final Map<UUID, Consumer<VillagerShop>> clickListeners = new HashMap<>();
 
     public PlayerListener(VMPlugin plugin) {
         this.plugin = plugin;
@@ -61,6 +64,10 @@ public class PlayerListener implements Listener {
 
     public void removeCancelledPlayer(UUID uuid) {
         cancelledPlayers.remove(uuid);
+    }
+
+    public void addClickListener(UUID uuid, Consumer<VillagerShop> consumer) {
+        clickListeners.put(uuid, consumer);
     }
 
     @EventHandler (priority = EventPriority.LOWEST)
@@ -80,6 +87,12 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             shop.setShopName(event.getRightClicked().getCustomName());
 
+            if (clickListeners.containsKey(p.getUniqueId())) {
+                clickListeners.get(p.getUniqueId()).accept(shop);
+                clickListeners.remove(p.getUniqueId());
+                return;
+            }
+
             if (shop instanceof AdminShop) {
                 if (p.hasPermission("villagermarket.adminshops")) {
                     shop.openInventory(p, ShopMenu.EDIT_SHOP);
@@ -88,11 +101,19 @@ public class PlayerListener implements Listener {
                         p.sendMessage(ConfigManager.getMessage("messages.no_permission_adminshop"));
                         return;
                     }
+                    if (shop.isRequirePermission() && !p.hasPermission("villagermarket.adminshop." + shop.getEntityUUID())) {
+                        p.sendMessage(ConfigManager.getMessage("messages.no_permission_adminshop"));
+                        return;
+                    }
                     shop.getShopfrontHolder().open(p, Shopfront.Type.CUSTOMER);
                 }
             } else {
                 PlayerShop playerShop = (PlayerShop) shop;
                 if (!playerShop.hasOwner()) {
+                    if (shop.isRequirePermission() && !p.hasPermission("villagermarket.playershop." + shop.getEntityUUID())) {
+                        p.sendMessage(ConfigManager.getMessage("messages.no_permission_playershop"));
+                        return;
+                    }
                     shop.openInventory(p, ShopMenu.BUY_SHOP);
                 } else if (playerShop.getOwnerUUID().equals(p.getUniqueId()) || playerShop.isTrusted(p) || (p.isSneaking() && p.hasPermission("villagermarket.spy"))) {
                     shop.updateMenu(ShopMenu.EDIT_SHOP);
@@ -103,6 +124,10 @@ public class PlayerListener implements Listener {
             }
 
             p.playSound(p.getLocation(), ConfigManager.getSound("sounds.open_shop"), 0.5f, 1);
+
+        } else if (clickListeners.containsKey(p.getUniqueId())) {
+            p.sendMessage(ConfigManager.getMessage("messages.no_villager_shop"));
+            clickListeners.remove(p.getUniqueId());
         }
     }
 

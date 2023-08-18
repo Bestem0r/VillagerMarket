@@ -94,6 +94,7 @@ messages:
   trusted_removed: '&cSpieler entfernt!'
   region_no_access: '&cDu hast keinen Zugriff auf diese Region!'
   no_permission_adminshop: '&cDu hast keine Berechtigung, diesen Admin Shop zu verwenden!'
+  no_permission_playershop: "&cDu hast keine Berechtigung, diesen Player Shop zu verkaufen!"
   no_permission_change_name: '&cDu hast keine Berechtigung, den Namen zu ändern!'
   no_permission_command: '&cDu hast keine Berechtigung, diesen Befehl zu verwenden!'
   no_permission_buy_shop: '&cDu hast keine Berechtigung, Shops zu kaufen!'
@@ -102,7 +103,7 @@ messages:
   max_shops: '&cDu besitzt bereits &e%current%&c/&e%max%&c verfügbare Shops!'
   get_id: '&7Klicke mit Rechtsklick auf einen &bVillagerShop &7um seine ID zu erhalten!'
   #Placeholders: %id%
-  id: '&7ShopID: &b%id%'
+  id: '&7Entity UUID: &b%id%'
   type_skin: '&bBitte gebe den Skin-Namen im Chat ein...'
   skin_set: '&aSkin erfolgreich eingestellt.'
   no_expired_storage: '&cDu hast keine Gegenstände im expired storage!'
@@ -126,6 +127,9 @@ messages:
   not_valid_time: "&cKeine gültige Zeit! Die Zeit muss mit einer Zahl beginnen und mit h, d oder m enden."
   #Placeholders: %shop_name%, %discount%, %item%
   discount_announcement: "&e%shop_name% hat jetzt einen &e%discount%% Rabatt auf &e%item%&a!"
+  toggle_require_permission: "&7Klicke mit Rechtsklick auf den &bVillagerShop&7, um die Berechtigung zu umschalten."
+  require_permission_enabled: "&aBerechtigung erforderlich. Berechtigung: &e%permission%"
+  require_permission_disabled: "&cBerechtigung nicht erforderlich."
 
 stats_message:
 - '&bVillagerShop Statistiken:'
@@ -243,7 +247,19 @@ menus:
         - ''
         - '&7Klicke, um deine Mietzeit'
         - '&7um &b%time%&7 für &a%price%&7 zu verlängern!'
-  
+      #Enable trade notifications item
+      enable_trade_notifications:
+        material: RED_TERRACOTTA
+        name: "&eHandelsbenachrichtigungen&7: &cDeaktiviert"
+        lore:
+          - "&7Klicken Sie hier, um Handelsbenachrichtigungen zu aktivieren"
+      #Disable trade notifications item
+      disable_trade_notifications:
+        material: LIME_TERRACOTTA
+        name: "&eHandelsbenachrichtigungen&7: &aAktiviert"
+        lore:
+          - "&7Klicken um Handelsbenachrichtigungen zu deaktivieren"
+
   #-------------------- Shopfront --------------------#
   shopfront:
     title: '&7%shop%'

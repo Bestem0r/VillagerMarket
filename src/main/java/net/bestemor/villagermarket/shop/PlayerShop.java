@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class PlayerShop extends VillagerShop {
 
@@ -36,6 +37,7 @@ public class PlayerShop extends VillagerShop {
 
     protected UUID ownerUUID;
     protected String ownerName;
+    private boolean disableNotifications = false;
 
     public PlayerShop(VMPlugin plugin, File file) {
         super(plugin, file);
@@ -45,6 +47,7 @@ public class PlayerShop extends VillagerShop {
         String nameString = config.getString("ownerName");
         this.ownerUUID = uuidString == null || uuidString.equals("admin_shop") || uuidString.equals("null") ? null : UUID.fromString(uuidString);
         this.ownerName = nameString == null || nameString.equals("admin_shop") || nameString.equals("null") ? null : nameString;
+        this.disableNotifications = config.getBoolean("disable_notifications");
 
         if (ownerUUID != null) {
             OfflinePlayer owner = Bukkit.getOfflinePlayer(ownerUUID);
@@ -64,9 +67,13 @@ public class PlayerShop extends VillagerShop {
         this.trustedPlayers = config.getStringList("trusted");
 
         updateRedstone(false);
-        shopfrontHolder.load();
 
-        isLoaded = true;
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            Entity entity = VMUtils.getEntity(entityUUID);
+            setShopName(entity == null ? null : entity.getCustomName());
+            shopfrontHolder.load();
+            isLoaded = true;
+        });
     }
 
     public void updateRedstone(boolean forceOff) {
@@ -107,7 +114,7 @@ public class PlayerShop extends VillagerShop {
             removeItems(player.getInventory(), shopItem.getItemTrade(), shopItem.getItemTradeAmount());
             storageHolder.addItem(shopItem.getItemTrade(), shopItem.getItemTradeAmount());
 
-            if (owner.isOnline() && owner.getPlayer() != null) {
+            if (owner.isOnline() && owner.getPlayer() != null && !disableNotifications) {
                 Player ownerOnline = owner.getPlayer();
                 ownerOnline.sendMessage(ConfigManager.getCurrencyBuilder("messages.sold_item_as_owner")
                         .replace("%price%", shopItem.getItemTradeAmount() + "x " + " " + shopItem.getItemTradeName())
@@ -201,7 +208,7 @@ public class PlayerShop extends VillagerShop {
         }
 
         economy.withdrawPlayer(owner, price.doubleValue());
-        if (owner.isOnline() && owner.getPlayer() != null) {
+        if (owner.isOnline() && owner.getPlayer() != null && !disableNotifications) {
             Player ownerOnline = owner.getPlayer();
             CurrencyBuilder builder = ConfigManager.getCurrencyBuilder("messages.bought_item_as_owner")
                     .replace("%player%", player.getName())
@@ -245,6 +252,21 @@ public class PlayerShop extends VillagerShop {
         if (ConfigManager.getBoolean("require_collect")) {
             super.collectedMoney = collectedMoney.add(amount);
             super.updateMenu(ShopMenu.EDIT_SHOP);
+
+        } else if (ConfigManager.getBoolean("distribute_income")) {
+
+            List<OfflinePlayer> trusted = trustedPlayers.stream()
+                    .map(UUID::fromString)
+                    .map(Bukkit::getOfflinePlayer)
+                    .collect(Collectors.toList());
+
+            trusted.add(Bukkit.getOfflinePlayer(ownerUUID));
+            BigDecimal split = amount.divide(BigDecimal.valueOf(trusted.size()), 2, RoundingMode.HALF_UP);
+            for (OfflinePlayer p : trusted) {
+                Economy economy = plugin.getEconomy();
+                economy.depositPlayer(p, split.doubleValue());
+            }
+
         } else {
             Economy economy = plugin.getEconomy();
             economy.depositPlayer(Bukkit.getOfflinePlayer(ownerUUID), amount.doubleValue());
@@ -363,6 +385,7 @@ public class PlayerShop extends VillagerShop {
     public void save() {
         config.set("storage", storageHolder.getItems());
         config.set("trusted", trustedPlayers);
+        config.set("disable_notifications", disableNotifications);
 
         config.set("ownerUUID", ownerUUID == null ? null : ownerUUID.toString());
         config.set("ownerName", ownerName);
@@ -396,5 +419,13 @@ public class PlayerShop extends VillagerShop {
     /** Returns true if player is trusted, false if not */
     public boolean isTrusted(Player player) {
         return trustedPlayers.contains(player.getUniqueId().toString());
+    }
+
+    public boolean isDisableNotifications() {
+        return disableNotifications;
+    }
+
+    public void setDisableNotifications(boolean disableNotifications) {
+        this.disableNotifications = disableNotifications;
     }
 }

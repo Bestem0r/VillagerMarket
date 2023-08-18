@@ -57,7 +57,7 @@ public class MoveCommand implements ISubCommand {
 
     @Override
     public String getUsage() {
-        return null;
+        return "";
     }
 
     @Override

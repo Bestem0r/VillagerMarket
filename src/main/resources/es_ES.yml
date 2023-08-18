@@ -93,6 +93,7 @@ messages:
   trusted_removed: "&cJugador removido!"
   region_no_access: "&cNo tienes acceso a esta región!"
   no_permission_adminshop: "&cNo tienes permiso para usar esta tienda de la administración!"
+  no_permission_playershop: "&cNo tienes permiso para comprar en esta tienda de jugadores!"
   no_permission_change_name: "&cNo tienes permiso para cambiar el nombre!"
   no_permission_command: "&cNo tienes permiso para usar este comando!"
   no_permission_buy_shop: "&cNo tienes permiso para comprar tiendas!"
@@ -101,7 +102,7 @@ messages:
   max_shops: "&cYa tienes &e%current%&c/&e%max%&c de tiendas disponibles!"
   get_id: "&7az clic con el botón derecho en una &bVillager Shop &7para obtener su ID!"
   #Placeholders: %id%
-  id: "&7ShopID: &b%id%"
+  id: "&7Entity UUID: &b%id%"
   type_skin: "&bEscribe el nombre de la skin en el chat..."
   skin_set: "&aSkin establecida con éxito."
   no_expired_storage: "&cNo tienes almacenamiento caducado!"
@@ -125,6 +126,9 @@ messages:
   not_valid_time: "&c¡No es un tiempo válido! El tiempo debe comenzar con un número y terminar con h, d o m."
   #Placeholders: %shop_name%, %discount%, %item%
   discount_announcement: "¡&e%shop_name% ahora tiene un descuento de &e%discount%% en &e%item%&a!"
+  toggle_require_permission: "&7Haga clic derecho en &bVillagerShop &7para el que desea alternar el requisito de permiso."
+  require_permission_enabled: "&aSe requiere permiso para usar esta tienda! Permiso: &e%permission%"
+  require_permission_disabled: "&cNo se requiere permiso para usar esta tienda!"
 
 stats_message:
 - "&bEstadísticas de VillagerShop:"
@@ -240,8 +244,20 @@ menus:
         lore:
         - "&7Tu tienda caducará en: &e%expire%"
         - ""
-        - "&7Click para aumentar tu renta"
+        - "&7Clic para aumentar tu renta"
         - "&7por &b%time%&7 por &a%price%&7!"
+      #Enable trade notifications item
+      enable_trade_notifications:
+        material: RED_TERRACOTTA
+        name: "&eNotificaciones comerciales: Deshabilitado"
+        lore:
+          - "&7Clic para habilitar las notificaciones comerciales"
+      #Disable trade notifications item
+      disable_trade_notifications:
+        material: LIME_TERRACOTTA
+        name: "&eNotificaciones comerciales: Habilitado"
+        lore:
+          - "&7Clic para deshabilitar las notificaciones comerciales"
 
   #-------------------- Shopfront --------------------#
   shopfront:

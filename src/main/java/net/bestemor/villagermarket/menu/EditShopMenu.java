@@ -82,6 +82,19 @@ public class EditShopMenu extends Menu {
             });
             content.setClickable(40, collectMoney);
         }
+
+        if (shop instanceof PlayerShop) {
+
+            PlayerShop playerShop = (PlayerShop) shop;
+            String path = playerShop.isDisableNotifications() ? "menus.edit_shop.items.enable_trade_notifications" :
+                    "menus.edit_shop.items.disable_trade_notifications";
+
+            Clickable tradeNotifications = Clickable.of(ConfigManager.getItem(path).build(), event -> {
+                playerShop.setDisableNotifications(!playerShop.isDisableNotifications());
+                update();
+            });
+            content.setClickable(40, tradeNotifications);
+        }
     }
 
     @Override

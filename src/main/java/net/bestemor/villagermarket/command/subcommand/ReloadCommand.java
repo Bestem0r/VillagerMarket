@@ -39,7 +39,7 @@ public class ReloadCommand implements ISubCommand {
 
     @Override
     public String getUsage() {
-        return null;
+        return "";
     }
 
     @Override

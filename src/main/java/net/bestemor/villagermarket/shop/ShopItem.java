@@ -105,7 +105,7 @@ public class ShopItem {
         if (this.cooldown != null && !this.cooldown.equals("never")) {
             this.nextReset = Instant.ofEpochSecond(section.getLong("next_reset"));
         }
-        if (section.getConfigurationSection("discount") != null) {
+        if (section.getConfigurationSection("discount") != null && section.getLong("discount.end") > Instant.now().getEpochSecond()) {
             this.discount = section.getInt("discount.amount");
             this.discountEnd = Instant.ofEpochSecond(section.getLong("discount.end"));
         }
@@ -281,6 +281,15 @@ public class ShopItem {
     }
 
     public Instant getDiscountEnd() {
+        if (discountEnd == null) {
+            return null;
+        }
+        if (discountEnd.isAfter(Instant.MAX)) {
+            return Instant.MAX;
+        }
+        if (discountEnd.isBefore(Instant.MIN)) {
+            return Instant.MIN;
+        }
         return discountEnd;
     }
 
@@ -402,7 +411,7 @@ public class ShopItem {
         if (discount > 0 && discountEnd != null) {
             lore.addAll(ConfigManager.getListBuilder("menus.shopfront.discount_lore")
                     .replace("%discount%", String.valueOf(discount))
-                    .replace("%time%", ConfigManager.getTimeLeft(discountEnd)).build());
+                    .replace("%time%", ConfigManager.getTimeLeft(getDiscountEnd())).build());
         }
         if (isAdmin && limit > 0) {
             int index = lore.indexOf("%limit_lore%");

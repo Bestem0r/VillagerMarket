@@ -3,6 +3,7 @@ package net.bestemor.villagermarket;
 import net.bestemor.core.CorePlugin;
 import net.bestemor.core.command.CommandModule;
 import net.bestemor.core.config.ConfigManager;
+import net.bestemor.villagermarket.command.ShopCommand;
 import net.bestemor.villagermarket.command.subcommand.*;
 import net.bestemor.villagermarket.listener.ChatListener;
 import net.bestemor.villagermarket.listener.EntityListener;
@@ -114,9 +115,11 @@ public class VMPlugin extends CorePlugin {
                 .addSubCommand("regen", new RegenCommand(this))
                 .addSubCommand("clone", new CloneCommand(this))
                 .addSubCommand("setsize", new SetSizeCommand(this))
+                .addSubCommand("toggleperm", new ToggleRequirePermissionCommand(this))
                 .permissionPrefix("villagermarket.command")
                 .build();
 
+        getCommand("shop").setExecutor(new ShopCommand(this));
         module.register("vm");
     }
 

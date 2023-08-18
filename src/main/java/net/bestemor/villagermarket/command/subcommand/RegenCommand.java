@@ -71,7 +71,7 @@ public class RegenCommand implements ISubCommand {
 
     @Override
     public String getUsage() {
-        return null;
+        return "";
     }
 
     @Override

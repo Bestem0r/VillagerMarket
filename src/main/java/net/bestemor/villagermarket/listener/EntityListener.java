@@ -1,20 +1,28 @@
 package net.bestemor.villagermarket.listener;
 
+import de.tr7zw.nbtapi.NBTItem;
 import net.bestemor.core.config.VersionUtils;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.shop.ShopMenu;
 import net.bestemor.villagermarket.shop.VillagerShop;
+import net.bestemor.villagermarket.utils.VMUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.VillagerCareerChangeEvent;
 import org.bukkit.event.weather.LightningStrikeEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 public class EntityListener implements Listener {
     
@@ -70,6 +78,35 @@ public class EntityListener implements Listener {
             if (plugin.getShopManager().getShop(entity.getUniqueId()) != null) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onDispense(BlockDispenseEvent event) {
+        ItemStack itemStack = event.getItem();
+        ItemMeta itemMeta = itemStack.getItemMeta();
+
+        boolean isVMItem;
+
+        String data = null;
+        if (VersionUtils.getMCVersion() >= 14) {
+            PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
+            isVMItem = dataContainer.has(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING);
+            if (isVMItem) {
+                data = dataContainer.get(new NamespacedKey(plugin, "vm-item"), PersistentDataType.STRING);
+            }
+        } else {
+            NBTItem nbtItem = new NBTItem(itemStack);
+            data = nbtItem.getString("vm-item");
+            isVMItem = data != null && data.split("-").length > 0;
+        }
+
+        if (isVMItem && data != null && data.split("-").length > 0) {
+            String[] split = data.split("-");
+            isVMItem = VMUtils.isInteger(split[0]) && VMUtils.isInteger(split[1]);
+        }
+        if (isVMItem) {
+            event.setCancelled(true);
         }
     }
 }

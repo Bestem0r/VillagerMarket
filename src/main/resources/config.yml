@@ -45,6 +45,10 @@ language: en_US
 enable_non_solid_placement: false
 #Maximum amount of items that can be sold in one transaction
 max_sell_amount: 64
+#Should income be distributed to all trusted players?
+distribute_income: true
+#The admin shop that should open when doing /shop. Leave blank to disable.
+default_admin_shop: ""
 
 #----------------------- Villager settings -----------------------#
 
