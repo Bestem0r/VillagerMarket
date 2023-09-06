@@ -80,7 +80,7 @@ public class EditShopMenu extends Menu {
                     .replaceCurrency("%worth%", shop.getCollectedMoney()).build(), event -> {
                 playerShop.collectMoney((Player) event.getWhoClicked());
             });
-            content.setClickable(40, collectMoney);
+            content.setClickable(41, collectMoney);
         }
 
         if (shop instanceof PlayerShop) {
