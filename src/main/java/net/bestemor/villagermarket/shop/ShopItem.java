@@ -91,9 +91,10 @@ public class ShopItem {
         }
         this.buyPrice = new BigDecimal(String.valueOf(section.getDouble("buy_price")));
 
-        section.getStringList("command");
-        for (String command : section.getStringList("command")) {
-            addCommand(command);
+        List<String> commands = section.getStringList("commands");
+        if (!commands.isEmpty()) {
+            this.mode = COMMAND;
+            this.commands.addAll(commands);
         }
 
         this.mode = ItemMode.valueOf(section.getString("mode"));
@@ -156,7 +157,7 @@ public class ShopItem {
     }
     public int getAmount() { return amount; }
     public List<String> getCommands() {
-        return commands;
+        return new ArrayList<>(commands);
     }
     public boolean isItemTrade() {
         return this.itemTrade != null;

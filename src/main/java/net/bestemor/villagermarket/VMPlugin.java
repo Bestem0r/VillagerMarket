@@ -52,7 +52,7 @@ public class VMPlugin extends CorePlugin {
         this.playerListener = new PlayerListener(this);
         registerEvents();
 
-        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.7-#1 of VillagerMarket! Please expect and report all bugs in my discord server");
+        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.7-#2 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
@@ -119,7 +119,9 @@ public class VMPlugin extends CorePlugin {
                 .permissionPrefix("villagermarket.command")
                 .build();
 
-        getCommand("shop").setExecutor(new ShopCommand(this));
+        if (!ConfigManager.getString("default_admin_shop").isEmpty()) {
+            getCommand("shop").setExecutor(new ShopCommand(this));
+        }
         module.register("vm");
     }
 
