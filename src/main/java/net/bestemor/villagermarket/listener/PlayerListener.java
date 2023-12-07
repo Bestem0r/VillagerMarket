@@ -23,6 +23,7 @@ import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.ShopMenu;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import net.bestemor.villagermarket.utils.VMUtils;
+import net.citizensnpcs.api.CitizensAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -83,7 +84,13 @@ public class PlayerListener implements Listener {
         VillagerShop shop = plugin.getShopManager().getShop(event.getRightClicked().getUniqueId());
         
         if (shop != null) {
-            cachedEntities.put(event.getRightClicked().getUniqueId(), event.getRightClicked());
+            if (plugin.isCitizensEnabled()) {
+                if (!(event.getRightClicked() instanceof Player) && !CitizensAPI.getNPCRegistry().isNPC(event.getRightClicked())) {
+                    cachedEntities.put(event.getRightClicked().getUniqueId(), event.getRightClicked());
+                }
+            } else {
+                cachedEntities.put(event.getRightClicked().getUniqueId(), event.getRightClicked());
+            }
             event.setCancelled(true);
             shop.setShopName(event.getRightClicked().getCustomName());
 
