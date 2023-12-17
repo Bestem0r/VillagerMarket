@@ -70,11 +70,6 @@ public class ShopfrontHolder {
         }
     }
 
-    public void remove(int slot) {
-        itemList.remove(slot);
-        update();
-    }
-
     public void closeAll() {
         shopfronts.forEach(Shopfront::close);
     }
@@ -105,7 +100,31 @@ public class ShopfrontHolder {
         });
     }
 
+
+    /**
+     * Returns a copy of the item list.
+     * @return a copy of the item list.
+     */
     public Map<Integer, ShopItem> getItemList() {
-        return itemList;
+        return new ConcurrentHashMap<>(itemList);
+    }
+
+    /**
+     * Removes an item from the item list.
+     * @param slot the slot of the item to remove.
+     */
+    public void removeItem(int slot) {
+        itemList.remove(slot);
+        update();
+    }
+
+    /**
+     * Adds an item to the item list.
+     * @param slot the slot to add the item to.
+     * @param item the item to add.
+     */
+    public void addItem(int slot, ShopItem item) {
+        itemList.put(slot, item);
+        update();
     }
 }

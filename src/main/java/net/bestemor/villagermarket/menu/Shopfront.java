@@ -355,7 +355,7 @@ public class Shopfront {
 
                     shopItem.setSellPrice(price);
 
-                    shop.getShopfrontHolder().getItemList().put(shopItem.getSlot(), shopItem);
+                    shop.getShopfrontHolder().addItem(shopItem.getSlot(), shopItem);
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, Shopfront.this.holder::update);
 
                     player.sendMessage(ConfigManager.getMessage("messages.add_successful"));

@@ -54,7 +54,7 @@ public class EditItemMenu extends Menu {
             Player player = (Player) event.getWhoClicked();
             
             new ConfirmActionMenu(plugin.getMenuListener(), () -> {
-                shop.getShopfrontHolder().remove(shopItem.getSlot());
+                shop.getShopfrontHolder().removeItem(shopItem.getSlot());
                 player.playSound(player.getLocation(), ConfigManager.getSound("sounds.remove_item"), 1, 1);
                 shop.openInventory(player, ShopMenu.EDIT_SHOPFRONT);
             }, () -> open(player)).open(player);

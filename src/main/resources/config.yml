@@ -53,7 +53,7 @@ default_admin_shop: ""
 #----------------------- Villager settings -----------------------#
 
 villager:
-  name_always_display: false
+  name_always_display: true
   killable: false
   #Enabling this will make the villagers move around like normal
   #villagers and enable gravity.

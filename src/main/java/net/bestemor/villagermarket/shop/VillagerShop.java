@@ -352,13 +352,18 @@ public abstract class VillagerShop {
         if (this.shopName != null) {
             return shopName;
         }
-
-        Entity entity = VMUtils.getEntity(entityUUID);
-        this.shopName = entity == null ? null : entity.getCustomName();
-        return this.shopName == null ? "Unknown" : this.shopName;
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            Entity entity = VMUtils.getEntity(entityUUID);
+            this.shopName = entity == null ? null : entity.getCustomName();
+        });
+        return "Loading...";
     }
 
     public void setShopName(String customName) {
+        if (this.shopName == null) {
+            this.shopName = customName;
+            shopfrontHolder.update();
+        }
         this.shopName = customName;
     }
 
