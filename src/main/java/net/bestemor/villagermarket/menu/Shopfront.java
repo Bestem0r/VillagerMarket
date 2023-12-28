@@ -123,15 +123,13 @@ public class Shopfront {
         }
 
         Inventory customerInventory = Bukkit.createInventory(null, size, customerTitle);
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            for (Integer slot : items.keySet()) {
-                ShopItem item = items.get(slot);
-                if (item == null) {
-                    continue;
-                }
-                customerInventory.setItem(slot, item.getCustomerItem(player));
+        for (Integer slot : items.keySet()) {
+            ShopItem item = items.get(slot);
+            if (item == null) {
+                continue;
             }
-        });
+            customerInventory.setItem(slot, item.getCustomerItem(player));
+        }
         buildBottom(customerInventory);
         if (!ConfigManager.getBoolean("disable_lore_toggle")) {
             customerInventory.setItem(size - 1, details);

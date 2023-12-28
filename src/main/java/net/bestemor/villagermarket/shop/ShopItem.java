@@ -319,7 +319,7 @@ public class ShopItem {
 
         if (owner != null && customer.getUniqueId().equals(owner.getUniqueId())) {
             customer.sendMessage(ConfigManager.getMessage("messages.cannot_" + (verifyMode == SELL ?  "buy_from" :"sell_to") + "_yourself"));
-            //return false;
+            return false;
         }
         Economy economy = plugin.getEconomy();
         if (verifyMode == SELL && isItemTrade() && getAmountInventory(itemTrade, customer.getInventory()) < itemTradeAmount) {
