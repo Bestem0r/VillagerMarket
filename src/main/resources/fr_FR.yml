@@ -100,6 +100,7 @@ messages:
   no_permission_buy_shop: "&cVous n'avez pas la permission d'acheter des boutiques !"
   no_permission_use_item: "&cVous n'avez pas la permission d'utiliser cet objet !"
   no_permission_citizens: "&cVous n'avez pas la permission de transformer votre boutique en PNJ !"
+  no_permission_trade_item: "&cVous n'avez pas la permission d'échanger des articles !"
   max_shops: "&cVous possédez déjà &e%current%&c/&e%max%&c boutiques disponibles !"
   get_id: "&7Cliquez avec le bouton droit sur une &bVillager Shop &7pour obtenir son ID !"
 
