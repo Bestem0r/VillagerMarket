@@ -99,6 +99,7 @@ messages:
   no_permission_buy_shop: "&cYou do not have permission to buy shops!"
   no_permission_use_item: "&cYou do not have permission to use this item!"
   no_permission_citizens: "&cYou do not have permission to turn your shop into an NPC!"
+  no_permission_trade_item: '&cYou do not have permission to trade for items!'
   max_shops: "&cYou already own &e%current%&c/&e%max%&c available shops!"
   get_id: "&7Right click a &bVillager Shop &7to get it's ID!"
   #Placeholders: %id%
