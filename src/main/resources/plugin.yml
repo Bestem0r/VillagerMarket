@@ -53,6 +53,7 @@ permissions:
       villagermarket.command.help: true
       villagermarket.command.getid: true
       villagermarket.use_citizens: true
+      villagermarket.set_trade_type: true
 
   villagermarket.adminshops:
     default: op
@@ -111,3 +112,6 @@ permissions:
   villagermarket.bypass_price:
     default: op
     description: Buypass max price
+  villagermarket.set_trade_type:
+    default: op
+    description: Allows usage of trade for items mode

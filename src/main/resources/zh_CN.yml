@@ -99,6 +99,7 @@ messages:
   no_permission_buy_shop: "&c你没有权限购买商店!"
   no_permission_use_item: "&c你没有权限使用该物品!"
   no_permission_citizens: "&c你没有权限将你的商店转化为 NPC!"
+  no_permission_trade_item: "&c您没有权限交换物品!"
   max_shops: "&c你已经拥有了 &e%current%&c/&e%max%&c 个商店!"
   get_id: "&7右键&b村民商店&7来获取它的 ID!"
   #Placeholders: %id%

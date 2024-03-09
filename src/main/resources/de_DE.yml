@@ -100,6 +100,7 @@ messages:
   no_permission_buy_shop: '&cDu hast keine Berechtigung, Shops zu kaufen!'
   no_permission_use_item: '&cDu hast keine Berechtigung, diesen Gegenstand zu verwenden!'
   no_permission_citizens: '&cDu hast keine Berechtigung, deinen Shop in einen NPC zu verwandeln!'
+  no_permission_trade_item: '&cDu hast keine Berechtigung, in deinem Shop Tauschhandel zu betreiben!'
   max_shops: '&cDu besitzt bereits &e%current%&c/&e%max%&c verfügbare Shops!'
   get_id: '&7Klicke mit Rechtsklick auf einen &bVillagerShop &7um seine ID zu erhalten!'
   #Placeholders: %id%

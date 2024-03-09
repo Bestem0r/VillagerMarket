@@ -165,19 +165,26 @@ public class EditItemMenu extends Menu {
             Player player = (Player) event.getWhoClicked(); 
             player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
             if (event.getCursor() != null && event.getCursor().getType() != Material.AIR) {
-                player.sendMessage(ConfigManager.getMessage("messages.type_amount"));
-                ItemStack clone = event.getCursor().clone();
-                event.getView().close();
-                plugin.getChatListener().addDecimalListener(player, (amount -> {
-                    if (amount.intValue() > ConfigManager.getInt("max_sell_amount") || amount.intValue() < 1) {
-                        player.sendMessage(ConfigManager.getMessage("messages.not_valid_range"));
-                        return;
-                    }
-                    clone.setAmount(amount.intValue() > clone.getMaxStackSize() ? 1 : amount.intValue());
-                    shopItem.setItemTrade(clone, amount.intValue());
-                    update();
-                    open(player);
-                }));
+                //Set Permissions
+                if(player.hasPermission("villagermarket.set_trade_type")){
+                    player.sendMessage(ConfigManager.getMessage("messages.type_amount"));
+                    ItemStack clone = event.getCursor().clone();
+                    event.getView().close();
+                    plugin.getChatListener().addDecimalListener(player, (amount -> {
+                        if (amount.intValue() > ConfigManager.getInt("max_sell_amount") || amount.intValue() < 1) {
+                            player.sendMessage(ConfigManager.getMessage("messages.not_valid_range"));
+                            return;
+                        }
+                        clone.setAmount(amount.intValue() > clone.getMaxStackSize() ? 1 : amount.intValue());
+                        shopItem.setItemTrade(clone, amount.intValue());
+                        update();
+                        open(player);
+                    }));
+                } else {
+                    player.sendMessage(ConfigManager.getMessage("messages.no_permission_trade_item"));
+                    return;
+                }
+
             } else {
                 shopItem.setItemTrade(null, 0);
                 event.getView().close();
