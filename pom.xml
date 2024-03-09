@@ -145,7 +145,7 @@
         <dependency>
             <groupId>com.github.Bestem0r</groupId>
             <artifactId>BestemorCore</artifactId>
-            <version>1.3.0</version>
+            <version>4ca728e895</version>
             <scope>compile</scope>
         </dependency>
 
@@ -182,6 +182,10 @@
                         <relocation>
                             <pattern>org.bstats</pattern>
                             <shadedPattern>net.bestemor.villagermarket.utils.bstats</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>net.bestemor.core</pattern>
+                            <shadedPattern>net.bestemor.villagermarket.utils.core</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

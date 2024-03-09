@@ -53,14 +53,14 @@ public class ExpiredStorageCommand implements ISubCommand {
                 holder.loadItems(plugin.getShopManager().getExpiredStorages().get(storageUUID));
 
                 UUID finalStorageUUID = storageUUID;
-                holder.setCloseEvent(() -> {
+                holder.setClickEvent(() -> Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     List<ItemStack> items = holder.getItems();
                     if (items.isEmpty()) {
                         plugin.getShopManager().getExpiredStorages().remove(finalStorageUUID);
                     } else {
                         plugin.getShopManager().getExpiredStorages().put(finalStorageUUID, items);
                     }
-                });
+                }, 1L));
 
                 holder.open(player);
 

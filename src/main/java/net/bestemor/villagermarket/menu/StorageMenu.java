@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -26,8 +27,6 @@ public class StorageMenu extends Menu {
     private final int inventorySize;
     private final int itemsSize;
     private final int page;
-
-    private boolean didChangePage = false;
 
     private List<ItemStack> items = new ArrayList<>();
 
@@ -57,7 +56,6 @@ public class StorageMenu extends Menu {
                 content.setClickable(48, Clickable.of(ConfigManager.getItem("items.previous").build(), event -> {
                     Player player = (Player) event.getWhoClicked();
                     player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-                    didChangePage = true;
                     holder.open(player, page - 1);
                 }));
             }
@@ -65,7 +63,6 @@ public class StorageMenu extends Menu {
                 content.setClickable(50, Clickable.of(ConfigManager.getItem("items.next").build(), event -> {
                     Player player = (Player) event.getWhoClicked();
                     player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-                    didChangePage = true;
                     holder.open(player, page + 1);
                 }));
             }
@@ -79,14 +76,11 @@ public class StorageMenu extends Menu {
 
     @Override
     protected void onClose(InventoryCloseEvent event) {
-        if (!didChangePage) {
-            holder.close();
-        }
-        didChangePage = false;
         if (holder.getShop() == null) {
             return;
         }
         holder.getShop().getShopfrontHolder().update();
+        holder.onClick();
     }
 
     @Override
@@ -105,6 +99,12 @@ public class StorageMenu extends Menu {
         if (isInfinite ? (event.getRawSlot() < size - 9 || event.getRawSlot() > size - 1) : (event.getRawSlot() != size - 1)) {
             event.setCancelled(false);
         }
+        holder.onClick();
+    }
+
+    @Override
+    protected void onDrag(InventoryDragEvent event) {
+        holder.onClick();
     }
 
     public void setItems(List<ItemStack> items) {

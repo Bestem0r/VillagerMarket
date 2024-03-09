@@ -142,6 +142,9 @@ public class PlayerListener implements Listener {
     public void onMove(PlayerMoveEvent event) {
         Player p = event.getPlayer();
         for (Entity e : cachedEntities.values()) {
+            if (e.getWorld() != p.getWorld()) {
+                continue;
+            }
             if (p.getWorld().getName().equals(e.getWorld().getName()) && p.getLocation().distanceSquared(e.getLocation()) < 25) {
                 e.teleport(e.getLocation().setDirection(p.getLocation().subtract(e.getLocation()).toVector()));
             }

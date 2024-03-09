@@ -15,7 +15,7 @@ public class StorageHolder {
     private final PlayerShop shop;
 
     private final List<StorageMenu> storageMenus = new ArrayList<>();
-    private Runnable closeEvent;
+    private Runnable clickEvent;
 
     private final int size;
     private final boolean isInfinite;
@@ -65,14 +65,14 @@ public class StorageHolder {
         }
     }
 
-    protected void close() {
-        if (closeEvent != null) {
-            closeEvent.run();
+    protected void onClick() {
+        if (clickEvent != null) {
+            clickEvent.run();
         }
     }
 
-    public void setCloseEvent(Runnable closeEvent) {
-        this.closeEvent = closeEvent;
+    public void setClickEvent(Runnable closeEvent) {
+        this.clickEvent = closeEvent;
     }
 
     public void open(Player player) {

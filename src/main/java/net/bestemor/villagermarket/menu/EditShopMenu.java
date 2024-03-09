@@ -124,7 +124,7 @@ public class EditShopMenu extends Menu {
             player.sendMessage(ConfigManager.getMessage("messages.change_name"));
             plugin.getChatListener().addStringListener(player, (result) -> {
 
-                for (String word : ConfigManager.getStringList("villager.name_blacklist")) {
+                for (String word : plugin.getConfig().getStringList("villager.name_blacklist")) {
                     if (result.toLowerCase(Locale.ROOT).contains(word)) {
                         player.sendMessage(ConfigManager.getMessage("messages.name_blacklisted"));
                         return;
@@ -164,12 +164,12 @@ public class EditShopMenu extends Menu {
             content.setClickable(32,  changeName);
         } else if (shop instanceof PlayerShop) {
 
-            PlayerShop playerShop = (PlayerShop) shop;
 
             Clickable removeShop = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.sell_shop").build(), event -> {
                 shop.openInventory(event.getWhoClicked(), ShopMenu.SELL_SHOP);
             });
             Clickable storage = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.edit_storage").build(), event -> {
+                PlayerShop playerShop = (PlayerShop) shop;
                 playerShop.openStorage((Player) event.getWhoClicked());
             });
 
