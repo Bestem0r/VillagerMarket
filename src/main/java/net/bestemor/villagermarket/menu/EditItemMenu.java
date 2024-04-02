@@ -6,8 +6,10 @@ import net.bestemor.core.menu.Clickable;
 import net.bestemor.core.menu.Menu;
 import net.bestemor.core.menu.MenuContent;
 import net.bestemor.villagermarket.VMPlugin;
+import net.bestemor.villagermarket.event.interact.EditShopItemEvent;
 import net.bestemor.villagermarket.shop.*;
 import net.bestemor.villagermarket.utils.VMUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -233,6 +235,11 @@ public class EditItemMenu extends Menu {
             }
             player.sendMessage(ConfigManager.getMessage("messages.amount_successful"));
             shopItem.setAmount(result.intValue());
+            EditShopItemEvent editShopItemEvent = new EditShopItemEvent(player,this.shop, shopItem);
+            Bukkit.getPluginManager().callEvent(editShopItemEvent);
+            if (editShopItemEvent.isCancelled()) {
+                return;
+            }
             update();
             open(player);
         });
@@ -253,6 +260,11 @@ public class EditItemMenu extends Menu {
                 shopItem.setBuyPrice(result);
             } else {
                 shopItem.setSellPrice(result);
+            }
+            EditShopItemEvent editShopItemEvent = new EditShopItemEvent(player,this.shop, shopItem);
+            Bukkit.getPluginManager().callEvent(editShopItemEvent);
+            if (editShopItemEvent.isCancelled()) {
+                return;
             }
             update();
             open(player);

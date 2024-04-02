@@ -3,6 +3,9 @@ package net.bestemor.villagermarket.shop;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.config.CurrencyBuilder;
 import net.bestemor.villagermarket.VMPlugin;
+import net.bestemor.villagermarket.event.interact.BuyShopItemsEvent;
+import net.bestemor.villagermarket.event.interact.SellShopItemsEvent;
+import net.bestemor.villagermarket.event.interact.TradeShopItemsEvent;
 import net.bestemor.villagermarket.utils.VMUtils;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -52,8 +55,20 @@ public class AdminShop extends VillagerShop {
         player.sendMessage(message.build());
 
         if (shopItem.isItemTrade()) {
+            TradeShopItemsEvent tradeShopItemsEvent = new TradeShopItemsEvent(player,this, shopItem);
+            Bukkit.getPluginManager().callEvent(tradeShopItemsEvent);
+            if (tradeShopItemsEvent.isCancelled()) {
+                return;
+            }
             removeItems(player.getInventory(), shopItem.getItemTrade(), shopItem.getItemTradeAmount());
         } else {
+
+            BuyShopItemsEvent buyShopItemsEvent = new BuyShopItemsEvent(player,this, shopItem);
+            Bukkit.getPluginManager().callEvent(buyShopItemsEvent);
+            if (buyShopItemsEvent.isCancelled()) {
+                return;
+            }
+
             economy.withdrawPlayer(player, price.doubleValue());
             BigDecimal left = BigDecimal.valueOf(economy.getBalance(player));
             player.sendMessage(ConfigManager.getCurrencyBuilder("messages.money_left").replaceCurrency("%amount%", left).addPrefix().build());
@@ -81,6 +96,12 @@ public class AdminShop extends VillagerShop {
         BigDecimal price = shopItem.getBuyPrice();
 
         if (!shopItem.verifyPurchase(player, ItemMode.BUY)) {
+            return;
+        }
+
+        SellShopItemsEvent sellShopItemsEvent = new SellShopItemsEvent(player,this, shopItem);
+        Bukkit.getPluginManager().callEvent(sellShopItemsEvent);
+        if (sellShopItemsEvent.isCancelled()) {
             return;
         }
 

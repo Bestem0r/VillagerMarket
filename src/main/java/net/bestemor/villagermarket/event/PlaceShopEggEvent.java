@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class PlaceShopEggEvent extends PlayerEvent implements Cancellable {
 
-    private final HandlerList HANDLERS_LIST = new HandlerList();
+    private static final HandlerList HANDLERS_LIST = new HandlerList();
 
     private boolean cancelled = false;
     private final Location location;
@@ -39,7 +39,9 @@ public class PlaceShopEggEvent extends PlayerEvent implements Cancellable {
     public HandlerList getHandlers() {
         return this.HANDLERS_LIST;
     }
-
+    public static HandlerList getHandlerList() {
+        return HANDLERS_LIST;
+    }
     public Location getLocation() {
         return location;
     }
