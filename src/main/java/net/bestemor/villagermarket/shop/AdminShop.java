@@ -63,12 +63,6 @@ public class AdminShop extends VillagerShop {
             removeItems(player.getInventory(), shopItem.getItemTrade(), shopItem.getItemTradeAmount());
         } else {
 
-            BuyShopItemsEvent buyShopItemsEvent = new BuyShopItemsEvent(player,this, shopItem);
-            Bukkit.getPluginManager().callEvent(buyShopItemsEvent);
-            if (buyShopItemsEvent.isCancelled()) {
-                return;
-            }
-
             economy.withdrawPlayer(player, price.doubleValue());
             BigDecimal left = BigDecimal.valueOf(economy.getBalance(player));
             player.sendMessage(ConfigManager.getCurrencyBuilder("messages.money_left").replaceCurrency("%amount%", left).addPrefix().build());
@@ -79,6 +73,9 @@ public class AdminShop extends VillagerShop {
         giveShopItem(player, shopItem);
         shopItem.incrementPlayerTrades(player);
         shopItem.incrementServerTrades();
+
+        BuyShopItemsEvent buyShopItemsEvent = new BuyShopItemsEvent(player,this, shopItem);
+        Bukkit.getPluginManager().callEvent(buyShopItemsEvent);
 
         player.playSound(player.getLocation(), ConfigManager.getSound("sounds.buy_item"), 1, 1);
 
@@ -99,12 +96,6 @@ public class AdminShop extends VillagerShop {
             return;
         }
 
-        SellShopItemsEvent sellShopItemsEvent = new SellShopItemsEvent(player,this, shopItem);
-        Bukkit.getPluginManager().callEvent(sellShopItemsEvent);
-        if (sellShopItemsEvent.isCancelled()) {
-            return;
-        }
-
         player.sendMessage(ConfigManager.getCurrencyBuilder("messages.sold_item_as_customer")
                 .replace("%amount%", String.valueOf(shopItem.getAmount()))
                 .replaceCurrency("%price%", price)
@@ -118,6 +109,8 @@ public class AdminShop extends VillagerShop {
         shopStats.addBought(amount);
         shopStats.addSpent(price.doubleValue());
 
+        SellShopItemsEvent sellShopItemsEvent = new SellShopItemsEvent(player,this, shopItem);
+        Bukkit.getPluginManager().callEvent(sellShopItemsEvent);
 
         player.playSound(player.getLocation(), ConfigManager.getSound("sounds.sell_item"), 0.5f, 1);
 

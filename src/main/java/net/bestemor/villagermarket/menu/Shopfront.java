@@ -2,6 +2,8 @@ package net.bestemor.villagermarket.menu;
 
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
+import net.bestemor.villagermarket.event.interact.BuyShopItemsEvent;
+import net.bestemor.villagermarket.event.interact.CreateShopItemsEvent;
 import net.bestemor.villagermarket.shop.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -360,6 +362,9 @@ public class Shopfront {
 
                     open(player, Type.EDITOR);
                     player.playSound(player.getLocation(), ConfigManager.getSound("sounds.add_item"), 0.5f, 1);
+                    CreateShopItemsEvent createShopItemsEvent = new CreateShopItemsEvent(player,shop, shopItem);
+                    Bukkit.getPluginManager().callEvent(createShopItemsEvent);
+
                 });
             });
         }

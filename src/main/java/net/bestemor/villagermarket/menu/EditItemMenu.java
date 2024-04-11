@@ -6,7 +6,9 @@ import net.bestemor.core.menu.Clickable;
 import net.bestemor.core.menu.Menu;
 import net.bestemor.core.menu.MenuContent;
 import net.bestemor.villagermarket.VMPlugin;
+import net.bestemor.villagermarket.event.interact.DeleteShopItemEvent;
 import net.bestemor.villagermarket.event.interact.EditShopItemEvent;
+import net.bestemor.villagermarket.event.interact.enums.EditType;
 import net.bestemor.villagermarket.shop.*;
 import net.bestemor.villagermarket.utils.VMUtils;
 import org.bukkit.Bukkit;
@@ -59,6 +61,8 @@ public class EditItemMenu extends Menu {
                 shop.getShopfrontHolder().removeItem(shopItem.getSlot());
                 player.playSound(player.getLocation(), ConfigManager.getSound("sounds.remove_item"), 1, 1);
                 shop.openInventory(player, ShopMenu.EDIT_SHOPFRONT);
+                DeleteShopItemEvent deleteShopItemEvent = new DeleteShopItemEvent(player,this.shop, shopItem);
+                Bukkit.getPluginManager().callEvent(deleteShopItemEvent);
             }, () -> open(player)).open(player);
         }));
 
@@ -233,13 +237,13 @@ public class EditItemMenu extends Menu {
                 player.sendMessage(ConfigManager.getMessage("messages.not_valid_range"));
                 return;
             }
-            player.sendMessage(ConfigManager.getMessage("messages.amount_successful"));
-            shopItem.setAmount(result.intValue());
-            EditShopItemEvent editShopItemEvent = new EditShopItemEvent(player,this.shop, shopItem);
+            EditShopItemEvent editShopItemEvent = new EditShopItemEvent(player,this.shop, shopItem,result, EditType.AMOUNT);
             Bukkit.getPluginManager().callEvent(editShopItemEvent);
-            if (editShopItemEvent.isCancelled()) {
+            if(editShopItemEvent.isCancelled()){
                 return;
             }
+            player.sendMessage(ConfigManager.getMessage("messages.amount_successful"));
+            shopItem.setAmount(result.intValue());
             update();
             open(player);
         });
@@ -254,17 +258,16 @@ public class EditItemMenu extends Menu {
                 player.sendMessage(ConfigManager.getMessage("messages.max_item_price"));
                 return;
             }
-
+            EditShopItemEvent editShopItemEvent = new EditShopItemEvent(player,this.shop, shopItem,result,EditType.PRICE);
+            Bukkit.getPluginManager().callEvent(editShopItemEvent);
+            if(editShopItemEvent.isCancelled()){
+                return;
+            }
             player.sendMessage(ConfigManager.getMessage("messages.price_successful"));
             if (isBuy) {
                 shopItem.setBuyPrice(result);
             } else {
                 shopItem.setSellPrice(result);
-            }
-            EditShopItemEvent editShopItemEvent = new EditShopItemEvent(player,this.shop, shopItem);
-            Bukkit.getPluginManager().callEvent(editShopItemEvent);
-            if (editShopItemEvent.isCancelled()) {
-                return;
             }
             update();
             open(player);
@@ -289,6 +292,12 @@ public class EditItemMenu extends Menu {
                 open(player);
                 return;
             }
+            EditShopItemEvent editShopItemEvent = new EditShopItemEvent(player,this.shop, shopItem,new BigDecimal(discount),EditType.DISCOUNT);
+            Bukkit.getPluginManager().callEvent(editShopItemEvent);
+            if(editShopItemEvent.isCancelled()){
+                return;
+            }
+
             player.sendMessage(ConfigManager.getMessage("messages.type_time"));
             plugin.getChatListener().addStringListener(player, (timeS) -> {
                 String amount = timeS.substring(0, timeS.length() - 1);
