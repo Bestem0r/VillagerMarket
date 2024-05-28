@@ -107,7 +107,11 @@ public class Shopfront {
         for (UUID uuid : customerInventories.keySet()) {
             Player p = Bukkit.getPlayer(uuid);
             if (p != null && customerInventories.get(uuid) != null) {
-                Bukkit.getScheduler().runTask(plugin, () -> customerInventories.get(uuid).setContents(getCustomerInventory(p).getContents()));
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (customerInventories.containsKey(uuid)) {
+                        customerInventories.get(uuid).setContents(getCustomerInventory(p).getContents());
+                    }
+                });
             }
         }
         if (!ConfigManager.getBoolean("disable_lore_toggle")) {
@@ -142,6 +146,9 @@ public class Shopfront {
         for (Integer slot : items.keySet()) {
             ShopItem item = items.get(slot);
             if (item == null) {
+                continue;
+            }
+            if (detailedInventory.getSize() <= slot) {
                 continue;
             }
             detailedInventory.setItem(slot, item.getRawItem());
@@ -354,7 +361,7 @@ public class Shopfront {
                     shopItem.setSellPrice(price);
 
                     shop.getShopfrontHolder().addItem(shopItem.getSlot(), shopItem);
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, Shopfront.this.holder::update);
+                    Shopfront.this.holder.update();
 
                     player.sendMessage(ConfigManager.getMessage("messages.add_successful"));
 

@@ -7,13 +7,12 @@ import net.bestemor.core.menu.MenuContent;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.shop.ShopMenu;
 import net.bestemor.villagermarket.shop.VillagerShop;
+import net.bestemor.villagermarket.utils.VMUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,8 +29,7 @@ public class EditVillagerMenu extends Menu {
 
     @Override
     public void onCreate(MenuContent content) {
-        List<Villager.Profession> professions = new ArrayList<>(Arrays.asList(Villager.Profession.values()));
-        professions.removeIf(profession -> profession.name().equals("HUSK"));
+        List<Villager.Profession> professions = VMUtils.getProfessions();
 
         ItemStack filler = ConfigManager.getItem("items.filler").build();
         content.fillSlots(filler, 0, 1, 2, 3, 4, 5, 6, 7, 8);

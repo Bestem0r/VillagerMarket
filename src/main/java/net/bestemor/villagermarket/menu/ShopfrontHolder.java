@@ -92,6 +92,7 @@ public class ShopfrontHolder {
                 this.midPages = updatedMidPages;
             }
             try {
+                List<Shopfront> shopfronts = new ArrayList<>(this.shopfronts);
                 shopfronts.forEach(Shopfront::update);
             } catch (Exception e) {
                 Bukkit.getLogger().severe("An error occurred while updating shopfront " + shop.getEntityUUID().toString());

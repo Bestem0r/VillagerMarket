@@ -91,7 +91,7 @@ public class ShopItem {
         }
         this.buyPrice = new BigDecimal(String.valueOf(section.getDouble("buy_price")));
 
-        List<String> commands = section.getStringList("commands");
+        List<String> commands = section.getStringList("command");
         if (!commands.isEmpty()) {
             this.mode = COMMAND;
             this.commands.addAll(commands);

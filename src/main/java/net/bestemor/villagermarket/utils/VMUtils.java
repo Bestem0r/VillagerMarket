@@ -1,17 +1,22 @@
 package net.bestemor.villagermarket.utils;
 
 import net.bestemor.core.config.ConfigManager;
+import net.bestemor.core.config.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class VMUtils {
 
@@ -79,7 +84,21 @@ public class VMUtils {
     }
 
     public static Entity getEntity(UUID uuid) {
-        return Bukkit.getEntity(uuid);
+        try {
+            if (VersionUtils.getMCVersion() < 9) {
+                for (World w : Bukkit.getWorlds()) {
+                    for (Entity e : w.getEntities()) {
+                        if (e.getUniqueId().equals(uuid)) {
+                            return e;
+                        }
+                    }
+                }
+            } else {
+                return Bukkit.getEntity(uuid);
+            }
+        } catch (Exception ignore) {
+        }
+        return null;
     }
 
     public static Instant getTimeFromNow(String time) {
@@ -143,5 +162,18 @@ public class VMUtils {
             price = buyPrice + currency + " / " + sellPrice + currency;
         }
         return price;
+    }
+
+    public static List<Villager.Profession> getProfessions() {
+        if (VersionUtils.getMCVersion() < 14) {
+            return Arrays.asList("BLACKSMITH", "BUTCHER", "FARMER", "LIBRARIAN", "PRIEST", "NONE").stream().map(Villager.Profession::valueOf).collect(Collectors.toList());
+        } else {
+            return Arrays.asList(Villager.Profession.ARMORER,
+                    Villager.Profession.BUTCHER, Villager.Profession.CARTOGRAPHER, Villager.Profession.CLERIC,
+                    Villager.Profession.FARMER, Villager.Profession.FISHERMAN, Villager.Profession.FLETCHER,
+                    Villager.Profession.LEATHERWORKER, Villager.Profession.LIBRARIAN, Villager.Profession.MASON,
+                    Villager.Profession.NITWIT, Villager.Profession.NONE, Villager.Profession.SHEPHERD,
+                    Villager.Profession.TOOLSMITH, Villager.Profession.WEAPONSMITH);
+        }
     }
 }
