@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class AbandonShopEvent extends Event  {
 
-    private final HandlerList HANDLERS_LIST = new HandlerList();
+    private static final HandlerList HANDLERS_LIST = new HandlerList();
 
     private final PlayerShop shop;
 
@@ -18,6 +18,9 @@ public class AbandonShopEvent extends Event  {
     @NotNull
     @Override
     public HandlerList getHandlers() {
+        return HANDLERS_LIST;
+    }
+    public static HandlerList getHandlerList() {
         return HANDLERS_LIST;
     }
 
