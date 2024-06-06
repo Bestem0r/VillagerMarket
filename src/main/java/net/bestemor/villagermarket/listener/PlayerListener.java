@@ -12,6 +12,9 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import de.tr7zw.nbtapi.NBTItem;
+import me.angeschossen.lands.api.LandsIntegration;
+import me.angeschossen.lands.api.flags.type.Flags;
+import me.angeschossen.lands.api.land.LandWorld;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.config.VersionUtils;
 import net.bestemor.core.utils.UpdateChecker;
@@ -24,10 +27,7 @@ import net.bestemor.villagermarket.shop.ShopMenu;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import net.bestemor.villagermarket.utils.VMUtils;
 import net.citizensnpcs.api.CitizensAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -257,11 +257,24 @@ public class PlayerListener implements Listener {
                 }
             }
 
+            Location location = clickedLoc.clone().add(0.5, 1, 0.5);
+
+            //Lands check
+            if (Bukkit.getPluginManager().isPluginEnabled("Lands") && ConfigManager.getBoolean("lands")) {
+                LandsIntegration api = LandsIntegration.of(plugin);
+                LandWorld world = api.getWorld(player.getWorld());
+
+                if (world != null && !world.hasRoleFlag(player.getUniqueId(), location, Flags.BLOCK_PLACE)) {
+                    player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
+                    return;
+                }
+            }
+
             if (!player.hasPermission("villagermarket.use_spawn_item")) {
                 player.sendMessage(ConfigManager.getMessage("messages.no_permission_use_item"));
                 return;
             }
-            Location location = clickedLoc.clone().add(0.5, 1, 0.5);
+
 
             PlaceShopEggEvent eggEvent = new PlaceShopEggEvent(player, location, shopSize, storageSize);
             Bukkit.getPluginManager().callEvent(eggEvent);
