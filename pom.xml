@@ -11,7 +11,7 @@
 
     <groupId>me.bestemor.villagermarket</groupId>
     <artifactId>VillagerMarket</artifactId>
-    <version>1.11.7-SNAPSHOT</version>
+    <version>1.12.0-SNAPSHOT</version>
 
     <repositories>
         <repository>
@@ -131,6 +131,14 @@
             <artifactId>citizens-main</artifactId>
             <version>2.0.27-SNAPSHOT</version>
             <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- LandsAPI -->
+        <dependency>
+            <groupId>com.github.angeschossen</groupId>
+            <artifactId>LandsAPI</artifactId>
+            <version>7.1.12</version>
             <scope>provided</scope>
         </dependency>
 

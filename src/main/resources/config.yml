@@ -75,6 +75,8 @@ villager:
 world_guard: false
 #Enable PlotSquared support
 plot_squared: true
+#Enable Lands support
+lands: true
 towny:
   #Enable towny support
   enabled: true

@@ -1,6 +1,6 @@
 name: VillagerMarket
 main: net.bestemor.villagermarket.VMPlugin
-version: 1.11.7
+version: 1.12.0
 
 author: Bestem0r
 description: A plugin made by Bestem0r to create Villager Shops
@@ -19,6 +19,7 @@ softdepend:
   - Citizens
   - Towny
   - NBTApi
+  - Lands
 commands:
   vm:
     description: List all Villager Market commands
