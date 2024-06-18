@@ -1,5 +1,8 @@
 package net.bestemor.villagermarket.shop;
 
+import me.angeschossen.lands.api.LandsIntegration;
+import me.angeschossen.lands.api.flags.type.Flags;
+import me.angeschossen.lands.api.land.LandWorld;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.config.CurrencyBuilder;
 import net.bestemor.core.config.VersionUtils;
@@ -438,7 +441,25 @@ public class PlayerShop extends VillagerShop {
     }
     /** Returns true if player is trusted, false if not */
     public boolean isTrusted(Player player) {
-        return trustedPlayers.contains(player.getUniqueId().toString());
+        if (trustedPlayers.contains(player.getUniqueId().toString())) {
+            // If the player is manually trusted, skip the rest of the checks
+            return true;
+        }
+
+        //Lands check (Add players as trusted if they have interact container flag)
+        if (Bukkit.getPluginManager().isPluginEnabled("Lands") && ConfigManager.getBoolean("lands")) {
+            LandsIntegration api = LandsIntegration.of(plugin);
+            Entity villager = VMUtils.getEntity(entityUUID);
+            if (villager == null) {
+                return false;
+            }
+            Location location = villager.getLocation();
+            LandWorld world = api.getWorld(villager.getWorld());
+
+            return world != null && world.hasRoleFlag(player.getUniqueId(), location, Flags.INTERACT_CONTAINER);
+        }
+
+        return false;
     }
 
     public boolean isDisableNotifications() {
