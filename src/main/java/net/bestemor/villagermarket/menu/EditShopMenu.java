@@ -1,9 +1,7 @@
 package net.bestemor.villagermarket.menu;
 
 import net.bestemor.core.config.ConfigManager;
-import net.bestemor.core.menu.Clickable;
-import net.bestemor.core.menu.Menu;
-import net.bestemor.core.menu.MenuContent;
+import net.bestemor.core.menu.*;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.shop.AdminShop;
 import net.bestemor.villagermarket.shop.PlayerShop;
@@ -16,7 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -28,22 +25,32 @@ public class EditShopMenu extends Menu {
     private final VillagerShop shop;
 
     public EditShopMenu(VMPlugin plugin, VillagerShop shop) {
-        super(plugin.getMenuListener(), 54, ConfigManager.getString("menus.edit_shop.title"));
+        super(MenuConfig.fromConfig("menus.edit_shop"));
         this.plugin = plugin;
         this.shop = shop;
     }
 
     @Override
     protected void onUpdate(MenuContent content) {
+        if (!(shop instanceof PlayerShop)) {
+            return;
+        }
+        PlayerShop playerShop = (PlayerShop) shop;
 
-        if (shop instanceof PlayerShop && !shop.getDuration().equals("infinite")) {
+        String path = playerShop.isDisableNotifications() ? "menus.edit_shop.items.enable_trade_notifications" :
+                "menus.edit_shop.items.disable_trade_notifications";
+        Clickable tradeNotifications = Clickable.of(ConfigManager.getItem(path).build(), event -> {
+            playerShop.setDisableNotifications(!playerShop.isDisableNotifications());
+            update();
+        });
+        content.setClickable(ConfigManager.getInt(path + ".slot"), tradeNotifications);
+
+        if (!shop.getDuration().equals("infinite")) {
 
             String timeShort = shop.getDuration();
             String unit = timeShort.substring(timeShort.length() - 1);
             int amount = Integer.parseInt(timeShort.substring(0, timeShort.length() - 1));
             String time = amount + " " + ConfigManager.getUnit(unit, amount > 1);
-
-            PlayerShop playerShop = (PlayerShop) shop;
 
             Clickable increaseTime = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.increase_time")
                     .replace("%expire%", ConfigManager.getTimeLeft(shop.getExpireDate()))
@@ -70,49 +77,43 @@ public class EditShopMenu extends Menu {
                 player.playSound(player.getLocation(), ConfigManager.getSound("sounds.increase_time"), 1, 1);
             });
 
-            content.setClickable(13, increaseTime);
+            content.setClickable(ConfigManager.getInt("menus.edit_shop.items.increase_time.slot"), increaseTime);
         }
-        if (shop instanceof PlayerShop && ConfigManager.getBoolean("require_collect")) {
-
-            PlayerShop playerShop = (PlayerShop) shop;
+        if (ConfigManager.getBoolean("require_collect")) {
 
             Clickable collectMoney = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.collect_money")
                     .replaceCurrency("%worth%", shop.getCollectedMoney()).build(), event -> {
                 playerShop.collectMoney((Player) event.getWhoClicked());
             });
-            content.setClickable(41, collectMoney);
-        }
-
-        if (shop instanceof PlayerShop) {
-
-            PlayerShop playerShop = (PlayerShop) shop;
-            String path = playerShop.isDisableNotifications() ? "menus.edit_shop.items.enable_trade_notifications" :
-                    "menus.edit_shop.items.disable_trade_notifications";
-
-            Clickable tradeNotifications = Clickable.of(ConfigManager.getItem(path).build(), event -> {
-                playerShop.setDisableNotifications(!playerShop.isDisableNotifications());
-                update();
-            });
-            content.setClickable(40, tradeNotifications);
+            content.setClickable(ConfigManager.getInt("menus.edit_shop.items.collect_money.slot"), collectMoney);
         }
     }
 
     @Override
     public void onCreate(MenuContent content) {
 
-        ItemStack filler = ConfigManager.getItem("items.filler").build();
+        int[] fillerSlots = ConfigManager.getIntArray("menus.edit_shop.filler_slots");
+        content.fillSlots(ConfigManager.getItem("items.filler").build(), fillerSlots);
 
-        Clickable editShopfront = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.edit_shopfront").build(), event -> {
+        String slotSuffix = shop instanceof AdminShop ? "admin" : "";
+
+        int editSlot = ConfigManager.getInt("menus.edit_shop.items.edit_shopfront.slot" + slotSuffix);
+        content.setClickable(editSlot, Clickable.fromConfig("menus.edit_shop.items.edit_shopfront", event -> {
             shop.openInventory(event.getWhoClicked(), ShopMenu.EDIT_SHOPFRONT);
-        });
-        Clickable previewShop = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.preview_shop").build(), event -> {
-            shop.openInventory(event.getWhoClicked(), ShopMenu.CUSTOMER);
-        });
-        Clickable editVillager = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.edit_villager").build(), event -> {
-          shop.openInventory(event.getWhoClicked(), ShopMenu.EDIT_VILLAGER);
-        });
+        }));
 
-        Clickable changeName = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.change_name").build(), event -> {
+        int previewSlot = ConfigManager.getInt("menus.edit_shop.items.preview_shop.slot" + slotSuffix);
+        content.setClickable(previewSlot, Clickable.fromConfig("menus.edit_shop.items.preview_shop", event -> {
+            shop.openInventory(event.getWhoClicked(), ShopMenu.CUSTOMER);
+        }));
+
+        int villagerSlot = ConfigManager.getInt("menus.edit_shop.items.edit_villager.slot" + slotSuffix);
+        content.setClickable(villagerSlot, Clickable.fromConfig("menus.edit_shop.items.edit_villager", event -> {
+          shop.openInventory(event.getWhoClicked(), ShopMenu.EDIT_VILLAGER);
+        }));
+
+        int nameSlot = ConfigManager.getInt("menus.edit_shop.items.change_name.slot" + slotSuffix);
+        content.setClickable(nameSlot, Clickable.fromConfig("menus.edit_shop.items.change_name", event -> {
 
             Player player = (Player) event.getWhoClicked();
             if (!player.hasPermission("villagermarket.change_name")) {
@@ -153,34 +154,18 @@ public class EditShopMenu extends Menu {
 
                 player.sendMessage(ConfigManager.getMessage("messages.change_name_set").replace("%name%", name));
             });
-        });
+        }));
 
-        content.fillEdges(filler);
+        if (shop instanceof PlayerShop) {
 
-        if (shop instanceof AdminShop) {
-            content.setClickable(21, editShopfront);
-            content.setClickable(23,  previewShop);
-            content.setClickable(30,  editVillager);
-            content.setClickable(32,  changeName);
-        } else if (shop instanceof PlayerShop) {
-
-
-            Clickable removeShop = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.sell_shop").build(), event -> {
+            content.setPlaced(PlacedClickable.fromConfig("menus.edit_shop.items.sell_shop", event -> {
                 shop.openInventory(event.getWhoClicked(), ShopMenu.SELL_SHOP);
-            });
-            Clickable storage = Clickable.of(ConfigManager.getItem("menus.edit_shop.items.edit_storage").build(), event -> {
+            }));
+
+            content.setPlaced(PlacedClickable.fromConfig("menus.edit_shop.items.edit_storage", event -> {
                 PlayerShop playerShop = (PlayerShop) shop;
                 playerShop.openStorage((Player) event.getWhoClicked());
-            });
-
-            content.setClickable(21, editShopfront);
-            content.setClickable(22, storage);
-            content.setClickable(23, previewShop);
-            content.setClickable(30, editVillager);
-            content.setClickable(31, removeShop);
-            content.setClickable(32, changeName);
-
-            update();
+            }));
         }
     }
 }

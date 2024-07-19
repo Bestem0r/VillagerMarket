@@ -1,9 +1,7 @@
 package net.bestemor.villagermarket.menu;
 
 import net.bestemor.core.config.ConfigManager;
-import net.bestemor.core.menu.Clickable;
-import net.bestemor.core.menu.Menu;
-import net.bestemor.core.menu.MenuContent;
+import net.bestemor.core.menu.*;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.ShopMenu;
@@ -21,7 +19,7 @@ public class SellShopMenu extends Menu {
     private final VillagerShop shop;
 
     public SellShopMenu(VMPlugin plugin, VillagerShop shop) {
-        super(plugin.getMenuListener(), 27, ConfigManager.getString("menus.sell_shop.title"));
+        super(MenuConfig.fromConfig("menus.sell_shop"));
         this.plugin = plugin;
         this.shop = shop;
     }
@@ -32,12 +30,11 @@ public class SellShopMenu extends Menu {
 
         String configPath = (shop.getCost() == -1 ? "yes_remove" : "yes_sell");
 
-        ItemStack fillItem = ConfigManager.getItem("items.filler").build();
-        ItemStack cancel = ConfigManager.getItem("menus.sell_shop.items.no_cancel").build();
         ItemStack confirmItem = ConfigManager.getItem("menus.sell_shop.items." + configPath)
                 .replaceCurrency("%amount%", new BigDecimal(priceHalved)).build();
 
-        content.setClickable(12, Clickable.of(confirmItem, event -> {
+        int slot = ConfigManager.getInt("menus.sell_shop.items." + configPath + ".slot");
+        content.setClickable(slot, Clickable.of(confirmItem, event -> {
             PlayerShop playerShop = (PlayerShop) shop;
 
             Player player = (Player) event.getWhoClicked();
@@ -55,10 +52,12 @@ public class SellShopMenu extends Menu {
             event.getView().close();
         }));
 
-        content.setClickable(14, Clickable.of(cancel, event -> {
+        content.setPlaced(PlacedClickable.fromConfig("menus.sell_shop.items.no_cancel", event -> {
             shop.openInventory((Player) event.getWhoClicked(), ShopMenu.EDIT_SHOP);
         }));
 
-        content.fillEdges(fillItem);
+
+        int[] fillerSlots = ConfigManager.getIntArray("menus.sell_shop.filler_slots");
+        content.fillSlots(ConfigManager.getItem("items.filler").build(), fillerSlots);
     }
 }

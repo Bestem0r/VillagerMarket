@@ -2,6 +2,8 @@
 
 #Villager Market"s message prefix
 plugin_prefix: "&8[&aVM&8]&r"
+#Should configuration be auto-updated?
+auto_update: false
 #How much (%) should shop owner get refunded when selling shop
 refund_percent: 50.0
 #How often should villager shops auto-save? (minutes)

@@ -3,17 +3,15 @@ package net.bestemor.villagermarket.menu;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.menu.Clickable;
 import net.bestemor.core.menu.Menu;
+import net.bestemor.core.menu.MenuConfig;
 import net.bestemor.core.menu.MenuContent;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.event.BuyShopEvent;
 import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.ShopMenu;
 import net.milkbowl.vault.economy.Economy;
-import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.math.BigDecimal;
@@ -25,7 +23,7 @@ public class BuyShopMenu extends Menu {
     private final PlayerShop shop;
 
     public BuyShopMenu(VMPlugin plugin, PlayerShop shop) {
-        super(plugin.getMenuListener(), 27, ConfigManager.getString("menus.buy_shop.title"));
+        super(MenuConfig.fromConfig("menus.buy_shop"));
         this.plugin = plugin;
         this.shop = shop;
     }
@@ -38,7 +36,7 @@ public class BuyShopMenu extends Menu {
         int shopS = shop.getShopSize();
         int storageS = shop.getStorageSize();
 
-        String infinite = WordUtils.capitalizeFully(ConfigManager.getString("quantity.infinite"));
+        String infinite = ConfigManager.getString("quantity.infinite");
 
         String shopAmount = (shopS == 0 ? infinite : String.valueOf(shopS - 1));
         String storageAmount = (storageS == 0 ? infinite : String.valueOf(storageS - 1));
@@ -52,9 +50,15 @@ public class BuyShopMenu extends Menu {
         ItemStack storageSize = ConfigManager.getItem( "menus.buy_shop.items.storage_size").replace("%amount%", storageAmount).build();
         ItemStack buyShop = ConfigManager.getItem("menus.buy_shop.items.buy_shop").replaceCurrency("%price%", new BigDecimal(cost)).replace("%time%", time).build();
 
-        content.fillEdges(ConfigManager.getItem("items.filler").build());
-        content.setClickable(12, Clickable.empty(shopSize));
-        content.setClickable(13, Clickable.of(buyShop, (event) -> {
+        int[] fillerSlots = ConfigManager.getIntArray("menus.buy_shop.filler_slots");
+        content.fillSlots(ConfigManager.getItem("items.filler").build(), fillerSlots);
+
+        int shopSizeSlot = ConfigManager.getInt("menus.buy_shop.items.shop_size.slot");
+        int storageSizeSlot = ConfigManager.getInt("menus.buy_shop.items.storage_size.slot");
+        int buyShopSlot = ConfigManager.getInt("menus.buy_shop.items.buy_shop.slot");
+
+        content.setClickable(shopSizeSlot, Clickable.empty(shopSize));
+        content.setClickable(buyShopSlot, Clickable.of(buyShop, (event) -> {
             Player player = (Player) event.getWhoClicked();
 
             Economy economy = plugin.getEconomy();
@@ -94,6 +98,6 @@ public class BuyShopMenu extends Menu {
             shop.updateRedstone(false);
             shop.openInventory(player, ShopMenu.EDIT_SHOP);
         }));
-        content.setClickable(14, Clickable.empty(storageSize));
+        content.setClickable(storageSizeSlot, Clickable.empty(storageSize));
     }
 }

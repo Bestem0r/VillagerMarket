@@ -6,21 +6,19 @@
 package net.bestemor.villagermarket.menu;
 
 import net.bestemor.core.config.ConfigManager;
-import net.bestemor.core.menu.Clickable;
 import net.bestemor.core.menu.Menu;
+import net.bestemor.core.menu.MenuConfig;
 import net.bestemor.core.menu.MenuContent;
-import net.bestemor.core.menu.MenuListener;
+import net.bestemor.core.menu.PlacedClickable;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 
 public class ConfirmActionMenu extends Menu {
 
     private final Runnable accept;
     private final Runnable cancel;
 
-    public ConfirmActionMenu(MenuListener listener, Runnable accept, Runnable cancel) {
-        super(listener, 27, ConfigManager.getString("menus.confirm_action.title"));
+    public ConfirmActionMenu(Runnable accept, Runnable cancel) {
+        super(MenuConfig.fromConfig("menus.confirm_action"));
         this.accept = accept;
         this.cancel = cancel;
     }
@@ -28,14 +26,17 @@ public class ConfirmActionMenu extends Menu {
     @Override
     protected void onCreate(MenuContent content) {
 
-        content.fillEdges(ConfigManager.getItem("items.filler").build());
+        int[] fillerSlots = ConfigManager.getIntegerList("menus.confirm_action.filler_slots")
+                .stream().mapToInt(i -> i).toArray();
 
-        content.setClickable(12, Clickable.of(ConfigManager.getItem("menus.confirm_action.items.accept").build(), (event) -> {
+        content.fillSlots(ConfigManager.getItem("items.filler").build(), fillerSlots);
+
+        content.setPlaced(PlacedClickable.fromConfig("menus.confirm_action.items.accept", event -> {
             Player player = (Player) event.getWhoClicked();
             player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
             accept.run();
         }));
-        content.setClickable(14, Clickable.of(ConfigManager.getItem("menus.confirm_action.items.cancel").build(), (event) -> {
+        content.setPlaced(PlacedClickable.fromConfig("menus.confirm_action.items.cancel", event -> {
             Player player = (Player) event.getWhoClicked();
             player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
             cancel.run();

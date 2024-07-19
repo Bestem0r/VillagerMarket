@@ -8,7 +8,6 @@ import net.bestemor.villagermarket.menu.EditItemMenu;
 import net.bestemor.villagermarket.menu.StorageHolder;
 import net.bestemor.villagermarket.utils.VMUtils;
 import net.milkbowl.vault.economy.Economy;
-import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -479,7 +478,7 @@ public class ShopItem {
         } else if (m != null && VersionUtils.getMCVersion() > 11 && m.hasLocalizedName()) {
             return m.getLocalizedName();
         } else {
-            return WordUtils.capitalizeFully(i.getType().name().replaceAll("_", " "));
+            return i.getType().name().replaceAll("_", " ");
         }
     }
 }

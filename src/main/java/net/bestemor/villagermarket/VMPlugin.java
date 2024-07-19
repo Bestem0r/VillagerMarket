@@ -5,7 +5,6 @@ import net.bestemor.core.command.CommandModule;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.command.ShopCommand;
 import net.bestemor.villagermarket.command.subcommand.*;
-import net.bestemor.villagermarket.listener.ChatListener;
 import net.bestemor.villagermarket.listener.EntityListener;
 import net.bestemor.villagermarket.listener.PlayerListener;
 import net.bestemor.villagermarket.shop.ShopManager;
@@ -29,7 +28,6 @@ public class VMPlugin extends CorePlugin {
     public static final List<String> log = new ArrayList<>();
 
     private ShopManager shopManager;
-    private ChatListener chatListener;
     private PlayerListener playerListener;
 
     private final Map<String, String> localizedMaterials = new HashMap<>();
@@ -42,8 +40,6 @@ public class VMPlugin extends CorePlugin {
 
         ConfigManager.setPrefixPath("plugin_prefix");
 
-        this.chatListener = new ChatListener(this);
-
         setupCommands();
 
         this.shopManager = new ShopManager(this);
@@ -52,7 +48,10 @@ public class VMPlugin extends CorePlugin {
         this.playerListener = new PlayerListener(this);
         registerEvents();
 
-        //Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.11.7-#5 of VillagerMarket! Please expect and report all bugs in my discord server");
+        boolean enableUpdate = !getConfig().contains("auto_update") || getConfig().getBoolean("auto_update");
+        Bukkit.getLogger().info("[VillagerMarket] Auto config update is " + (enableUpdate ? "enabled" : "disabled"));
+
+        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.12.0-#2x of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
@@ -145,7 +144,6 @@ public class VMPlugin extends CorePlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new EntityListener(this), this);
         pluginManager.registerEvents(playerListener, this);
-        pluginManager.registerEvents(chatListener, this);
     }
 
     @Override
@@ -170,9 +168,6 @@ public class VMPlugin extends CorePlugin {
 
     public ShopManager getShopManager() {
         return shopManager;
-    }
-    public ChatListener getChatListener() {
-        return chatListener;
     }
     public PlayerListener getPlayerEvents() {
         return playerListener;

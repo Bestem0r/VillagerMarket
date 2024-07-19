@@ -2,9 +2,7 @@ package net.bestemor.villagermarket.menu;
 
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.config.ItemBuilder;
-import net.bestemor.core.menu.Clickable;
-import net.bestemor.core.menu.Menu;
-import net.bestemor.core.menu.MenuContent;
+import net.bestemor.core.menu.*;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.event.interact.DeleteShopItemEvent;
 import net.bestemor.villagermarket.event.interact.EditShopItemEvent;
@@ -35,7 +33,7 @@ public class EditItemMenu extends Menu {
     private final int page;
 
     public EditItemMenu(VMPlugin plugin, VillagerShop shop, ShopItem shopItem, int page) {
-        super(plugin.getMenuListener(), 54, ConfigManager.getString("menus.edit_item.title"));
+        super(MenuConfig.fromConfig("menus.edit_item"));
 
         this.page = page;
         this.plugin = plugin;
@@ -45,19 +43,21 @@ public class EditItemMenu extends Menu {
 
     @Override
     protected void onCreate(MenuContent content) {
-        content.fillEdges(ConfigManager.getItem("items.filler").build());
+        int[] slots = ConfigManager.getIntArray("menus.edit_item.filler_slots");
+        content.fillSlots(ConfigManager.getItem("items.filler").build(), slots);
         shopItem.reloadMeta(shop);
-        
-        content.setClickable(53, Clickable.of(ConfigManager.getItem("items.back").build(), (event) -> {
+
+        int backSlot = ConfigManager.getInt("menus.edit_item.back_slot");
+        content.setClickable(backSlot, Clickable.fromConfig("items.back", event -> {
             Player player = (Player) event.getWhoClicked(); 
             player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
             shop.getShopfrontHolder().open(player, Shopfront.Type.EDITOR, this.page);
         }));
         
-        content.setClickable(49, Clickable.of(ConfigManager.getItem("menus.edit_item.items.delete").build(), (event) -> {
+        content.setPlaced(PlacedClickable.fromConfig("menus.edit_item.items.delete", event -> {
             Player player = (Player) event.getWhoClicked();
             
-            new ConfirmActionMenu(plugin.getMenuListener(), () -> {
+            new ConfirmActionMenu(() -> {
                 shop.getShopfrontHolder().removeItem(shopItem.getSlot());
                 player.playSound(player.getLocation(), ConfigManager.getSound("sounds.remove_item"), 1, 1);
                 shop.openInventory(player, ShopMenu.EDIT_SHOPFRONT);
@@ -71,17 +71,28 @@ public class EditItemMenu extends Menu {
 
     @Override
     protected void onUpdate(MenuContent content) {
+        String p = "menus.edit_item.items.";
 
-        content.setClickable(4, Clickable.empty(shopItem.getRawItem()));
-        content.setClickable(31, null);
+        int slot = ConfigManager.getInt("menus.edit_item.item_slot");
+        content.setClickable(slot, Clickable.empty(shopItem.getRawItem()));
+
+        int cooldownSlot = ConfigManager.getInt( p + "limit_cooldown.slot");
+        int commandSlot = ConfigManager.getInt(p + "command.slot");
+        int buyLimitSlot = ConfigManager.getInt(p + "buy_limit.slot");
+        int playerLimitSlot = ConfigManager.getInt(p + "player_limit.slot");
+
+        content.setClickable(cooldownSlot, null);
+        content.setClickable(commandSlot, null);
+        content.setClickable(buyLimitSlot, null);
+        content.setClickable(playerLimitSlot, null);
 
         String mode = shopItem.getMode().name().toLowerCase(Locale.ROOT);
         String modeName = ConfigManager.getString("menus.shopfront.modes." + mode);
         String modeCycle = shop.getModeCycle(mode, shopItem.isItemTrade());
 
-        ItemStack modeItem = ConfigManager.getItem("menus.edit_item.items.mode").replace("%cycle%", modeCycle).replace("%mode%", modeName).build();
-        ItemStack amountItem = ConfigManager.getItem("menus.edit_item.items.amount").replace("%amount%", String.valueOf(shopItem.getAmount())).build();
-        ItemBuilder priceBuilder = ConfigManager.getItem("menus.edit_item.items.price");
+        ItemStack modeItem = ConfigManager.getItem(p + "mode").replace("%cycle%", modeCycle).replace("%mode%", modeName).build();
+        ItemStack amountItem = ConfigManager.getItem(p + "amount").replace("%amount%", String.valueOf(shopItem.getAmount())).build();
+        ItemBuilder priceBuilder = ConfigManager.getItem(p + "price");
 
         if (shopItem.isItemTrade()) {
             priceBuilder.replace("%price%", shopItem.getItemTradeAmount() + "x " + shopItem.getItemTradeName());
@@ -95,7 +106,7 @@ public class EditItemMenu extends Menu {
         ItemStack priceItem = priceBuilder.build();
         if (shopItem.getMode() == ItemMode.BUY_AND_SELL) {
             ItemMeta meta = priceItem.getItemMeta();
-            meta.setLore(ConfigManager.getStringList("menus.edit_item.items.price.buy_and_sell_lore"));
+            meta.setLore(ConfigManager.getStringList(p + "price.buy_and_sell_lore"));
             priceItem.setItemMeta(meta);
         }
 
@@ -107,22 +118,23 @@ public class EditItemMenu extends Menu {
         String limit = (shopItem.getLimit() == 0 ? ConfigManager.getString("quantity.unlimited") : String.valueOf(shopItem.getLimit()));
 
         if (shop instanceof AdminShop) {
-            content.setClickable(32, Clickable.of(ConfigManager.getItem("menus.edit_item.items.limit_cooldown")
+            ItemStack limitItem = ConfigManager.getItem(p + "limit_cooldown")
                     .replace("%cooldown%", shopItem.getCooldown() == null ? "none" : shopItem.getCooldown())
-                    .replace("%next%", ConfigManager.getTimeLeft(shopItem.getNextReset())).build(), this::handleCooldown));
+                    .replace("%next%", ConfigManager.getTimeLeft(shopItem.getNextReset())).build();
+            content.setClickable(cooldownSlot, Clickable.of(limitItem, this::handleCooldown));
 
             String cycleName = shopItem.getLimitMode().name().toLowerCase();
-            content.setClickable(30, Clickable.of(ConfigManager.getItem("menus.edit_item.items.player_limit")
+            content.setClickable(playerLimitSlot, Clickable.of(ConfigManager.getItem(p + "player_limit")
                     .replace("%limit%", limit)
-                    .replace("%cycle%", ConfigManager.getString("menus.edit_item.limit_cycle." + cycleName)).build(), this::handleLimit));
+                    .replace("%cycle%", ConfigManager.getString(p + "limit_cycle." + cycleName)).build(), this::handleLimit));
 
         } else if (shopItem.getMode() == ItemMode.BUY || shopItem.getMode() == ItemMode.BUY_AND_SELL) {
-            content.setClickable(31, Clickable.of(ConfigManager.getItem("menus.edit_item.items.buy_limit")
+            content.setClickable(buyLimitSlot, Clickable.of(ConfigManager.getItem(p + "buy_limit")
                     .replace("%limit%", limit).build(), this::handleLimit));
         }
 
         if (shopItem.getMode() == ItemMode.COMMAND) {
-            ItemStack commandItem =  ConfigManager.getItem("menus.edit_item.items.command").build();
+            ItemStack commandItem =  ConfigManager.getItem(p + "command").build();
             ItemMeta meta = commandItem.getItemMeta();
             List<String> lore = meta.getLore();
 
@@ -139,7 +151,7 @@ public class EditItemMenu extends Menu {
             meta.setLore(lore);
             commandItem.setItemMeta(meta);
 
-            content.setClickable(31, Clickable.of(commandItem, (event) -> {
+            content.setClickable(commandSlot, Clickable.of(commandItem, event -> {
 
                 if (event.getClick() == ClickType.RIGHT) {
                     shopItem.resetCommand();
@@ -150,7 +162,7 @@ public class EditItemMenu extends Menu {
                 event.getView().close();
                 Player player = (Player) event.getWhoClicked();
                 player.sendMessage(ConfigManager.getMessage("messages.type_command"));
-                plugin.getChatListener().addStringListener(player, (result) -> {
+                plugin.getChatListener().addStringListener(player, result -> {
                     shopItem.addCommand(result);
                     update();
                     open(player);
@@ -158,16 +170,16 @@ public class EditItemMenu extends Menu {
             }));
         }
 
-        content.setClickable(21, Clickable.of(amountItem, (event) -> {
+        content.setClickable(ConfigManager.getInt(p + "amount.slot"), Clickable.of(amountItem, event -> {
             event.getView().close();
             typeAmount((Player) event.getWhoClicked());
         }));
         
-        content.setClickable(22, Clickable.of(modeItem, (event) -> {
+        content.setClickable(ConfigManager.getInt(p + "mode.slot"), Clickable.of(modeItem, event -> {
             shopItem.cycleTradeMode();
             update();
         }));
-        content.setClickable(23, Clickable.of(priceItem, (event) -> {
+        content.setClickable(ConfigManager.getInt(p + "price.slot"), Clickable.of(priceItem, event -> {
             Player player = (Player) event.getWhoClicked(); 
             player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
             if (event.getCursor() != null && event.getCursor().getType() != Material.AIR) {
@@ -188,7 +200,6 @@ public class EditItemMenu extends Menu {
                     }));
                 } else {
                     player.sendMessage(ConfigManager.getMessage("messages.no_permission_trade_item"));
-                    return;
                 }
 
             } else {
@@ -199,11 +210,11 @@ public class EditItemMenu extends Menu {
         }));
 
         if (!shopItem.isItemTrade()) {
-            ItemStack discountItem = ConfigManager.getItem("menus.edit_item.items.discount")
+            ItemStack discountItem = ConfigManager.getItem(p + "discount")
                     .replace("%discount%", String.valueOf(shopItem.getDiscount()))
                     .replace("%discount_end%", ConfigManager.getTimeLeft(shopItem.getDiscountEnd())).build();
 
-            content.setClickable(13, Clickable.of(discountItem, (event) -> {
+            content.setClickable(ConfigManager.getInt(p + "discount.slot"), Clickable.of(discountItem, event -> {
                 event.getView().close();
                 typeDiscount((Player) event.getWhoClicked());
             }));
@@ -220,7 +231,7 @@ public class EditItemMenu extends Menu {
         if (event.getClick() != ClickType.RIGHT && event.getClick() != ClickType.LEFT) {
             return;
         }
-        if (event.getRawSlot() > 53) {
+        if (event.getRawSlot() > event.getView().getTopInventory().getSize() - 1) {
             event.setCancelled(false);
         }
     }

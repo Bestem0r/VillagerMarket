@@ -165,21 +165,26 @@ menus:
   #-------------------- Buy Shop --------------------#
   buy_shop:
     title: "&8Comprar loja disponível"
+    size: 27
+    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
     items:
       shop_size:
+        material: CHEST
+        slot: 12
         #Placeholders: %amount%
         name: "&a%amount%&7 slots de loja"
-        material: CHEST
         lore:
           - ""
       storage_size:
+        material: WRITABLE_BOOK
+        slot: 14
         #Placeholders: %amount%
         name: "&a%amount%&7 slots de armazém"
-        material: WRITABLE_BOOK
         lore:
           - ""
       buy_shop:
         material: EMERALD
+        slot: 13
         name: "&aCompre essa loja!"
         lore: #Placeholders: %price%, %time%
           - "&7Clique para comprar essa loja por &a%price%&7!"
@@ -190,10 +195,14 @@ menus:
   #-------------------- Edit Shop --------------------#
   edit_shop:
     title: "&8Editar loja"
+    size: 54
+    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]
     items:
       #Edit items for sale item
       edit_shopfront:
         material: WRITABLE_BOOK
+        slot: 21
+        slot_admin: 22
         name: "&bEditar vitrine"
         lore:
           - "&7Clique para editar itens"
@@ -201,18 +210,23 @@ menus:
       #Preview shop item
       preview_shop:
         material: BOOK
+        slot: 23
+        slot_admin: 23
         name: "&eVer loja"
         lore:
           - "&7Clique para ver sua vitrine"
       #Edit storage item
       edit_storage:
         material: CHEST
+        slot: 22
         name: "&cEditar armazém"
         lore:
           - "&7Clique para editar o armazém da loja"
       #Edit villager item
       edit_villager:
         material: VILLAGER_SPAWN_EGG
+        slot: 30
+        slot_admin: 30
         name: "&eEditar villager"
         lore:
           - "&7Clique para editar a profissão"
@@ -220,12 +234,15 @@ menus:
       #Change villager name item
       change_name:
         material: NAME_TAG
+        slot: 32
+        slot_admin: 32
         name: "&eMudar o nome do villager"
         lore:
           - "&7Clique para mudar o nome do seu villager"
       #Sell shop item
       sell_shop:
         material: FEATHER
+        slot: 31
         name: "&cVender/abandonar loja"
         lore:
           - "&7Clique para abandonar sua"
@@ -233,6 +250,7 @@ menus:
       #Collect money (this needs to be enabled in general settings)
       collect_money:
         material: GOLD_INGOT
+        slot: 41
         name: "&aColetar dinheiro"
         #Placeholders: %worth%
         lore:
@@ -240,6 +258,7 @@ menus:
       #Add more time item
       increase_time:
         material: EMERALD
+        slot: 13
         name: "&aAumentar tempo do aluguel"
         #Placeholders: %expire%, %time%, %price%
         lore:
@@ -250,12 +269,14 @@ menus:
       #Enable trade notifications item
       enable_trade_notifications:
         material: RED_TERRACOTTA
+        slot: 40
         name: "&eNotificações de negociação&7: &cDesativado"
         lore:
           - "&7Clique para ativar as notificações de negociação"
       #Disable trade notifications item
       disable_trade_notifications:
         material: LIME_TERRACOTTA
+        slot: 40
         name: "&eNotificações de negociação&7: &aHabilitadas"
         lore:
           - "&7Clique para desativar as notificações de negociação"
@@ -450,79 +471,105 @@ menus:
   #------------------ Edit Villager ------------------#
   edit_villager:
     title: "&8Editar villager"
+    size: 36
     #This requires citizens to be on the server
     citizens_item:
       material: PLAYER_HEAD
+      slot: 31
       name: "&eDefinir skin em vez disso"
       lore:
         - "&7Clique para definir uma skin para essa loja"
+    back_slot: 35
+    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 27, 28, 29, 30, 31, 32, 33, 34]
     items:
       armorer:
         material: IRON_CHESTPLATE
+        slot: 9
         name: "&7Armeiro"
       butcher:
         material: PORKCHOP
+        slot: 10
         name: "&cAçougueiro"
       cartographer:
         material: MAP
+        slot: 11
         name: "&bCartógrafo"
       cleric:
         material: POTION
+        slot: 12
         name: "&dClérigo"
       farmer:
         material: WHEAT
+        slot: 13
         name: "&eFazendeiro"
       fisherman:
         material: COD
+        slot: 14
         name: "&bPescador"
       fletcher:
         material: FLETCHING_TABLE
+        slot: 15
         name: "&eFlecheiro"
       leatherworker:
         material: LEATHER
+        slot: 16
         name: "&cCoureiro"
       librarian:
         material: BOOK
+        slot: 17
         name: "&6Bibliotecário"
       mason:
         material: BRICK
+        slot: 18
         name: "&cPedreiro"
       nitwit:
         material: PAPER
+        slot: 19
         name: "&fIdiota"
       shepherd:
         material: WHITE_WOOL
+        slot: 20
         name: "&fPastor"
       toolsmith:
         material: IRON_AXE
+        slot: 21
         name: "&7Ferreiro"
       weaponsmith:
         material: IRON_SWORD
+        slot: 22
         name: "&7Ferreiro de armas"
       none:
         material: VILLAGER_SPAWN_EGG
+        slot: 23
         name: "&cNenhum"
       #Legacy versions
       blacksmith:
         material: ANVIL
+        slot: 9
         name: "&7Ferreiro"
       priest:
         material: POTION
+        slot: 11
         name: "&dSacerdote"
       normal:
         material: VILLAGER_SPAWN_EGG
+        slot: 12
         name: "&cNenhum"
 
   #-------------------- Sell Shop --------------------#
   sell_shop:
     title: "&8Você tem certeza?"
+    size: 27
+    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
     items:
       no_cancel:
         material: RED_TERRACOTTA
+        slot: 14
         name: "&cNão, cancelar"
       #If the Shop is reusable (created by command)
       yes_sell:
         material: LIME_TERRACOTTA
+        slot: 12
         name: "&aSim, vender loja"
         #Placeholders: %amount%
         lore:
@@ -533,6 +580,7 @@ menus:
       #If the Shop isn't reusable (created using a spawn egg)
       yes_remove:
         material: LIME_TERRACOTTA
+        slot: 12
         name: "&aSim, remover loja"
         lore:
           - "&7Isso vai &cremover &7a"
@@ -542,6 +590,10 @@ menus:
   #-------------------- Edit Item --------------------#
   edit_item:
     title: "&8Editar Item"
+    size: 54
+    item_slot: 4
+    filler_slots: [0, 1, 2, 3, 5, 6, 7, 8, 9, 17, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]
+    back_slot: 53
     limit_cycle:
       player: "&eJogador&7 | Servidor"
       server: "&7Jogador |&e Servidor"
@@ -561,6 +613,7 @@ menus:
     items:
       mode:
         material: OAK_SIGN
+        slot: 22
         name: "&eModo&7: %mode%"
         #%cycle% is replaced with cycle values above
         lore:
@@ -568,11 +621,13 @@ menus:
           - "%cycle%"
       amount:
         material: CHEST
+        slot: 21
         name: "&eQuantidade&7: &r%amount%"
         lore:
           - "&7Clique para editar"
       price:
         material: GOLD_INGOT
+        slot: 23
         name: "&ePriço&7: &r%price%"
         lore:
           - "&7Clique para editar o preço"
@@ -587,11 +642,13 @@ menus:
           - "&7por um item ao invés de dinheiro"
       delete:
         material: BARRIER
+        slot: 49
         name: "&cRemover"
         lore:
           - "&7Clique para &cremover o &7item"
       command:
         material: COMMAND_BLOCK
+        slot: 31
         name: "&eComando"
         lore:
           - "&7Comandos atuais:"
@@ -601,11 +658,13 @@ menus:
           - "&7>> Direita para redefinir"
       buy_limit:
         material: FEATHER
+        slot: 31
         name: "&eLimite de compra&7: %limit%"
         lore:
           - "&7>> Clique para editar"
       player_limit:
         material: PLAYER_HEAD
+        slot: 30
         name: "&eLimite de jogador&7: &f%limit%"
         lore:
           - "&7>> Clique direito para circular:"
@@ -614,6 +673,7 @@ menus:
           - "&7>> Clique esquerdo para editar"
       limit_cooldown:
         material: CLOCK
+        slot: 32
         name: "&eLimite de tempo&7: &f%cooldown%"
         lore:
           - "&7Próxima redefinição de limite: &e%next%"
@@ -622,6 +682,7 @@ menus:
           - "&7>> Clique direito para &credefinir o &7limite"
       discount:
         material: EMERALD
+        slot: 13
         name: "&eDesconto&7: &f%discount%%"
         lore:
           - "&7Termina: &e%discount_end%"
@@ -629,12 +690,16 @@ menus:
           - "&7>> Clique para editar"
   confirm_action:
     title: "&8Você tem certeza?"
+    size: 27
+    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
     items:
       accept:
         material: GREEN_TERRACOTTA
+        slot: 12
         name: "&aSim, confirmar"
       cancel:
         material: RED_TERRACOTTA
+        slot: 14
         name: "&cNão, cancelar"
 
 
