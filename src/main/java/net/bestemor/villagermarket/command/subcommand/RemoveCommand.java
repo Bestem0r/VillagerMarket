@@ -31,7 +31,7 @@ public class RemoveCommand implements ISubCommand {
 
 
         player.sendMessage(ConfigManager.getMessage("messages.remove_villager"));
-        plugin.getPlayerEvents().addClickListener(player.getUniqueId(), shop -> {
+        plugin.getPlayerListener().addClickListener(player.getUniqueId(), shop -> {
             player.sendMessage(ConfigManager.getMessage("messages.villager_removed"));
             player.playSound(player.getLocation(), ConfigManager.getSound("sounds.remove_villager"), 0.5f, 1);
             plugin.getShopManager().removeShop(shop.getEntityUUID());

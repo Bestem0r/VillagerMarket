@@ -29,7 +29,7 @@ public class CloneCommand implements ISubCommand {
 
             player.sendMessage(ConfigManager.getMessage("messages.clone_shop"));
 
-            plugin.getPlayerEvents().addClickListener(player.getUniqueId(), shop -> {
+            plugin.getPlayerListener().addClickListener(player.getUniqueId(), shop -> {
                 plugin.getShopManager().cloneShop(shop, player.getLocation());
                 player.sendMessage(ConfigManager.getMessage("messages.shop_cloned"));
             });

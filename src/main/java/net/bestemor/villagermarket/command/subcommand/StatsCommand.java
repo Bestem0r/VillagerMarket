@@ -32,7 +32,7 @@ public class StatsCommand implements ISubCommand {
 
         player.sendMessage(ConfigManager.getMessage("messages.get_stats"));
 
-        plugin.getPlayerEvents().addClickListener(player.getUniqueId(), shop -> {
+        plugin.getPlayerListener().addClickListener(player.getUniqueId(), shop -> {
             boolean show = player.hasPermission("villagermarket.spy");
             if (shop instanceof PlayerShop) {
                 PlayerShop playerShop = (PlayerShop) shop;

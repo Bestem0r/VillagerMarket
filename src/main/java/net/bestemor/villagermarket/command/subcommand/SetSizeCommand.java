@@ -52,7 +52,7 @@ public class SetSizeCommand implements ISubCommand {
             SetAction action = new SetAction(args[1], args[2].equals("infinite") ? 0 : Integer.parseInt(args[2]));
             player.sendMessage(ConfigManager.getMessage("messages.set_size"));
 
-            plugin.getPlayerEvents().addClickListener(player.getUniqueId(), shop -> {
+            plugin.getPlayerListener().addClickListener(player.getUniqueId(), shop -> {
 
                 shop.closeAllMenus();
                 if (action.action.equals("storage")) {

@@ -32,7 +32,7 @@ public class ToggleRequirePermissionCommand implements ISubCommand {
         Player player = (Player) sender;
         player.sendMessage(ConfigManager.getMessage("messages.toggle_require_permission"));
 
-        plugin.getPlayerEvents().addClickListener(player.getUniqueId(), shop -> {
+        plugin.getPlayerListener().addClickListener(player.getUniqueId(), shop -> {
             shop.setRequirePermission(!shop.isRequirePermission());
 
             if (shop.isRequirePermission()) {

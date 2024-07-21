@@ -42,7 +42,7 @@ public class GetIDCommand implements ISubCommand {
                 return;
             }
 
-            plugin.getPlayerEvents().addCancelledPlayer(player.getUniqueId());
+            plugin.getPlayerListener().addCancelledPlayer(player.getUniqueId());
             listener.players.add(player.getUniqueId());
             player.sendMessage(ConfigManager.getMessage("messages.get_id"));
         }
@@ -81,7 +81,7 @@ public class GetIDCommand implements ISubCommand {
                 player.sendMessage(ConfigManager.getMessage("messages.no_villager_shop"));
                 player.sendMessage(ConfigManager.getMessage("messages.id").replace("%id%", event.getRightClicked().getUniqueId().toString()));
             }
-            plugin.getPlayerEvents().removeCancelledPlayer(player.getUniqueId());
+            plugin.getPlayerListener().removeCancelledPlayer(player.getUniqueId());
             players.remove(player.getUniqueId());
         }
 

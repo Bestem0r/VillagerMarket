@@ -20,14 +20,14 @@ import net.bestemor.core.config.VersionUtils;
 import net.bestemor.core.utils.UpdateChecker;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.event.PlaceShopEggEvent;
-import net.bestemor.villagermarket.menu.Shopfront;
-import net.bestemor.villagermarket.shop.AdminShop;
 import net.bestemor.villagermarket.shop.PlayerShop;
-import net.bestemor.villagermarket.shop.ShopMenu;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import net.bestemor.villagermarket.utils.VMUtils;
 import net.citizensnpcs.api.CitizensAPI;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -100,37 +100,7 @@ public class PlayerListener implements Listener {
                 return;
             }
 
-            if (shop instanceof AdminShop) {
-                if (p.hasPermission("villagermarket.adminshops")) {
-                    shop.openInventory(p, ShopMenu.EDIT_SHOP);
-                } else {
-                    if (ConfigManager.getBoolean("per_adminshop_permissions") && !p.hasPermission("villagermarket.adminshop." + shop.getEntityUUID())) {
-                        p.sendMessage(ConfigManager.getMessage("messages.no_permission_adminshop"));
-                        return;
-                    }
-                    if (shop.isRequirePermission() && !p.hasPermission("villagermarket.adminshop." + shop.getEntityUUID())) {
-                        p.sendMessage(ConfigManager.getMessage("messages.no_permission_adminshop"));
-                        return;
-                    }
-                    shop.getShopfrontHolder().open(p, Shopfront.Type.CUSTOMER);
-                }
-            } else {
-                PlayerShop playerShop = (PlayerShop) shop;
-                if (!playerShop.hasOwner()) {
-                    if (shop.isRequirePermission() && !p.hasPermission("villagermarket.playershop." + shop.getEntityUUID())) {
-                        p.sendMessage(ConfigManager.getMessage("messages.no_permission_playershop"));
-                        return;
-                    }
-                    shop.openInventory(p, ShopMenu.BUY_SHOP);
-                } else if (playerShop.getOwnerUUID().equals(p.getUniqueId()) || playerShop.isTrusted(p) || (p.isSneaking() && p.hasPermission("villagermarket.spy"))) {
-                    shop.updateMenu(ShopMenu.EDIT_SHOP);
-                    shop.openInventory(p, ShopMenu.EDIT_SHOP);
-                } else {
-                    shop.getShopfrontHolder().open(p, Shopfront.Type.CUSTOMER);
-                }
-            }
-
-            p.playSound(p.getLocation(), ConfigManager.getSound("sounds.open_shop"), 0.5f, 1);
+            plugin.getShopManager().openShop(p, shop, true);
 
         } else if (clickListeners.containsKey(p.getUniqueId())) {
             p.sendMessage(ConfigManager.getMessage("messages.no_villager_shop"));

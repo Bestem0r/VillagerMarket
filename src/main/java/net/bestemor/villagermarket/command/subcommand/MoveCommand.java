@@ -45,7 +45,7 @@ public class MoveCommand implements ISubCommand {
 
             player.sendMessage(ConfigManager.getMessage("messages.move_villager"));
 
-            plugin.getPlayerEvents().addCancelledPlayer(player.getUniqueId());
+            plugin.getPlayerListener().addCancelledPlayer(player.getUniqueId());
             listener.selectShop.add(player.getUniqueId());
         }
     }
@@ -84,7 +84,7 @@ public class MoveCommand implements ISubCommand {
             } else {
                 player.sendMessage(ConfigManager.getMessage("messages.no_villager_shop"));
             }
-            plugin.getPlayerEvents().removeCancelledPlayer(player.getUniqueId());
+            plugin.getPlayerListener().removeCancelledPlayer(player.getUniqueId());
             selectShop.remove(player.getUniqueId());
         }
 

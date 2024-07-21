@@ -2,11 +2,9 @@ package net.bestemor.villagermarket.shop;
 
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.config.CurrencyBuilder;
-import net.bestemor.core.config.VersionUtils;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.event.AbandonShopEvent;
 import net.bestemor.villagermarket.event.interact.BuyShopItemsEvent;
-import net.bestemor.villagermarket.event.interact.EditShopItemEvent;
 import net.bestemor.villagermarket.event.interact.SellShopItemsEvent;
 import net.bestemor.villagermarket.event.interact.TradeShopItemsEvent;
 import net.bestemor.villagermarket.menu.BuyShopMenu;
@@ -21,7 +19,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
@@ -81,7 +78,7 @@ public class PlayerShop extends VillagerShop {
     }
 
     public void updateRedstone(boolean forceOff) {
-        if (!plugin.getShopManager().isRedstoneEnabled() || cost == -1) { return; }
+        if (cost == -1) { return; }
         Entity entity = VMUtils.getEntity(entityUUID);
 
         if (entity != null) {
@@ -341,16 +338,7 @@ public class PlayerShop extends VillagerShop {
             }
         }
 
-        Entity entity = VMUtils.getEntity(entityUUID);
-        if (entity != null) {
-            if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(entity)) {
-                CitizensAPI.getNPCRegistry().getNPC(entity).setName(ConfigManager.getString("villager.name_available"));
-            } else if (entity instanceof Villager) {
-                entity.setCustomName(ConfigManager.getString("villager.name_available"));
-            }
-            setProfession(VersionUtils.getMCVersion() < 14 ? Villager.Profession.FARMER : Villager.Profession.NONE);
-        }
-
+        plugin.getShopManager().resetShopEntity(entityUUID);
 
         if (offlinePlayer.isOnline()) {
             Player player = (Player) offlinePlayer;

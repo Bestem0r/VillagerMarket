@@ -4,6 +4,7 @@ import de.tr7zw.nbtapi.NBTItem;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.config.VersionUtils;
 import net.bestemor.villagermarket.VMPlugin;
+import net.bestemor.villagermarket.menu.Shopfront;
 import net.bestemor.villagermarket.utils.VMUtils;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -38,8 +39,6 @@ public class ShopManager {
     private final Map<UUID, VillagerShop> shops = new HashMap<>();
     private final List<String> blackList;
 
-    private final boolean redstoneEnabled;
-
     private Instant nextAutoDiscount = Instant.now();
 
     private final HashMap<UUID, List<ItemStack>> expiredStorages = new HashMap<>();
@@ -47,7 +46,6 @@ public class ShopManager {
     public ShopManager(VMPlugin plugin) {
         this.plugin = plugin;
 
-        this.redstoneEnabled = ConfigManager.getBoolean("enable_redstone_output");
         this.blackList = ConfigManager.getStringList("item_blacklist");
 
         beginSaveThread();
@@ -110,6 +108,55 @@ public class ShopManager {
         villager.setCustomNameVisible(plugin.getConfig().getBoolean("villager.name_always_display"));
 
         return villager;
+    }
+
+    public void openShop(Player p, VillagerShop shop, boolean enableEdit) {
+        if (shop instanceof AdminShop) {
+            if (p.hasPermission("villagermarket.adminshops") && enableEdit) {
+                shop.openInventory(p, ShopMenu.EDIT_SHOP);
+            } else {
+                if (ConfigManager.getBoolean("per_adminshop_permissions") && !p.hasPermission("villagermarket.adminshop." + shop.getEntityUUID())) {
+                    p.sendMessage(ConfigManager.getMessage("messages.no_permission_adminshop"));
+                    return;
+                }
+                if (shop.isRequirePermission() && !p.hasPermission("villagermarket.adminshop." + shop.getEntityUUID())) {
+                    p.sendMessage(ConfigManager.getMessage("messages.no_permission_adminshop"));
+                    return;
+                }
+                shop.getShopfrontHolder().open(p, Shopfront.Type.CUSTOMER);
+            }
+        } else {
+            PlayerShop playerShop = (PlayerShop) shop;
+            boolean canEdit = playerShop.getOwnerUUID().equals(p.getUniqueId()) || playerShop.isTrusted(p) || (p.isSneaking() && p.hasPermission("villagermarket.spy"));
+            if (!playerShop.hasOwner()) {
+                if (shop.isRequirePermission() && !p.hasPermission("villagermarket.playershop." + shop.getEntityUUID())) {
+                    p.sendMessage(ConfigManager.getMessage("messages.no_permission_playershop"));
+                    return;
+                }
+                resetShopEntity(shop.getEntityUUID());
+                shop.openInventory(p, ShopMenu.BUY_SHOP);
+            } else if (canEdit && enableEdit) {
+                shop.updateMenu(ShopMenu.EDIT_SHOP);
+                shop.openInventory(p, ShopMenu.EDIT_SHOP);
+            } else {
+                shop.getShopfrontHolder().open(p, Shopfront.Type.CUSTOMER);
+            }
+        }
+
+        p.playSound(p.getLocation(), ConfigManager.getSound("sounds.open_shop"), 0.5f, 1);
+    }
+
+    public void resetShopEntity(UUID uuid) {
+        Entity entity = VMUtils.getEntity(uuid);
+        if (entity != null) {
+            if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(entity)) {
+                CitizensAPI.getNPCRegistry().getNPC(entity).setName(ConfigManager.getString("villager.name_available"));
+            } else if (entity instanceof Villager) {
+                entity.setCustomName(ConfigManager.getString("villager.name_available"));
+            }
+            VillagerShop shop = shops.get(uuid);
+            shop.setProfession(VersionUtils.getMCVersion() < 14 ? Villager.Profession.FARMER : Villager.Profession.NONE);
+        }
     }
 
     public void closeAllShopfronts() {
@@ -205,7 +252,6 @@ public class ShopManager {
     }
 
     public void reloadAll() {
-        plugin.getMenuListener().closeAll();
         closeAllShopfronts();
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -216,9 +262,6 @@ public class ShopManager {
 
     public boolean isShop(Entity entity) {
         return shops.containsKey(entity.getUniqueId());
-    }
-    public boolean isRedstoneEnabled() {
-        return redstoneEnabled;
     }
     public HashMap<UUID, List<ItemStack>> getExpiredStorages() {
         return expiredStorages;
@@ -301,6 +344,9 @@ public class ShopManager {
         long interval = 20L * ConfigManager.getInt("redstone_update_interval");
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            if (!ConfigManager.getBoolean("enable_redstone_output")) {
+                return;
+            }
             for (VillagerShop villagerShop : shops.values()) {
                 if (villagerShop instanceof PlayerShop) {
                     PlayerShop playerShop = (PlayerShop) villagerShop;

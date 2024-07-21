@@ -51,7 +51,7 @@ public class VMPlugin extends CorePlugin {
         boolean enableUpdate = !getConfig().contains("auto_update") || getConfig().getBoolean("auto_update");
         Bukkit.getLogger().info("[VillagerMarket] Auto config update is " + (enableUpdate ? "enabled" : "disabled"));
 
-        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.12.0-#2x of VillagerMarket! Please expect and report all bugs in my discord server");
+        //Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.12.0-#3 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
@@ -115,6 +115,7 @@ public class VMPlugin extends CorePlugin {
                 .addSubCommand("clone", new CloneCommand(this))
                 .addSubCommand("setsize", new SetSizeCommand(this))
                 .addSubCommand("toggleperm", new ToggleRequirePermissionCommand(this))
+                .addSubCommand("open", new OpenCommand(this))
                 .permissionPrefix("villagermarket.command")
                 .build();
 
@@ -169,7 +170,7 @@ public class VMPlugin extends CorePlugin {
     public ShopManager getShopManager() {
         return shopManager;
     }
-    public PlayerListener getPlayerEvents() {
+    public PlayerListener getPlayerListener() {
         return playerListener;
     }
 

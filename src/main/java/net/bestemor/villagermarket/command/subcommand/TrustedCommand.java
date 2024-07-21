@@ -71,7 +71,7 @@ public class TrustedCommand implements ISubCommand {
             return;
         }
 
-        plugin.getPlayerEvents().addCancelledPlayer(player.getUniqueId());
+        plugin.getPlayerListener().addCancelledPlayer(player.getUniqueId());
         switch (args[1]) {
             case "add":
                 player.sendMessage(ConfigManager.getMessage("messages.add_trusted"));
@@ -116,7 +116,7 @@ public class TrustedCommand implements ISubCommand {
             event.setCancelled(true);
 
             HandlerList.unregisterAll(this);
-            plugin.getPlayerEvents().removeCancelledPlayer(sender.getUniqueId());
+            plugin.getPlayerListener().removeCancelledPlayer(sender.getUniqueId());
 
             VillagerShop shop = plugin.getShopManager().getShop(event.getRightClicked().getUniqueId());
             if (shop != null) {
