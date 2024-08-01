@@ -95,7 +95,7 @@ public class EditShopMenu extends Menu {
         int[] fillerSlots = ConfigManager.getIntArray("menus.edit_shop.filler_slots");
         content.fillSlots(ConfigManager.getItem("items.filler").build(), fillerSlots);
 
-        String slotSuffix = shop instanceof AdminShop ? "admin" : "";
+        String slotSuffix = shop instanceof AdminShop ? "_admin" : "";
 
         int editSlot = ConfigManager.getInt("menus.edit_shop.items.edit_shopfront.slot" + slotSuffix);
         content.setClickable(editSlot, Clickable.fromConfig("menus.edit_shop.items.edit_shopfront", event -> {

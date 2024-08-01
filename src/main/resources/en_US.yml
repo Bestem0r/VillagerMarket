@@ -202,7 +202,7 @@ menus:
       edit_shopfront:
         material: WRITABLE_BOOK
         slot: 21
-        slot_admin: 22
+        slot_admin: 21
         name: "&bEdit shopfront"
         lore:
           - "&7Click to edit the items for"

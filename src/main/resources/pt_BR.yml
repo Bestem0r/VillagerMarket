@@ -202,7 +202,7 @@ menus:
       edit_shopfront:
         material: WRITABLE_BOOK
         slot: 21
-        slot_admin: 22
+        slot_admin: 21
         name: "&bEditar vitrine"
         lore:
           - "&7Clique para editar itens"

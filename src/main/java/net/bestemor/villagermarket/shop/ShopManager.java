@@ -127,7 +127,6 @@ public class ShopManager {
             }
         } else {
             PlayerShop playerShop = (PlayerShop) shop;
-            boolean canEdit = playerShop.getOwnerUUID().equals(p.getUniqueId()) || playerShop.isTrusted(p) || (p.isSneaking() && p.hasPermission("villagermarket.spy"));
             if (!playerShop.hasOwner()) {
                 if (shop.isRequirePermission() && !p.hasPermission("villagermarket.playershop." + shop.getEntityUUID())) {
                     p.sendMessage(ConfigManager.getMessage("messages.no_permission_playershop"));
@@ -135,11 +134,14 @@ public class ShopManager {
                 }
                 resetShopEntity(shop.getEntityUUID());
                 shop.openInventory(p, ShopMenu.BUY_SHOP);
-            } else if (canEdit && enableEdit) {
-                shop.updateMenu(ShopMenu.EDIT_SHOP);
-                shop.openInventory(p, ShopMenu.EDIT_SHOP);
             } else {
-                shop.getShopfrontHolder().open(p, Shopfront.Type.CUSTOMER);
+                boolean canEdit = playerShop.getOwnerUUID().equals(p.getUniqueId()) || playerShop.isTrusted(p) || (p.isSneaking() && p.hasPermission("villagermarket.spy"));
+                if (enableEdit && canEdit) {
+                    shop.updateMenu(ShopMenu.EDIT_SHOP);
+                    shop.openInventory(p, ShopMenu.EDIT_SHOP);
+                } else {
+                    shop.getShopfrontHolder().open(p, Shopfront.Type.CUSTOMER);
+                }
             }
         }
 

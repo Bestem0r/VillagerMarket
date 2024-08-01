@@ -201,7 +201,7 @@ menus:
       edit_shopfront:
         material: WRITABLE_BOOK
         slot: 21
-        slot_admin: 22
+        slot_admin: 21
         name: "&b编辑货架"
         lore:
           - "&7点击编辑商店中出售的物品"

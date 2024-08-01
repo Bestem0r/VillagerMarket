@@ -203,7 +203,7 @@ menus:
       edit_shopfront:
         material: WRITABLE_BOOK
         slot: 21
-        slot_admin: 22
+        slot_admin: 21
         name: '&bShop bearbeiten'
         lore:
         - '&7Klicke, um die in deinem Shop zum'

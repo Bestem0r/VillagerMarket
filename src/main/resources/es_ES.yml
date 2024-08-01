@@ -202,7 +202,7 @@ menus:
       edit_shopfront:
         material: WRITABLE_BOOK
         slot: 21
-        slot_admin: 22
+        slot_admin: 21
         name: "&b Editar el mostrador de tu tienda"
         lore:
         - "&7Haga clic para editar los artículos de"
