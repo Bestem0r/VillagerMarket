@@ -139,7 +139,12 @@ public class AdminShop extends VillagerShop {
             player.sendMessage(ConfigManager.getMessage("messages.not_enough_money"));
             return;
         }
-        if (shopItem.getPlayerLimit(player) >= shopItem.getLimit() && shopItem.getLimit() != 0) {
+        boolean bypass = player.hasPermission("villagermarket.bypass_limit");
+        int limit = shopItem.getLimit();
+        int serverTrades = shopItem.getServerTrades();
+        int playerTrades = shopItem.getPlayerLimit(player);
+        ShopItem.LimitMode limitMode = shopItem.getLimitMode();
+        if (!bypass && limit > 0 && ((limitMode == ShopItem.LimitMode.SERVER && serverTrades >= limit) || (limitMode == ShopItem.LimitMode.PLAYER && playerTrades >= limit))) {
             player.sendMessage(ConfigManager.getMessage("messages.reached_command_limit"));
             return;
         }
@@ -153,5 +158,6 @@ public class AdminShop extends VillagerShop {
         }
 
         shopItem.incrementPlayerTrades(player);
+        shopItem.incrementServerTrades();
     }
 }

@@ -79,16 +79,18 @@ public class PlayerShop extends VillagerShop {
 
     public void updateRedstone(boolean forceOff) {
         if (cost == -1) { return; }
-        Entity entity = VMUtils.getEntity(entityUUID);
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            Entity entity = VMUtils.getEntity(entityUUID);
 
-        if (entity != null) {
-            Location location = entity.getLocation();
-            Material standingOn = entity.getLocation().clone().subtract(0, 1, 0).getBlock().getType();
-            boolean isOnPiston = (standingOn == Material.PISTON_HEAD || standingOn == Material.MOVING_PISTON);
+            if (entity != null) {
+                Location location = entity.getLocation();
+                Material standingOn = entity.getLocation().clone().subtract(0, 1, 0).getBlock().getType();
+                boolean isOnPiston = (standingOn == Material.PISTON_HEAD || standingOn == Material.MOVING_PISTON);
 
-            Block replace = location.subtract(0, (isOnPiston ? 3 : 2), 0).getBlock();
-            replace.setType(ownerUUID == null || forceOff ? Material.AIR : Material.REDSTONE_BLOCK);
-        }
+                Block replace = location.subtract(0, (isOnPiston ? 3 : 2), 0).getBlock();
+                replace.setType(ownerUUID == null || forceOff ? Material.AIR : Material.REDSTONE_BLOCK);
+            }
+        });
     }
 
     public void openStorage(Player player) {

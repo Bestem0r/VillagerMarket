@@ -152,6 +152,7 @@ public abstract class VillagerShop {
         if (shopItem.getMode() == ItemMode.COMMAND && this instanceof AdminShop) {
             AdminShop adminShop = (AdminShop) this;
             adminShop.buyCommand(player, shopItem);
+            shopfrontHolder.update();
         }
     }
 
