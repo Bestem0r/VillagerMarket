@@ -126,7 +126,7 @@ public class EditItemMenu extends Menu {
             String cycleName = shopItem.getLimitMode().name().toLowerCase();
             content.setClickable(playerLimitSlot, Clickable.of(ConfigManager.getItem(p + "player_limit")
                     .replace("%limit%", limit)
-                    .replace("%cycle%", ConfigManager.getString(p + "limit_cycle." + cycleName)).build(), this::handleLimit));
+                    .replace("%cycle%", ConfigManager.getString("menus.edit_item.limit_cycle." + cycleName)).build(), this::handleLimit));
 
         } else if (shopItem.getMode() == ItemMode.BUY || shopItem.getMode() == ItemMode.BUY_AND_SELL) {
             content.setClickable(buyLimitSlot, Clickable.of(ConfigManager.getItem(p + "buy_limit")
