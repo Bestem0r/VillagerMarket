@@ -217,11 +217,10 @@ public class PlayerListener implements Listener {
                         clickedLoc.getWorld().getName(), clickedLoc.getBlockX(), clickedLoc.getBlockY(), clickedLoc.getBlockZ());
 
                 PlotArea area = plotAPI.getPlotSquared().getPlotAreaManager().getPlotArea(wrappedLoc);
-                Plot psPlot = area.getPlot(wrappedLoc);
                 if (area != null) {
                     Plot plot = area.getPlot(wrappedLoc);
                     UUID uuid = player.getUniqueId();
-                    if (psPlot == null) {
+                    if (plot == null) {
                         player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
                         return;
                     }  
