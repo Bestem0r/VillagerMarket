@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class VMUtils {
 
@@ -166,7 +167,7 @@ public class VMUtils {
 
     public static List<Villager.Profession> getProfessions() {
         if (VersionUtils.getMCVersion() < 14) {
-            return Arrays.asList("BLACKSMITH", "BUTCHER", "FARMER", "LIBRARIAN", "PRIEST", "NONE").stream().map(Villager.Profession::valueOf).collect(Collectors.toList());
+            return Stream.of("BLACKSMITH", "BUTCHER", "FARMER", "LIBRARIAN", "PRIEST", "NITWIT").map(Villager.Profession::valueOf).collect(Collectors.toList());
         } else {
             return Arrays.asList(Villager.Profession.ARMORER,
                     Villager.Profession.BUTCHER, Villager.Profession.CARTOGRAPHER, Villager.Profession.CLERIC,

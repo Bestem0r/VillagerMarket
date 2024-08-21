@@ -2,6 +2,7 @@ package net.bestemor.villagermarket.shop;
 
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.config.CurrencyBuilder;
+import net.bestemor.core.config.VersionUtils;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.event.AbandonShopEvent;
 import net.bestemor.villagermarket.event.interact.BuyShopItemsEvent;
@@ -85,7 +86,11 @@ public class PlayerShop extends VillagerShop {
             if (entity != null) {
                 Location location = entity.getLocation();
                 Material standingOn = entity.getLocation().clone().subtract(0, 1, 0).getBlock().getType();
-                boolean isOnPiston = (standingOn == Material.PISTON_HEAD || standingOn == Material.MOVING_PISTON);
+
+                boolean legacy = VersionUtils.getMCVersion() < 13;
+                String piston = legacy ? "PISTON_EXTENSION" : "PISTON_HEAD";
+
+                boolean isOnPiston = (standingOn == Material.valueOf(piston) || (!legacy && standingOn == Material.MOVING_PISTON));
 
                 Block replace = location.subtract(0, (isOnPiston ? 3 : 2), 0).getBlock();
                 replace.setType(ownerUUID == null || forceOff ? Material.AIR : Material.REDSTONE_BLOCK);
@@ -416,6 +421,7 @@ public class PlayerShop extends VillagerShop {
         }
         this.ownerUUID = player.getUniqueId();
         this.ownerName = player.getName();
+        super.timesRented = 1;
     }
 
     /** Adds trusted to the trusted list */

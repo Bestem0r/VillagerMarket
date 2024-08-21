@@ -2,7 +2,6 @@ package net.bestemor.villagermarket.menu;
 
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
-import net.bestemor.villagermarket.event.interact.BuyShopItemsEvent;
 import net.bestemor.villagermarket.event.interact.CreateShopItemsEvent;
 import net.bestemor.villagermarket.shop.*;
 import org.bukkit.Bukkit;
@@ -13,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -296,6 +296,10 @@ public class Shopfront {
                             } else {
                                 createShopItem(cursor, slot);
                             }
+                            DropListener dropListener = new DropListener(player);
+                            Bukkit.getPluginManager().registerEvents(dropListener, plugin);
+                            Bukkit.getScheduler().runTaskLater(plugin, () -> HandlerList.unregisterAll(dropListener), 10L);
+
                             event.getView().close();
                         } else {
                             ShopItem shopItem = shop.getShopfrontHolder().getItemList().get(slot);
@@ -374,6 +378,21 @@ public class Shopfront {
 
                 });
             });
+        }
+    }
+
+    private class DropListener implements Listener {
+
+        private final Player player;
+
+        private DropListener(Player player) {
+            this.player = player;
+        }
+
+        @EventHandler
+        public void onDrop(PlayerDropItemEvent event) {
+            if (event.getPlayer() != player) { return; }
+            event.setCancelled(true);
         }
     }
 }
