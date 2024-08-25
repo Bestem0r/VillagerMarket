@@ -220,6 +220,10 @@ public class PlayerListener implements Listener {
                 if (area != null) {
                     Plot plot = area.getPlot(wrappedLoc);
                     UUID uuid = player.getUniqueId();
+                    if (plot == null) {
+                        player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
+                        return;
+                    }  
                     if (plot != null && (plot.isDenied(uuid) || (!plot.isOwner(uuid) && !plot.getMembers().contains(uuid) && !plot.getTrusted().contains(uuid)))) {
                         player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
                         return;
