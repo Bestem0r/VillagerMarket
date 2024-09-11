@@ -61,7 +61,7 @@ public class EditShopMenu extends Menu {
                 Instant max = Instant.now().plusSeconds(ConfigManager.getInt("max_rent") * 86400L);
 
                 Player player = (Player) event.getWhoClicked();
-                if (newExpire.isAfter(max)) {
+                if (newExpire.isAfter(max) && !player.hasPermission("villagermarket.bypass_max_rent")) {
                     player.sendMessage(ConfigManager.getMessage("messages.max_rent_time"));
                     return;
                 }
