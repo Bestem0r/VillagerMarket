@@ -68,7 +68,9 @@ public class PlayerShop extends VillagerShop {
 
         this.trustedPlayers = config.getStringList("trusted");
 
-        updateRedstone(false);
+        if (ConfigManager.getBoolean("enable_redstone_output")) {
+            updateRedstone(false);
+        }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
             Entity entity = VMUtils.getEntity(entityUUID);
