@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.17</maven.compiler.source>
+        <maven.compiler.target>1.17</maven.compiler.target>
     </properties>
 
     <groupId>me.bestemor.villagermarket</groupId>
@@ -159,7 +159,7 @@
         <dependency>
             <groupId>com.github.Bestem0r</groupId>
             <artifactId>BestemorCore</artifactId>
-            <version>782c51a6ac</version>
+            <version>79e6d68d3f</version>
             <scope>compile</scope>
         </dependency>
 
