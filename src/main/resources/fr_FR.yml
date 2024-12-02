@@ -114,7 +114,7 @@ messages:
   limits_cleared: "&cLimites effacées !"
   name_blacklisted: "&cVous n'êtes pas autorisé à utiliser ce nom de boutique !"
   max_item_price: "&cPrix de l'article trop élevé ! Veuillez réessayer avec un prix plus bas."
-  shopfront_cooldown: "&cVeuillez attendre avant d'acheter/vendre à nouveau !"
+  shopfront_cooldown: "&cVeuillez patienter avant de cliquer à nouveau !"
   max_name_length: "&cCe nom est trop long ! La longueur maximale du nom est de %limit% caractères."
   clone_shop: "&7Cliquez avec le bouton droit sur la &bVillager Shop &7que vous souhaitez cloner."
   shop_cloned: "&aVillager Shop cloné avec succès. Déplacez-le en utilisant &e/vm move&a."

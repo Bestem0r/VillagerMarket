@@ -113,7 +113,7 @@ messages:
   limits_cleared: '&cEinschränkungen aufgehoben!'
   name_blacklisted: '&cDu darfst diesen Shopnamen nicht verwenden!'
   max_item_price: '&cArtikelpreis zu hoch! Bitte versuche es mit einem niedrigeren Preis erneut.'
-  shopfront_cooldown: '&cBitte warte mit dem erneuten Kauf/Verkauf!'
+  shopfront_cooldown: '&cBitte warte mit dem erneuten klicken!'
   max_name_length: '&cDer Name ist zu lang! Die maximale Namenslänge beträgt %limit% Zeichen.'
   clone_shop: '&7Klicke mit Rechtsklick auf den &bVillagerShop &7den du klonen möchtest.'
   shop_cloned: '&aVillagerShop erfolgreich geklont. Verschiebe den Shop mit &e/vm move&a.'

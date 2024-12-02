@@ -112,7 +112,7 @@ messages:
   limits_cleared: "&cLímites limpiados!"
   name_blacklisted: "&cNo puedes usar este nombre para la tienda!"
   max_item_price: "&cEl precio del item es demasiado alto! Vuelva a intentarlo con un precio más bajo."
-  shopfront_cooldown: "&cPor favor espere antes de comprar/vender de nuevo!"
+  shopfront_cooldown: "&cPor favor espera antes de hacer clic nuevamente!"
   max_name_length: "&cEste nombre es demasiado largo! La longitud máxima del nombre es de %limit% caracteres."
   clone_shop: "&7Haz clic con el botón derecho en la &bVillager Shop &7 que quieras clonar"
   shop_cloned: "&aTienda de aldeanos clonada con éxito. Muévelo usando &e/vm move&a."

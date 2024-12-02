@@ -229,10 +229,17 @@ public class Shopfront {
             this.type = type;
         }
 
+        @SuppressWarnings("unused")
         @EventHandler
         public void onClick(InventoryClickEvent event) {
             if (this.player != event.getWhoClicked()) { return; }
             if (event.getRawSlot() < 0) { return; }
+
+            if (Instant.now().isBefore(nextClick)) {
+                player.sendMessage(ConfigManager.getMessage("messages.shopfront_cooldown"));
+                return;
+            }
+            this.nextClick = Instant.now().plusMillis(plugin.getConfig().getInt("menus.shopfront.cooldown"));
 
             if (type == Type.DETAILED || type == Type.CUSTOMER) {
                 event.setCancelled(true);
@@ -251,8 +258,7 @@ public class Shopfront {
             if (event.getRawSlot() == event.getView().getTopInventory().getSize() - 1) {
                 event.setCancelled(true);
                 boolean owner;
-                if (shop instanceof PlayerShop){
-                    PlayerShop playerShop = (PlayerShop) shop;
+                if (shop instanceof PlayerShop playerShop){
                     owner = playerShop.hasOwner() && playerShop.getOwnerUUID().equals(player.getUniqueId());
                 } else {
                     owner = player.hasPermission("villagermarket.admin");
@@ -311,12 +317,7 @@ public class Shopfront {
                         
                         break;
                     case CUSTOMER:
-                        if (Instant.now().isBefore(nextClick)) {
-                            player.sendMessage(ConfigManager.getMessage("messages.shopfront_cooldown"));
-                            return;
-                        }
                         shop.customerInteract(event, event.getSlot() + page * 45);
-                        this.nextClick = Instant.now().plusMillis(plugin.getConfig().getInt("menus.shopfront.cooldown"));
                         break;
                     case DETAILED:
                         if (event.isCancelled() && event.getCurrentItem() != null) {
@@ -326,12 +327,14 @@ public class Shopfront {
             }
         }
 
+        @SuppressWarnings("unused")
         @EventHandler
         public void onDrag(InventoryDragEvent event) {
-            if ((Player) event.getWhoClicked() != this.player) { return; }
+            if (event.getWhoClicked() != this.player) { return; }
             event.setCancelled(true);
         }
 
+        @SuppressWarnings("unused")
         @EventHandler
         public void onClose(InventoryCloseEvent event) {
             if (this.player != event.getPlayer()) { return; }
@@ -381,18 +384,15 @@ public class Shopfront {
         }
     }
 
-    private class DropListener implements Listener {
+    private record DropListener(Player player) implements Listener {
 
-        private final Player player;
-
-        private DropListener(Player player) {
-            this.player = player;
-        }
-
+        @SuppressWarnings("unused")
         @EventHandler
-        public void onDrop(PlayerDropItemEvent event) {
-            if (event.getPlayer() != player) { return; }
-            event.setCancelled(true);
+            public void onDrop(PlayerDropItemEvent event) {
+                if (event.getPlayer() != player) {
+                    return;
+                }
+                event.setCancelled(true);
+            }
         }
-    }
 }

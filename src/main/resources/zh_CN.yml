@@ -112,7 +112,7 @@ messages:
   limits_cleared: "&c冷却已清除!"
   name_blacklisted: "&c你不能使用该商店名称!"
   max_item_price: "&c物品价格过高! 请尝试输入一个更低一些的价格."
-  shopfront_cooldown: "&c请在再次交易前等待一会!"
+  shopfront_cooldown: "&c请稍等后再点击!"
   max_name_length: "&c名称过长! 最大名称长度为 %limit% 个字符."
   clone_shop: "&7右键你需要复制的&b村民商店&7."
   shop_cloned: "&a村民商店已成功复制. 可输入命令 &e/vm move&a 来移动它."

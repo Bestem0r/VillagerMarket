@@ -112,7 +112,7 @@ messages:
   limits_cleared: "&cLimites redefinidos!"
   name_blacklisted: "&cVocê não tem permissão para usar esse nome de loja!"
   max_item_price: "&cPreço do item muito alto! Por favor tente novamente com um preço menor."
-  shopfront_cooldown: "&cPor favor espere antes de comprar/vender novamente!"
+  shopfront_cooldown: "&cPor favor espere antes de clicar novamente!"
   max_name_length: "&cEsse nome é muito grande! Comprimento máximo de nome é de %limit% caracteres."
   clone_shop: "&7Clique com o botão direito em uma &bLoja Villager &7que você quer clonar."
   shop_cloned: "&aLoja Villager clonada com sucesso. Mova ela usando &e/vm move&a."
