@@ -59,7 +59,7 @@ public class SearchCommand implements ISubCommand {
             if (plugin.getShopManager().isShop(entity)) {
                 Location location = entity.getLocation();
                 TextComponent component = new TextComponent(ConfigManager.getMessage("messages.search_shop_info")
-                        .replace("%name%", entity.getCustomName())
+                        .replace("%name%", entity.getCustomName() == null ? "Unknown" : entity.getCustomName())
                         .replace("%location%", location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ()));
 
                 component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + location.getX() + " " + location.getY() + " " + location.getZ()));

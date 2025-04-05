@@ -29,8 +29,7 @@ public class ExpiredStorageCommand implements ISubCommand {
 
     @Override
     public void run(CommandSender sender, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
 
             UUID storageUUID = player.getUniqueId();
             if (args.length > 1) {
@@ -47,26 +46,30 @@ public class ExpiredStorageCommand implements ISubCommand {
                 storageUUID = target.getUniqueId();
             }
 
-            if (plugin.getShopManager().getExpiredStorages().containsKey(storageUUID)) {
-                final StorageHolder holder = new StorageHolder(plugin, 0);
-                holder.setAddingAllowed(false);
-                holder.loadItems(plugin.getShopManager().getExpiredStorages().get(storageUUID));
+            player.closeInventory();
+            final UUID finalStorageUUID = storageUUID;
 
-                UUID finalStorageUUID = storageUUID;
-                holder.setClickEvent(() -> Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                    List<ItemStack> items = holder.getItems();
-                    if (items.isEmpty()) {
-                        plugin.getShopManager().getExpiredStorages().remove(finalStorageUUID);
-                    } else {
-                        plugin.getShopManager().getExpiredStorages().put(finalStorageUUID, items);
-                    }
-                }, 1L));
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (plugin.getShopManager().getExpiredStorages().containsKey(finalStorageUUID)) {
+                    final StorageHolder holder = new StorageHolder(plugin, 0);
+                    holder.setAddingAllowed(false);
+                    holder.loadItems(plugin.getShopManager().getExpiredStorages().get(finalStorageUUID));
 
-                holder.open(player);
+                    holder.setClickEvent(() -> Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                        List<ItemStack> items = holder.getItems();
+                        if (items.isEmpty()) {
+                            plugin.getShopManager().getExpiredStorages().remove(finalStorageUUID);
+                        } else {
+                            plugin.getShopManager().getExpiredStorages().put(finalStorageUUID, items);
+                        }
+                    }, 1L));
 
-            } else {
-                player.sendMessage(ConfigManager.getMessage("messages.no_expired_storage"));
-            }
+                    holder.open(player);
+
+                } else {
+                    player.sendMessage(ConfigManager.getMessage("messages.no_expired_storage"));
+                }
+            }, 1L);
         }
     }
 

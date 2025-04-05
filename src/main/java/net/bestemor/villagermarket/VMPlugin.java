@@ -43,7 +43,7 @@ public class VMPlugin extends CorePlugin {
         setupCommands();
 
         this.shopManager = new ShopManager(this);
-        shopManager.load();
+        Bukkit.getScheduler().runTaskAsynchronously(this, shopManager::load);
 
         this.playerListener = new PlayerListener(this);
         registerEvents();

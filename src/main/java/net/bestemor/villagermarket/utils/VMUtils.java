@@ -5,12 +5,17 @@ import net.bestemor.core.config.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -58,7 +63,26 @@ public class VMUtils {
         item1clone.setAmount(1);
         item2clone.setAmount(1);
 
-        return (item1clone.toString() + item1clone.getDurability()).equals((item2clone.toString() + item2clone.getDurability()));
+        if (VersionUtils.getMCVersion() > 12) {
+            item1clone.setDurability((short) 0);
+            item2clone.setDurability((short) 0);
+        }
+
+        return itemStackToString(item1clone).equals(itemStackToString(item2clone));
+    }
+
+    private static String itemStackToString(ItemStack item) {
+        YamlConfiguration config = new YamlConfiguration();
+        config.set("i", item);
+        String configAsString = config.saveToString();
+
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            outputStream.write(configAsString.getBytes(StandardCharsets.UTF_8));
+            return Base64Coder.encodeLines(outputStream.toByteArray());
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to save item stacks", e);
+        }
     }
 
     public static boolean hasComma(String s) {

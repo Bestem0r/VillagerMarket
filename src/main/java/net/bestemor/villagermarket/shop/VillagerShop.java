@@ -45,13 +45,12 @@ public abstract class VillagerShop {
 
     protected EnumMap<ShopMenu, Menu> menus = new EnumMap<>(ShopMenu.class);
 
-    private String shopName;
+    protected String shopName;
 
     protected final ShopfrontHolder shopfrontHolder;
     protected ShopStats shopStats;
 
     protected final VMPlugin plugin;
-    protected boolean isLoaded = false;
     private boolean requirePermission = false;
 
     public enum VillagerType {
@@ -69,7 +68,9 @@ public abstract class VillagerShop {
         this.shopSize = config.getInt("shopfrontSize") * 9;
         this.storageSize = config.getInt("storageSize") * 9;
         this.expireDate = Instant.ofEpochMilli(config.getLong("expire"));
-        
+
+        this.shopName = config.getString("shop_name");
+        this.shopName = (shopName == null ? getGeneratedShopName() : shopName);
         this.duration = config.getString("duration");
         this.duration = (duration == null ? "infinite" : duration);
         this.timesRented = config.getInt("times_rented");
@@ -93,11 +94,11 @@ public abstract class VillagerShop {
         this.file = (new File(plugin.getDataFolder() + "/Shops/" + uuid + ".yml"));
     }
 
-    /** Abstract Methods */
     protected abstract void buyItem(int slot, Player player);
     protected abstract void sellItem(int slot, Player player);
     public abstract String getModeCycle(String mode, boolean isItemTrade);
     public abstract int getAvailable(ShopItem shopItem);
+    protected abstract String getGeneratedShopName() ;
 
     public void updateMenu(ShopMenu shopMenu) {
         menus.get(shopMenu).update();
@@ -192,13 +193,11 @@ public abstract class VillagerShop {
 
     /** Save method */
     public void save() {
-        if (!isLoaded) {
-            return;
-        }
         config.set("expire", expireDate == null ? 0 : expireDate.toEpochMilli());
         config.set("times_rented", timesRented);
         config.set("collected_money", collectedMoney);
         config.set("require_permission", requirePermission);
+        config.set("shop_name", shopName);
 
         shopStats.save();
         entityInfo.save();
@@ -277,6 +276,9 @@ public abstract class VillagerShop {
             if (CitizensAPI.getNPCRegistry().isNPC(entity)) {
                 name = CitizensAPI.getNPCRegistry().getNPC(entity).getName();
             }
+            if (name == null || name.isBlank()) {
+                name = entity.getName();
+            }
 
             NPC npc = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, name);
             npc.spawn(entity.getLocation());
@@ -350,22 +352,19 @@ public abstract class VillagerShop {
     }
 
     public String getShopName() {
-        if (this.shopName != null) {
-            return shopName;
-        }
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            Entity entity = VMUtils.getEntity(entityUUID);
-            this.shopName = entity == null ? null : entity.getCustomName();
-        });
-        return "Loading...";
+        return shopName;
     }
 
     public void setShopName(String customName) {
-        if (this.shopName == null) {
-            this.shopName = customName;
-            shopfrontHolder.update();
+        Entity entity = Bukkit.getEntity(entityUUID);
+        if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(entity)) {
+            CitizensAPI.getNPCRegistry().getNPC(entity).setName(customName);
+        } else if (entity != null) {
+            entity.setCustomName(customName);
         }
-        this.shopName = customName;
+        shopName = customName;
+        shopfrontHolder.closeAll();
+        shopfrontHolder.load();
     }
 
     public void checkDiscounts() {

@@ -31,9 +31,9 @@ public class Shopfront {
 
     private final ShopfrontHolder holder;
 
-    private final Inventory editorInventory;
+    private Inventory editorInventory;
     private final Map<UUID, Inventory> customerInventories = new ConcurrentHashMap<>();
-    private final Inventory detailedInventory;
+    private Inventory detailedInventory;
 
     private ItemStack back;
     private ItemStack filler;
@@ -57,21 +57,29 @@ public class Shopfront {
         this.isInfinite = shop.getShopSize() == 0;
         this.size = (isInfinite ? 54 : shop.getShopSize());
 
-        String editorTitle = ConfigManager.getString("menus.edit_shopfront.title").replace("%shop%", shop.getShopName());
-        String detailedTitle =  (ConfigManager.getString("menus.shopfront.title") + " " + ConfigManager.getString("menus.shopfront.detail_suffix"))
-                .replace("%shop%", shop.getShopName());
-
-        if (isInfinite) {
-            editorTitle += " | " + (page + 1);
-            detailedTitle += " | " + (page + 1);
-        }
-
-        this.editorInventory = Bukkit.createInventory(null, size, editorTitle);
-        this.detailedInventory = Bukkit.createInventory(null, size, detailedTitle);
+        this.editorInventory = Bukkit.createInventory(null, size, getEditorTitle());
+        this.detailedInventory = Bukkit.createInventory(null, size, getDetailedTitle());
 
         loadItemsFromConfig();
 
         loadItems();
+    }
+
+    private String getEditorTitle() {
+        String editorTitle = ConfigManager.getString("menus.edit_shopfront.title").replace("%shop%", shop.getShopName());
+        if (isInfinite) {
+            editorTitle += " | " + (page + 1);
+        }
+        return editorTitle;
+    }
+
+    private String getDetailedTitle() {
+        String detailedTitle =  (ConfigManager.getString("menus.shopfront.title") + " " + ConfigManager.getString("menus.shopfront.detail_suffix"))
+                .replace("%shop%", shop.getShopName());
+        if (isInfinite) {
+            detailedTitle += " | " + (page + 1);
+        }
+        return detailedTitle;
     }
 
     public void loadItemsFromConfig() {
@@ -161,7 +169,7 @@ public class Shopfront {
         }
     }
     private void updateEditorInventory() {
-        editorInventory.clear();
+        editorInventory = Bukkit.createInventory(null, size, getEditorTitle());
         for (Integer slot : items.keySet()) {
             ShopItem item = items.get(slot);
             if (item == null) {

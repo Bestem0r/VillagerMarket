@@ -92,7 +92,6 @@ public class PlayerListener implements Listener {
                 cachedEntities.put(event.getRightClicked().getUniqueId(), event.getRightClicked());
             }
             event.setCancelled(true);
-            shop.setShopName(event.getRightClicked().getCustomName());
 
             if (clickListeners.containsKey(p.getUniqueId())) {
                 clickListeners.get(p.getUniqueId()).accept(shop);
@@ -157,121 +156,125 @@ public class PlayerListener implements Listener {
             }
         }
 
-        if (isVMItem) {
-            Location clickedLoc = event.getClickedBlock().getLocation();
-            event.setCancelled(true);
+        if (!isVMItem) {
+            return;
+        }
 
-            if (!ConfigManager.getBoolean("enable_non_solid_placement") && !clickedLoc.getBlock().getType().isSolid()) {
-                return;
-            }
+        Location clickedLoc = event.getClickedBlock().getLocation();
+        event.setCancelled(true);
 
-            int max = plugin.getShopManager().getMaxShops(player);
-            int owned = plugin.getShopManager().getOwnedShops(player).size();
-            if (max != -1 && owned >= max) {
-                player.sendMessage(ConfigManager.getMessage("messages.max_shops")
-                        .replace("%current%", String.valueOf(owned))
-                        .replace("%max%", String.valueOf(max)));
-                
-                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.max_shops"), 1, 1);
-                return;
-            }
+        if (!ConfigManager.getBoolean("enable_non_solid_placement") && !clickedLoc.getBlock().getType().isSolid()) {
+            return;
+        }
 
-            //Towny check
-            if (Bukkit.getPluginManager().isPluginEnabled("Towny") && ConfigManager.getBoolean("towny.enabled")) {
-                if (!TownyAPI.getInstance().isWilderness(clickedLoc)) {
-                    try {
-                        Town town = Objects.requireNonNull(TownyAPI.getInstance().getTownBlock(clickedLoc)).getTown();
-                        if (!town.hasResident(player) || (ConfigManager.getBoolean("towny.shop_plot_only") && !ShopPlotUtil.isShopPlot(clickedLoc))) {
-                            player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
-                            return;
-                        }
-                    } catch (Exception ignore) {}
-                } else if (!ConfigManager.getBoolean("towny.allow_in_wilderness")) {
-                    player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
-                    return;
-                }
-            }
+        int max = plugin.getShopManager().getMaxShops(player);
+        int owned = plugin.getShopManager().getOwnedShops(player).size();
+        if (max != -1 && owned >= max) {
+            player.sendMessage(ConfigManager.getMessage("messages.max_shops")
+                    .replace("%current%", String.valueOf(owned))
+                    .replace("%max%", String.valueOf(max)));
 
-            //WorldGuard check
-            if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard") && ConfigManager.getBoolean("world_guard")) {
-                RegionManager rm = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()));
-                ApplicableRegionSet set = rm.getApplicableRegions(BukkitAdapter.asBlockVector(clickedLoc));
-                UUID uuid = player.getUniqueId();
-                boolean isMember = false;
-                for (ProtectedRegion region : set) {
-                    if (region.getOwners().getUniqueIds().contains(uuid) || region.getMembers().getUniqueIds().contains(uuid)) {
-                        isMember = true;
-                    }
-                }
-                if (!isMember) {
-                    player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
-                    return;
-                }
-            }
+            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.max_shops"), 1, 1);
+            return;
+        }
 
-            //PlotSquared check
-            if (Bukkit.getPluginManager().isPluginEnabled("PlotSquared") && ConfigManager.getBoolean("plot_squared")) {
-                PlotAPI plotAPI = new PlotAPI();
-
-                com.plotsquared.core.location.Location wrappedLoc = com.plotsquared.core.location.Location.at(
-                        clickedLoc.getWorld().getName(), clickedLoc.getBlockX(), clickedLoc.getBlockY(), clickedLoc.getBlockZ());
-
-                PlotArea area = plotAPI.getPlotSquared().getPlotAreaManager().getPlotArea(wrappedLoc);
-                if (area != null) {
-                    Plot plot = area.getPlot(wrappedLoc);
-                    UUID uuid = player.getUniqueId();
-                    if (plot == null) {
-                        player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
-                        return;
-                    }  
-                    if (plot != null && (plot.isDenied(uuid) || (!plot.isOwner(uuid) && !plot.getMembers().contains(uuid) && !plot.getTrusted().contains(uuid)))) {
+        //Towny check
+        if (Bukkit.getPluginManager().isPluginEnabled("Towny") && ConfigManager.getBoolean("towny.enabled")) {
+            if (!TownyAPI.getInstance().isWilderness(clickedLoc)) {
+                try {
+                    Town town = Objects.requireNonNull(TownyAPI.getInstance().getTownBlock(clickedLoc)).getTown();
+                    if (!town.hasResident(player) || (ConfigManager.getBoolean("towny.shop_plot_only") && !ShopPlotUtil.isShopPlot(clickedLoc))) {
                         player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
                         return;
                     }
-                }
-            }
-
-            Location location = clickedLoc.clone().add(0.5, 1, 0.5);
-
-            //Lands check
-            if (Bukkit.getPluginManager().isPluginEnabled("Lands") && ConfigManager.getBoolean("lands")) {
-                LandsIntegration api = LandsIntegration.of(plugin);
-                LandWorld world = api.getWorld(player.getWorld());
-
-                if (world != null && !world.hasRoleFlag(player.getUniqueId(), location, Flags.BLOCK_PLACE)) {
-                    player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
-                    return;
-                }
-            }
-
-            if (!player.hasPermission("villagermarket.use_spawn_item")) {
-                player.sendMessage(ConfigManager.getMessage("messages.no_permission_use_item"));
+                } catch (Exception ignore) {}
+            } else if (!ConfigManager.getBoolean("towny.allow_in_wilderness")) {
+                player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
                 return;
             }
+        }
 
-
-            PlaceShopEggEvent eggEvent = new PlaceShopEggEvent(player, location, shopSize, storageSize);
-            Bukkit.getPluginManager().callEvent(eggEvent);
-            if (eggEvent.isCancelled()) {
+        //WorldGuard check
+        if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard") && ConfigManager.getBoolean("world_guard")) {
+            RegionManager rm = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()));
+            ApplicableRegionSet set = rm.getApplicableRegions(BukkitAdapter.asBlockVector(clickedLoc));
+            UUID uuid = player.getUniqueId();
+            boolean isMember = false;
+            for (ProtectedRegion region : set) {
+                if (region.getOwners().getUniqueIds().contains(uuid) || region.getMembers().getUniqueIds().contains(uuid)) {
+                    isMember = true;
+                }
+            }
+            if (!isMember) {
+                player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
                 return;
             }
+        }
 
+        //PlotSquared check
+        if (Bukkit.getPluginManager().isPluginEnabled("PlotSquared") && ConfigManager.getBoolean("plot_squared")) {
+            PlotAPI plotAPI = new PlotAPI();
 
-            Entity entity = plugin.getShopManager().spawnShop(location, "player");
-            if (VMUtils.getEntity(entity.getUniqueId()) != null) {
-                plugin.getShopManager().createShopConfig(entity.getUniqueId(), storageSize, shopSize, -1, "player", "infinite");
-                PlayerShop playerShop = (PlayerShop) plugin.getShopManager().getShop(entity.getUniqueId());
-                playerShop.setOwner(player);
-            } else {
-                Bukkit.getLogger().severe(ChatColor.RED + "[VillagerMarket] Unable to spawn Villager! Does WorldGuard deny mobs pawn?");
+            com.plotsquared.core.location.Location wrappedLoc = com.plotsquared.core.location.Location.at(
+                    clickedLoc.getWorld().getName(), clickedLoc.getBlockX(), clickedLoc.getBlockY(), clickedLoc.getBlockZ());
+
+            PlotArea area = plotAPI.getPlotSquared().getPlotAreaManager().getPlotArea(wrappedLoc);
+            if (area == null) {
+                player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
+                return;
             }
-
-            player.playSound(clickedLoc, ConfigManager.getSound("sounds.create_shop"), 1, 1);
-            if (itemStack.getAmount() > 1) {
-                itemStack.setAmount(itemStack.getAmount() - 1);
-            } else {
-                player.setItemInHand(null);
+            Plot plot = area.getPlot(wrappedLoc);
+            UUID uuid = player.getUniqueId();
+            if (plot == null) {
+                player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
+                return;
             }
+            if (plot.isDenied(uuid) || (!plot.isOwner(uuid) && !plot.getMembers().contains(uuid) && !plot.getTrusted().contains(uuid))) {
+                player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
+                return;
+            }
+        }
+
+        Location location = clickedLoc.clone().add(0.5, 1, 0.5);
+
+        //Lands check
+        if (Bukkit.getPluginManager().isPluginEnabled("Lands") && ConfigManager.getBoolean("lands")) {
+            LandsIntegration api = LandsIntegration.of(plugin);
+            LandWorld world = api.getWorld(player.getWorld());
+
+            if (world != null && !world.hasRoleFlag(player.getUniqueId(), location, Flags.BLOCK_PLACE)) {
+                player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
+                return;
+            }
+        }
+
+        if (!player.hasPermission("villagermarket.use_spawn_item")) {
+            player.sendMessage(ConfigManager.getMessage("messages.no_permission_use_item"));
+            return;
+        }
+
+
+        PlaceShopEggEvent eggEvent = new PlaceShopEggEvent(player, location, shopSize, storageSize);
+        Bukkit.getPluginManager().callEvent(eggEvent);
+        if (eggEvent.isCancelled()) {
+            return;
+        }
+
+
+        Entity entity = plugin.getShopManager().spawnShop(location, "player");
+        if (VMUtils.getEntity(entity.getUniqueId()) != null) {
+            plugin.getShopManager().createShopConfig(entity.getUniqueId(), storageSize, shopSize, -1, "player", "infinite");
+            PlayerShop playerShop = (PlayerShop) plugin.getShopManager().getShop(entity.getUniqueId());
+            playerShop.setOwner(player);
+        } else {
+            Bukkit.getLogger().severe(ChatColor.RED + "[VillagerMarket] Unable to spawn Villager! Does WorldGuard deny mobs pawn?");
+        }
+
+        player.playSound(clickedLoc, ConfigManager.getSound("sounds.create_shop"), 1, 1);
+        if (itemStack.getAmount() > 1) {
+            itemStack.setAmount(itemStack.getAmount() - 1);
+        } else {
+            player.setItemInHand(null);
         }
     }
 

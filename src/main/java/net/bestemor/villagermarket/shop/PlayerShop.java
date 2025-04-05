@@ -11,7 +11,6 @@ import net.bestemor.villagermarket.event.interact.TradeShopItemsEvent;
 import net.bestemor.villagermarket.menu.BuyShopMenu;
 import net.bestemor.villagermarket.menu.StorageHolder;
 import net.bestemor.villagermarket.utils.VMUtils;
-import net.citizensnpcs.api.CitizensAPI;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -44,6 +43,7 @@ public class PlayerShop extends VillagerShop {
     public PlayerShop(VMPlugin plugin, File file) {
         super(plugin, file);
         super.collectedMoney = BigDecimal.valueOf(config.getDouble("collected_money"));
+        super.shopName = config.getString("shop_name") == null ? getGeneratedShopName() : shopName;
 
         String uuidString = config.getString("ownerUUID");
         String nameString = config.getString("ownerName");
@@ -71,13 +71,7 @@ public class PlayerShop extends VillagerShop {
         if (ConfigManager.getBoolean("enable_redstone_output")) {
             updateRedstone(false);
         }
-
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            Entity entity = VMUtils.getEntity(entityUUID);
-            setShopName(entity == null ? null : entity.getCustomName());
-            shopfrontHolder.load();
-            isLoaded = true;
-        });
+        shopfrontHolder.load();
     }
 
     public void updateRedstone(boolean forceOff) {
@@ -327,6 +321,11 @@ public class PlayerShop extends VillagerShop {
         return available;
     }
 
+    @Override
+    protected String getGeneratedShopName() {
+        return ConfigManager.getString("villager.name_taken").replace("%player%", ownerName == null ? "" : ownerName);
+    }
+
     public void abandon() {
         Bukkit.getPluginManager().callEvent(new AbandonShopEvent(this));
 
@@ -412,17 +411,12 @@ public class PlayerShop extends VillagerShop {
 
     /** Sets owner and changes name */
     public void setOwner(Player player) {
-        Entity villager = VMUtils.getEntity(entityUUID);
-        String name = ConfigManager.getString("villager.name_taken").replace("%player%", player.getName());
         this.expireDate = (seconds == 0 ? null : Instant.now().plusSeconds(seconds));
 
-        if (plugin.isCitizensEnabled() && CitizensAPI.getNPCRegistry().isNPC(villager)) {
-            CitizensAPI.getNPCRegistry().getNPC(villager).setName(name);
-        } else {
-            villager.setCustomName(name);
-        }
-        this.ownerUUID = player.getUniqueId();
         this.ownerName = player.getName();
+        setShopName(getGeneratedShopName());
+        this.ownerUUID = player.getUniqueId();
+
         super.timesRented = 1;
     }
 

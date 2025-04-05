@@ -45,6 +45,7 @@ public class ShopfrontHolder {
 
     public void load() {
         this.loadItems();
+        this.shopfronts.clear();
         this.shopfronts.add(new Shopfront(plugin, this, shop, 0));
         this.midPages = itemList.keySet().stream().mapToInt(v -> v).max().orElse(0) / 45;
         for (int page = 1; page <= midPages; page++) {

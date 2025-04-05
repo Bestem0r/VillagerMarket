@@ -6,11 +6,9 @@ import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.event.interact.BuyShopItemsEvent;
 import net.bestemor.villagermarket.event.interact.SellShopItemsEvent;
 import net.bestemor.villagermarket.event.interact.TradeShopItemsEvent;
-import net.bestemor.villagermarket.utils.VMUtils;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -21,13 +19,7 @@ public class AdminShop extends VillagerShop {
 
     public AdminShop(VMPlugin plugin, File file) {
         super(plugin, file);
-
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            Entity entity = VMUtils.getEntity(entityUUID);
-            setShopName(entity == null ? null : entity.getCustomName());
-            shopfrontHolder.load();
-            isLoaded = true;
-        });
+        shopfrontHolder.load();
     }
 
     /** Buys item/command from the admin shop */
@@ -128,6 +120,11 @@ public class AdminShop extends VillagerShop {
     @Override
     public int getAvailable(ShopItem shopItem) {
         return -1;
+    }
+
+    @Override
+    protected String getGeneratedShopName() {
+        return ConfigManager.getString("villager.name_admin");
     }
 
     /** Runs when a Player wants to buy a command */
