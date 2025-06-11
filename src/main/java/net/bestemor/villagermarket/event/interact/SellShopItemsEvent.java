@@ -9,8 +9,11 @@ import org.jetbrains.annotations.NotNull;
 public class SellShopItemsEvent extends InteractWithShopEvent {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
 
-    public SellShopItemsEvent(@NotNull Player who, VillagerShop shop, ShopItem shopItem) {
-        super(who,shop,shopItem);
+    private final int amount;
+
+    public SellShopItemsEvent(@NotNull Player who, VillagerShop shop, ShopItem shopItem, int amount) {
+        super(who, shop, shopItem);
+        this.amount = amount;
     }
 
     /** Rest of file is required boilerplate for custom events **/
@@ -20,7 +23,12 @@ public class SellShopItemsEvent extends InteractWithShopEvent {
         return HANDLERS_LIST;
     }
 
+    @SuppressWarnings("unused")
     public static HandlerList getHandlerList() {
         return HANDLERS_LIST;
+    }
+
+    public int getAmount() {
+        return amount;
     }
 }

@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class CreateShopItemsEvent extends InteractWithShopEvent{
+public class CreateShopItemsEvent extends InteractWithShopEvent {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
 
     public CreateShopItemsEvent(@NotNull Player who, VillagerShop shop, ShopItem shopItem) {

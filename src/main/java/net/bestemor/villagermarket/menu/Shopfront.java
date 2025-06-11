@@ -33,7 +33,7 @@ public class Shopfront {
 
     private Inventory editorInventory;
     private final Map<UUID, Inventory> customerInventories = new ConcurrentHashMap<>();
-    private Inventory detailedInventory;
+    private final Inventory detailedInventory;
 
     private ItemStack back;
     private ItemStack filler;
@@ -142,7 +142,7 @@ public class Shopfront {
             if (item == null) {
                 continue;
             }
-            customerInventory.setItem(slot, item.getCustomerItem(player));
+            customerInventory.setItem(slot, item.getCustomerItem(player, item.getAmount()));
         }
         buildBottom(customerInventory);
         if (!ConfigManager.getBoolean("disable_lore_toggle")) {
@@ -272,7 +272,7 @@ public class Shopfront {
                     owner = player.hasPermission("villagermarket.admin");
                 }
 
-                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.back"), 0.5f, 1);
 
                 if (type == Type.EDITOR) {
                     shop.openInventory(player, ShopMenu.EDIT_SHOP);
@@ -297,10 +297,13 @@ public class Shopfront {
             }
             if (event.getRawSlot() < event.getView().getTopInventory().getSize()) {
                 event.setCancelled(true);
+
+                int slot = event.getSlot() + page * 45;
+                ShopItem shopItem = shop.getShopfrontHolder().getItemList().get(slot);
+
                 switch (type) {
                     case EDITOR:
 
-                        int slot = event.getSlot() + page * 45;
                         ItemStack cursor = event.getCursor();
                         
                         if (cursor != null && cursor.getType() != Material.AIR) {
@@ -316,16 +319,19 @@ public class Shopfront {
 
                             event.getView().close();
                         } else {
-                            ShopItem shopItem = shop.getShopfrontHolder().getItemList().get(slot);
                             if (shopItem != null) {
                                 player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
                                 shopItem.openEditor(player, shop, page);
                             }
                         }
-                        
                         break;
                     case CUSTOMER:
-                        shop.customerInteract(event, event.getSlot() + page * 45);
+                        ItemMode mode = shopItem.getMode();
+                        if (mode == ItemMode.BUY_AND_SELL) {
+                            mode = ItemMode.BUY;
+                        }
+                        BuyItemMenu buyItemMenu = new BuyItemMenu(shopItem, mode.inverted(), player, page);
+                        buyItemMenu.open(player);
                         break;
                     case DETAILED:
                         if (event.isCancelled() && event.getCurrentItem() != null) {
@@ -354,7 +360,7 @@ public class Shopfront {
         private void createShopItem(ItemStack i, int slot) {
 
             player.sendMessage(ConfigManager.getMessage("messages.type_amount"));
-            ShopItem shopItem = new ShopItem(plugin, i.clone(), slot);
+            ShopItem shopItem = new ShopItem(plugin, shop, i.clone(), slot);
             shopItem.setAdmin(shop instanceof AdminShop);
 
             plugin.getChatListener().addDecimalListener(player, (amount) -> {
@@ -378,7 +384,7 @@ public class Shopfront {
                     shopItem.setSellPrice(price);
 
                     shop.getShopfrontHolder().addItem(shopItem.getSlot(), shopItem);
-                    Shopfront.this.holder.update();
+                    update();
 
                     player.sendMessage(ConfigManager.getMessage("messages.add_successful"));
 

@@ -13,7 +13,6 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -32,11 +31,13 @@ public class ShopItem {
     }
 
     private final VMPlugin plugin;
+    private final VillagerShop shop;
     private final ItemStack item;
 
     private final int slot;
 
     private boolean isAdmin;
+    private boolean allowCustomAmount = true;
 
     private List<String> editorLore = new ArrayList<>();
 
@@ -56,20 +57,22 @@ public class ShopItem {
     private final Map<UUID, Integer> playerLimits = new HashMap<>();
 
     int storageAmount = 0;
-    int available = -1;
+    int available = Integer.MAX_VALUE;
 
     private ItemMode mode = SELL;
 
     private final List<String> commands = new ArrayList<>();
 
-    public ShopItem(VMPlugin plugin, ItemStack item, int slot) {
+    public ShopItem(VMPlugin plugin, VillagerShop shop, ItemStack item, int slot) {
         this.plugin = plugin;
+        this.shop = shop;
         this.slot = slot;
         this.item = item;
         this.amount = item.getAmount();
     }
-    public ShopItem(VMPlugin plugin, ConfigurationSection section) {
+    public ShopItem(VMPlugin plugin, VillagerShop shop, ConfigurationSection section) {
         this.plugin = plugin;
+        this.shop = shop;
         this.slot = Integer.parseInt(section.getName());
 
         this.item = section.getItemStack("item");
@@ -96,6 +99,7 @@ public class ShopItem {
             this.commands.addAll(commands);
         }
 
+        this.allowCustomAmount = section.getBoolean("allow_custom_amount");
         this.mode = ItemMode.valueOf(section.getString("mode"));
         this.limit = section.getInt("buy_limit");
         this.limitMode = section.getString("limit_mode") == null ? LimitMode.PLAYER : LimitMode.valueOf(section.getString("limit_mode"));
@@ -115,33 +119,6 @@ public class ShopItem {
             for (String uuid : limits.getKeys(false)) {
                 playerLimits.put(UUID.fromString(uuid), limits.getInt(uuid));
             }
-        }
-    }
-
-    public BigDecimal getSellPrice() {
-        return getSellPrice(true);
-    }
-    public BigDecimal getSellPrice(boolean applyDiscount) {
-        if (sellPrice == null) {
-            return BigDecimal.ZERO;
-        } else if (!applyDiscount || discount <= 0) {
-            return sellPrice;
-        } else {
-            return sellPrice.subtract(sellPrice.multiply(BigDecimal.valueOf(discount / 100.0)));
-        }
-    }
-    public BigDecimal getBuyPrice() {
-        return getBuyPrice(true);
-    }
-    public BigDecimal getBuyPrice(boolean applyDiscount) {
-        if (mode != BUY_AND_SELL) {
-            return getSellPrice();
-        } else if (buyPrice == null) {
-            return BigDecimal.ZERO;
-        } else if (!applyDiscount || discount <= 0) {
-            return buyPrice;
-        } else {
-            return buyPrice.subtract(buyPrice.multiply(BigDecimal.valueOf(discount / 100.0)));
         }
     }
     public Material getType() { return item.getType(); }
@@ -179,6 +156,9 @@ public class ShopItem {
     public int getItemTradeAmount() {
         return itemTradeAmount;
     }
+    public VillagerShop getShop() {
+        return shop;
+    }
 
     public Map<UUID, Integer> getPlayerLimits() {
         return playerLimits;
@@ -209,6 +189,12 @@ public class ShopItem {
         if (itemTrade != null) {
             this.mode = SELL;
         }
+    }
+    public boolean isAllowCustomAmount() {
+        return allowCustomAmount && !isItemTrade() && mode != COMMAND;
+    }
+    public void setAllowCustomAmount(boolean allowCustomAmount) {
+        this.allowCustomAmount = allowCustomAmount;
     }
 
     public void resetCommand() {
@@ -259,8 +245,7 @@ public class ShopItem {
         serverTrades ++;
     }
     private void reloadData(VillagerShop shop) {
-        if (shop instanceof PlayerShop) {
-            PlayerShop playerShop = (PlayerShop) shop;
+        if (shop instanceof PlayerShop playerShop) {
             this.storageAmount = playerShop.getStorageHolder().getAmount(item.clone());
         }
         this.available = shop.getAvailable(this);
@@ -307,28 +292,28 @@ public class ShopItem {
 
     public void reloadMeta(VillagerShop shop) {
         reloadData(shop);
-        editorLore = getLore("edit_shopfront", mode, null);
+        editorLore = getLore("edit_shopfront", mode, null, amount);
     }
 
     public String getItemName() {
         return getItemName(item);
     }
 
-    public boolean verifyPurchase(Player player, ItemMode verifyMode) {
-        return verifyPurchase(player, verifyMode, null,null);
+    public boolean verifyPurchase(Player player, ItemMode verifyMode, int amount) {
+        return verifyPurchase(player, verifyMode, amount, null,null);
     }
-    public boolean verifyPurchase(Player customer, ItemMode verifyMode, OfflinePlayer owner, StorageHolder storage) {
+    public boolean verifyPurchase(Player customer, ItemMode verifyMode, int amount, OfflinePlayer owner, StorageHolder storage) {
 
         if (owner != null && customer.getUniqueId().equals(owner.getUniqueId())) {
             customer.sendMessage(ConfigManager.getMessage("messages.cannot_" + (verifyMode == SELL ?  "buy_from" :"sell_to") + "_yourself"));
             return false;
         }
         Economy economy = plugin.getEconomy();
-        if (verifyMode == SELL && isItemTrade() && getAmountInventory(itemTrade, customer.getInventory()) < itemTradeAmount) {
+        if (verifyMode == SELL && isItemTrade() && VMUtils.getAmountInventory(itemTrade, customer.getInventory()) < itemTradeAmount) {
             customer.sendMessage(ConfigManager.getMessage("messages.not_enough_in_inventory"));
             return false;
         }
-        if (!isItemTrade() && verifyMode == SELL && storage != null && storage.getAmount(item.clone()) < getAmount()) {
+        if (!isItemTrade() && verifyMode == SELL && storage != null && storage.getAmount(item.clone()) < amount) {
             customer.sendMessage(ConfigManager.getMessage("messages.not_enough_stock"));
             return false;
         }
@@ -340,11 +325,11 @@ public class ShopItem {
             customer.sendMessage(ConfigManager.getMessage("messages.owner_not_enough_money"));
             return false;
         }
-        if (verifyMode == ItemMode.BUY && getAmountInventory(item.clone(), customer.getInventory()) < getAmount()) {
+        if (verifyMode == ItemMode.BUY && VMUtils.getAmountInventory(item.clone(), customer.getInventory()) < amount) {
             customer.sendMessage(ConfigManager.getMessage("messages.not_enough_in_inventory"));
             return false;
         }
-        if ((verifyMode == BUY || isItemTrade()) && available != -1 && getAmount() > available) {
+        if ((verifyMode == BUY || isItemTrade()) && amount > getAvailable()) {
             customer.sendMessage(ConfigManager.getMessage("messages.reached_" + (isItemTrade() ? "buy" : "sell") + "_limit"));
             return false;
         }
@@ -356,7 +341,7 @@ public class ShopItem {
         return true;
     }
 
-    private List<String> getLore(String path, ItemMode mode, Player p) {
+    private List<String> getLore(String path, ItemMode mode, Player p, int amount) {
         String typePath = (isAdmin ? "admin_shop." : "player_shop.");
         String modePath = isItemTrade() ? "trade" : mode.toString().toLowerCase();
 
@@ -383,8 +368,8 @@ public class ShopItem {
         } else if (mode != BUY_AND_SELL) {
             if (discount > 0) {
                 ChatColor c = VMUtils.getCodeBeforePlaceholder(ConfigManager.getStringList(lorePath), "%price%");
-                String prePrice = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", sellPrice).build();
-                String currentPrice = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getSellPrice()).build();
+                String prePrice = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getSellPrice(amount, true)).build();
+                String currentPrice = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getSellPrice(amount, true)).build();
                 builder.replace("%price%", "§m" + prePrice + c + " " + currentPrice);
             } else {
                 builder.replaceCurrency("%price%", getSellPrice());
@@ -393,20 +378,20 @@ public class ShopItem {
         } else {
             boolean isCustomerMenu = path.equals("shopfront");
             if (isAdmin && !isCustomerMenu) {
-                builder.replace("%price%", VMUtils.formatBuySellPrice(getBuyPrice(false), getSellPrice(false)));
+                builder.replace("%price%", VMUtils.formatBuySellPrice(getBuyPrice(), getSellPrice()));
             } else if (discount > 0) {
-                String preSell = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", sellPrice).build();
-                String currentSell = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getSellPrice()).build();
-                String preBuy = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", buyPrice).build();
-                String currentBuy = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getBuyPrice()).build();
+                String preSell = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getSellPrice(amount, false)).build();
+                String currentSell = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getSellPrice(amount, true)).build();
+                String preBuy = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getBuyPrice(amount, false)).build();
+                String currentBuy = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getBuyPrice(amount, true)).build();
 
                 ChatColor cBuy = VMUtils.getCodeBeforePlaceholder(ConfigManager.getStringList(lorePath), "%buy_price%");
                 ChatColor cSell = VMUtils.getCodeBeforePlaceholder(ConfigManager.getStringList(lorePath), "%sell_price%");
                 builder.replace("%buy_price%", "§m" + (isCustomerMenu ? preSell : preBuy) + cBuy + " " + (isCustomerMenu ? currentSell : currentBuy));
                 builder.replace("%sell_price%", "§m" + (isCustomerMenu ? preBuy : preSell) + cSell + " " + (isCustomerMenu ? currentBuy : currentSell));
             } else {
-                builder.replaceCurrency("%buy_price%", isCustomerMenu ? getSellPrice() : getBuyPrice());
-                builder.replaceCurrency("%sell_price%", isCustomerMenu ? getBuyPrice() : getSellPrice());
+                builder.replaceCurrency("%buy_price%", isCustomerMenu ? getSellPrice(amount, true) : getBuyPrice(amount, true));
+                builder.replaceCurrency("%sell_price%", isCustomerMenu ? getBuyPrice(amount, true) : getSellPrice(amount, true));
             }
         }
         List<String> lore = builder.build();
@@ -442,11 +427,17 @@ public class ShopItem {
         }
         return i;
     }
-    public ItemStack getCustomerItem(Player p) {
+
+    public ItemStack getCustomerItem(Player p, int amount) {
+        return getCustomerItem(p, amount, mode.inverted());
+    }
+
+    public ItemStack getCustomerItem(Player p, int amount, ItemMode mode) {
         ItemStack i = getRawItem();
+        i.setAmount(Math.min(amount, item.getMaxStackSize()));
         ItemMeta m = i.getItemMeta();
         if (m != null) {
-            m.setLore(getLore("shopfront", mode.inverted(), p));
+            m.setLore(getLore("shopfront", mode, p, amount));
             i.setItemMeta(m);
         }
         return i;
@@ -460,16 +451,50 @@ public class ShopItem {
         return getItemName(itemTrade);
     }
 
-    private int getAmountInventory(ItemStack itemStack, Inventory inventory) {
-        int amount = 0;
-        for (ItemStack storageStack : inventory.getContents()) {
-            if (storageStack == null) { continue; }
+    public int getAvailable() {
+        return available;
+    }
 
-            if (VMUtils.compareItems(storageStack, itemStack)) {
-                amount = amount + storageStack.getAmount();
-            }
+    public BigDecimal getSellPrice() {
+        return getSellPrice(amount, true);
+    }
+    public BigDecimal getBuyPrice() {
+        return getBuyPrice(amount, true);
+    }
+
+    public BigDecimal getSellPrice(boolean applyDiscount) {
+        if (sellPrice == null) {
+            return BigDecimal.ZERO;
+        } else if (!applyDiscount || discount <= 0) {
+            return sellPrice;
+        } else {
+            return sellPrice.subtract(sellPrice.multiply(BigDecimal.valueOf(discount / 100.0)));
         }
-        return amount;
+    }
+    public BigDecimal getBuyPrice(boolean applyDiscount) {
+        if (mode != BUY_AND_SELL) {
+            return sellPrice;
+        } else if (buyPrice == null) {
+            return BigDecimal.ZERO;
+        } else if (!applyDiscount || discount <= 0) {
+            return buyPrice;
+        } else {
+            return buyPrice.subtract(buyPrice.multiply(BigDecimal.valueOf(discount / 100.0)));
+        }
+    }
+
+    public BigDecimal getBuyPrice(int amount, boolean applyDiscount) {
+        if (buyPrice == null) {
+            return BigDecimal.ZERO;
+        }
+        return getBuyPrice(applyDiscount).divide(BigDecimal.valueOf(item.getAmount()), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(amount));
+    }
+
+    public BigDecimal getSellPrice(int amount, boolean applyDiscount) {
+        if (sellPrice == null) {
+            return BigDecimal.ZERO;
+        }
+        return getSellPrice(applyDiscount).divide(BigDecimal.valueOf(item.getAmount()), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(amount));
     }
 
     private String getItemName(ItemStack i) {
