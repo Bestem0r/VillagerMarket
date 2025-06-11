@@ -292,7 +292,7 @@ menus:
   
   #-------------------- Vitrine --------------------#
   shopfront:
-    title: "&7%shop%"
+    title: "&8%shop%"
     #Placeholders : %item_name%, %mode%
     item_name: "&f%item_name% %mode%"
     detail_suffix: "&8(Détails)"

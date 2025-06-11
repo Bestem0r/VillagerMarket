@@ -64,7 +64,7 @@ public class ShopfrontHolder {
             if (itemStack == null || itemStack.getType() == Material.AIR || itemStack.getItemMeta() == null) {
                 Bukkit.getLogger().severe("[VM] Skipping corrupt item while loading shop " + shop.getConfig() + "! Please check the shop file!");
             } else {
-                ShopItem shopItem = new ShopItem(plugin, section.getConfigurationSection(slot));
+                ShopItem shopItem = new ShopItem(plugin, shop, section.getConfigurationSection(slot));
                 shopItem.setAdmin(shop instanceof AdminShop);
                 itemList.put(Integer.parseInt(slot), shopItem);
             }

@@ -283,7 +283,7 @@ menus:
 
   #-------------------- Shopfront --------------------#
   shopfront:
-    title: "&7%shop%"
+    title: "&8%shop%"
     #Placeholders: %item_name%, %mode%
     item_name: "&f%item_name% %mode%"
     detail_suffix: "&8(Details)"
@@ -688,6 +688,19 @@ menus:
           - "&7Ends: &e%discount_end%"
           - ""
           - "&7>> Click to edit"
+      custom_amount_enabled:
+        material: LIME_TERRACOTTA
+        slot: 40
+        name: "&eCustom amount&7: &aEnabled"
+        lore:
+          - "&7Click to disable custom amount"
+      custom_amount_disabled:
+        material: RED_TERRACOTTA
+        slot: 40
+        name: "&eCustom amount&7: &cDisabled"
+        lore:
+          - "&7Click to enable custom amount"
+
   confirm_action:
     title: "&8Are you sure?"
     size: 27
@@ -701,7 +714,60 @@ menus:
         material: RED_TERRACOTTA
         slot: 14
         name: "&cNo, cancel"
-
+  buy_item:
+    title_buy: "&8Buy item"
+    title_sell: "&8Sell item"
+    title_trade: "&8Trade item"
+    title_command: "&8Buy command"
+    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+    back_slot: 26
+    size: 27
+    confirm_slot: 13
+    items:
+      increase_one:
+        material: LIME_TERRACOTTA
+        slot: 15
+        name: "&aIncrease by 1"
+        lore:
+          - "&7Click to increase the amount by one"
+      increase_stack:
+        material: LIME_TERRACOTTA
+        slot: 16
+        amount: 64
+        name: "&aIncrease by stack"
+        lore:
+          - "&7Click to increase the amount by 64"
+      increase_max:
+        material: EMERALD_BLOCK
+        slot: 4
+        name: "&aIncrease to max"
+        lore:
+          - "&7Click to increase the amount to max"
+      decrease_one:
+        material: RED_TERRACOTTA
+        slot: 10
+        name: "&cDecrease by 1"
+        lore:
+          - "&7Click to decrease the amount by one"
+      decrease_stack:
+        material: RED_TERRACOTTA
+        slot: 11
+        amount: 64
+        name: "&cDecrease by stack"
+        lore:
+          - "&7Click to decrease the amount by 64"
+      toggle_sell:
+        material: BOOK
+        slot: 22
+        name: "&7Sell | &eBuy"
+        lore:
+          - "&7Click to switch to selling"
+      toggle_buy:
+        material: BOOK
+        name: "&eSell &7| Buy"
+        slot: 22
+        lore:
+          - "&7Click to switch to buying"
 
   #-------------------- Expired Storage --------------------#
   expired_storage:

@@ -13,7 +13,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.*;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -70,7 +69,7 @@ public abstract class VillagerShop {
         this.expireDate = Instant.ofEpochMilli(config.getLong("expire"));
 
         this.shopName = config.getString("shop_name");
-        this.shopName = (shopName == null ? getGeneratedShopName() : shopName);
+        this.shopName = (shopName == null ? entityInfo.getName() : shopName);
         this.duration = config.getString("duration");
         this.duration = (duration == null ? "infinite" : duration);
         this.timesRented = config.getInt("times_rented");
@@ -94,11 +93,10 @@ public abstract class VillagerShop {
         this.file = (new File(plugin.getDataFolder() + "/Shops/" + uuid + ".yml"));
     }
 
-    protected abstract void buyItem(int slot, Player player);
-    protected abstract void sellItem(int slot, Player player);
+    public abstract void buyItem(ShopItem item, int amount, Player player);
+    public abstract void sellItem(ShopItem item, int amount, Player player);
     public abstract String getModeCycle(String mode, boolean isItemTrade);
     public abstract int getAvailable(ShopItem shopItem);
-    protected abstract String getGeneratedShopName() ;
 
     public void updateMenu(ShopMenu shopMenu) {
         menus.get(shopMenu).update();
@@ -115,45 +113,6 @@ public abstract class VillagerShop {
             shopfrontHolder.open(player, Shopfront.Type.CUSTOMER);
         } else {
             menus.get(shopMenu).open(player);
-        }
-    }
-
-    /** Runs when customer interacts with shopfront menu */
-    public void customerInteract(InventoryClickEvent event, int slot) {
-        Player player = (Player) event.getWhoClicked();
-        ShopItem shopItem = shopfrontHolder.getItemList().get(slot);
-
-        if (shopItem == null) { return; }
-        event.setCancelled(true);
-
-        if (shopItem.getMode() == ItemMode.BUY_AND_SELL) {
-            switch (event.getClick()) {
-                case LEFT:
-                    buyItem(slot, player);
-                    shopfrontHolder.update();
-                    break;
-                case RIGHT:
-                    sellItem(slot, player);
-                    shopfrontHolder.update();
-                    break;
-            }
-            return;
-        }
-
-        switch (shopItem.getMode()) {
-            case BUY:
-                sellItem(slot, player);
-                shopfrontHolder.update();
-                break;
-            case SELL:
-                buyItem(slot, player);
-                shopfrontHolder.update();
-                break;
-        }
-        if (shopItem.getMode() == ItemMode.COMMAND && this instanceof AdminShop) {
-            AdminShop adminShop = (AdminShop) this;
-            adminShop.buyCommand(player, shopItem);
-            shopfrontHolder.update();
         }
     }
 
@@ -218,6 +177,7 @@ public abstract class VillagerShop {
             config.set("items_for_sale." + slot + ".limit_mode", shopItem.getLimitMode().toString());
             config.set("items_for_sale." + slot + ".cooldown", shopItem.getCooldown());
             config.set("items_for_sale." + slot + ".discount.amount", shopItem.getDiscount());
+            config.set("items_for_sale." + slot + ".allow_custom_amount", shopItem.isAllowCustomAmount());
             config.set("items_for_sale." + slot + ".discount.end", shopItem.getDiscountEnd() == null ? 0 : shopItem.getDiscountEnd().getEpochSecond());
             if (shopItem.getNextReset() != null && shopItem.getNextReset().getEpochSecond() != 0 && shopItem.getCooldown() != null) {
                 config.set("items_for_sale." + slot + ".next_reset", shopItem.getNextReset().getEpochSecond());
@@ -247,10 +207,10 @@ public abstract class VillagerShop {
 
 
     /** Adds shopItem to player's inventory and drops overflowing items */
-    protected void giveShopItem(Player player, ShopItem shopItem) {
+    protected void giveShopItem(Player player, ShopItem shopItem, int amount) {
         ItemStack itemStack = shopItem.getRawItem();
-        int stacks = (int) Math.floor((double) shopItem.getAmount() / itemStack.getMaxStackSize());
-        int rest = shopItem.getAmount() - (stacks * itemStack.getMaxStackSize());
+        int stacks = (int) Math.floor((double) amount / itemStack.getMaxStackSize());
+        int rest = amount - (stacks * itemStack.getMaxStackSize());
 
         List<ItemStack> itemsLeft = new ArrayList<>();
         for (int stack = 0; stack < stacks; stack++) {

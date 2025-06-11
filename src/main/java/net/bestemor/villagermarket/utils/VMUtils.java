@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
@@ -200,5 +201,18 @@ public class VMUtils {
                     Villager.Profession.NITWIT, Villager.Profession.NONE, Villager.Profession.SHEPHERD,
                     Villager.Profession.TOOLSMITH, Villager.Profession.WEAPONSMITH);
         }
+    }
+
+
+    public static int getAmountInventory(ItemStack itemStack, Inventory inventory) {
+        int amount = 0;
+        for (ItemStack storageStack : inventory.getContents()) {
+            if (storageStack == null) { continue; }
+
+            if (compareItems(storageStack, itemStack)) {
+                amount = amount + storageStack.getAmount();
+            }
+        }
+        return amount;
     }
 }

@@ -13,18 +13,12 @@ public enum ItemMode {
     }
 
     public ItemMode inverted() {
-        switch (this) {
-            case BUY:
-                return SELL;
-            case SELL:
-                return BUY;
-            case BUY_AND_SELL:
-                return BUY_AND_SELL;
-            case COMMAND:
-                return COMMAND;
-            default:
-                return null;
-        }
+        return switch (this) {
+            case BUY -> SELL;
+            case SELL -> BUY;
+            case BUY_AND_SELL -> BUY_AND_SELL;
+            case COMMAND -> COMMAND;
+        };
     }
 
     public String getInteractionType() {
