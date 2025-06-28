@@ -11,7 +11,6 @@ import net.bestemor.villagermarket.shop.ItemMode;
 import net.bestemor.villagermarket.shop.ShopItem;
 import net.bestemor.villagermarket.shop.VillagerShop;
 import net.bestemor.villagermarket.utils.VMUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -50,7 +49,6 @@ public class BuyItemMenu extends Menu {
 
         if (item.isAllowCustomAmount()) {
             content.setPlaced(PlacedClickable.fromConfig("menus.buy_item.items.increase_one", event -> {
-                Bukkit.getLogger().info("Increasing amount for " + item.getItemName() + " to " + (amount + 1));
                 amount++;
                 update();
             }));
