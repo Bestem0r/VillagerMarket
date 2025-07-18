@@ -123,7 +123,10 @@ public class PlayerListener implements Listener {
     public void onItemClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack itemStack = player.getInventory().getItemInHand();
-        if (itemStack.getItemMeta() == null || event.getClickedBlock() == null || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR) {
+        if (itemStack.getItemMeta() == null || event.getClickedBlock() == null
+                || event.getAction() == Action.LEFT_CLICK_AIR
+                || event.getAction() == Action.LEFT_CLICK_BLOCK
+                || event.getAction() == Action.PHYSICAL) {
             return;
         }
 
