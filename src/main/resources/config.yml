@@ -111,7 +111,7 @@ auto_discount:
   shop_amount: 1
   #List the admin shop IDs which should use auto discounts here
   admin_shops:
-  - "shop_id"
+    - "shop_id"
 
 #------------------------- Sounds -------------------------#
 

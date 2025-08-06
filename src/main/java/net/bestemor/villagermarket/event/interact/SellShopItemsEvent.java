@@ -16,7 +16,9 @@ public class SellShopItemsEvent extends InteractWithShopEvent {
         this.amount = amount;
     }
 
-    /** Rest of file is required boilerplate for custom events **/
+    /**
+     * Rest of file is required boilerplate for custom events
+     **/
     @NotNull
     @Override
     public HandlerList getHandlers() {

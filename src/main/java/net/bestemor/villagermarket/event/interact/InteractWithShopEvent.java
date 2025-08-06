@@ -15,7 +15,7 @@ public abstract class InteractWithShopEvent extends PlayerEvent implements Cance
     private final VillagerShop shop;
     private boolean cancelled;
 
-    public InteractWithShopEvent(@NotNull Player who,VillagerShop shop, ShopItem shopItem) {
+    public InteractWithShopEvent(@NotNull Player who, VillagerShop shop, ShopItem shopItem) {
         super(who);
         this.shop = shop;
         this.shopItem = shopItem;

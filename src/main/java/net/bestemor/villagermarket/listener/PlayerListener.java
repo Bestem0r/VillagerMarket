@@ -72,18 +72,20 @@ public class PlayerListener implements Listener {
     }
 
     @SuppressWarnings("unused")
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void playerRightClick(PlayerInteractEntityEvent event) {
         Player p = event.getPlayer();
 
-        if (VersionUtils.getMCVersion() >= 9 && event.getHand() == EquipmentSlot.OFF_HAND) { return; }
+        if (VersionUtils.getMCVersion() >= 9 && event.getHand() == EquipmentSlot.OFF_HAND) {
+            return;
+        }
 
         if (cancelledPlayers.contains(p.getUniqueId())) {
             return;
         }
-        
+
         VillagerShop shop = plugin.getShopManager().getShop(event.getRightClicked().getUniqueId());
-        
+
         if (shop != null) {
             if (plugin.isCitizensEnabled()) {
                 if (!(event.getRightClicked() instanceof Player) && !CitizensAPI.getNPCRegistry().isNPC(event.getRightClicked())) {
@@ -190,7 +192,8 @@ public class PlayerListener implements Listener {
                         player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
                         return;
                     }
-                } catch (Exception ignore) {}
+                } catch (Exception ignore) {
+                }
             } else if (!ConfigManager.getBoolean("towny.allow_in_wilderness")) {
                 player.sendMessage(ConfigManager.getMessage("messages.region_no_access"));
                 return;

@@ -94,8 +94,11 @@ public abstract class VillagerShop {
     }
 
     public abstract void buyItem(ShopItem item, int amount, Player player);
+
     public abstract void sellItem(ShopItem item, int amount, Player player);
+
     public abstract String getModeCycle(String mode, boolean isItemTrade);
+
     public abstract int getAvailable(ShopItem shopItem);
 
     public void updateMenu(ShopMenu shopMenu) {
@@ -119,7 +122,7 @@ public abstract class VillagerShop {
     protected void removeItems(Inventory inventory, ItemStack item, int amount) {
         int count = amount;
 
-        for (int i = 0; i < inventory.getContents().length; i ++) {
+        for (int i = 0; i < inventory.getContents().length; i++) {
             ItemStack stored = inventory.getItem(i);
             if (VMUtils.compareItems(stored, item)) {
                 if (stored.getAmount() > count) {
@@ -140,7 +143,8 @@ public abstract class VillagerShop {
             spawned.setCustomName(CitizensAPI.getNPCRegistry().getNPC(entity).getName());
             try {
                 CitizensAPI.getNPCRegistry().getNPC(entity).destroy();
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) {
+            }
             setUUID(spawned.getUniqueId());
         }
 
@@ -150,7 +154,9 @@ public abstract class VillagerShop {
         }
     }
 
-    /** Save method */
+    /**
+     * Save method
+     */
     public void save() {
         config.set("expire", expireDate == null ? 0 : expireDate.toEpochMilli());
         config.set("times_rented", timesRented);
@@ -164,7 +170,9 @@ public abstract class VillagerShop {
         config.set("items_for_sale", null);
         for (Integer slot : shopfrontHolder.getItemList().keySet()) {
             ShopItem shopItem = shopfrontHolder.getItemList().get(slot);
-            if (shopItem == null || slot == null) { continue; }
+            if (shopItem == null || slot == null) {
+                continue;
+            }
             config.set("items_for_sale." + slot + ".item", shopItem.getRawItem());
             config.set("items_for_sale." + slot + ".amount", shopItem.getAmount());
             config.set("items_for_sale." + slot + ".trade_amount", shopItem.getItemTradeAmount());
@@ -187,7 +195,9 @@ public abstract class VillagerShop {
 
             Map<UUID, Integer> playerLimits = shopItem.getPlayerLimits();
             for (UUID uuid : playerLimits.keySet()) {
-                if (uuid == null) { continue; }
+                if (uuid == null) {
+                    continue;
+                }
                 config.set("items_for_sale." + slot + ".limits." + uuid, playerLimits.get(uuid));
             }
         }
@@ -206,7 +216,9 @@ public abstract class VillagerShop {
     }
 
 
-    /** Adds shopItem to player's inventory and drops overflowing items */
+    /**
+     * Adds shopItem to player's inventory and drops overflowing items
+     */
     protected void giveShopItem(Player player, ShopItem shopItem, int amount) {
         ItemStack itemStack = shopItem.getRawItem();
         int stacks = (int) Math.floor((double) amount / itemStack.getMaxStackSize());
@@ -256,7 +268,7 @@ public abstract class VillagerShop {
     }
 
     public void sendStats(Player player) {
-        for (String line: shopStats.getStats()) {
+        for (String line : shopStats.getStats()) {
             player.sendMessage(line);
         }
     }
@@ -264,39 +276,51 @@ public abstract class VillagerShop {
     public int getStorageSize() {
         return storageSize;
     }
+
     public int getShopSize() {
         return shopSize;
     }
+
     public Instant getExpireDate() {
         return expireDate;
     }
+
     public String getDuration() {
         return duration;
     }
+
     public int getCost() {
         return cost;
     }
+
     public UUID getEntityUUID() {
         return entityUUID;
     }
+
     public int getTimesRented() {
         return timesRented;
     }
+
     public BigDecimal getCollectedMoney() {
         return collectedMoney;
     }
+
     public ShopfrontHolder getShopfrontHolder() {
         return shopfrontHolder;
     }
+
     public EntityInfo getEntityInfo() {
         return entityInfo;
     }
+
     public FileConfiguration getConfig() {
         return config;
     }
+
     public int getSeconds() {
         return seconds;
     }
+
     public File getFile() {
         return file;
     }

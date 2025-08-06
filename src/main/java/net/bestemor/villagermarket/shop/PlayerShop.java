@@ -66,6 +66,7 @@ public class PlayerShop extends VillagerShop {
     public void openStorage(Player player) {
         storageHolder.open(player);
     }
+
     public StorageHolder getStorageHolder() {
         return storageHolder;
     }
@@ -81,7 +82,7 @@ public class PlayerShop extends VillagerShop {
         }
 
         if (item.isItemTrade()) {
-            TradeShopItemsEvent tradeShopItemsEvent = new TradeShopItemsEvent(player,this, item);
+            TradeShopItemsEvent tradeShopItemsEvent = new TradeShopItemsEvent(player, this, item);
             Bukkit.getPluginManager().callEvent(tradeShopItemsEvent);
             if (tradeShopItemsEvent.isCancelled()) {
                 return;
@@ -169,9 +170,9 @@ public class PlayerShop extends VillagerShop {
         if (!item.verifyPurchase(player, ItemMode.BUY, amount, Bukkit.getOfflinePlayer(ownerUUID), storageHolder)) {
             return;
         }
-        SellShopItemsEvent sellShopItemsEvent = new SellShopItemsEvent(player,this, item, amount);
+        SellShopItemsEvent sellShopItemsEvent = new SellShopItemsEvent(player, this, item, amount);
         Bukkit.getPluginManager().callEvent(sellShopItemsEvent);
-        if(sellShopItemsEvent.isCancelled()){
+        if (sellShopItemsEvent.isCancelled()) {
             return;
         }
         removeItems(player.getInventory(), item.getRawItem(), amount);
@@ -185,7 +186,7 @@ public class PlayerShop extends VillagerShop {
 
         player.playSound(player.getLocation(), ConfigManager.getSound("sounds.sell_item"), 0.5f, 1);
         player.sendMessage(ConfigManager.getCurrencyBuilder("messages.money_currently").replaceCurrency("%amount%", moneyLeft).build());
-        
+
         if (taxAmount.doubleValue() > 0) {
             player.sendMessage(ConfigManager.getCurrencyBuilder("messages.tax").replaceCurrency("%tax%", taxAmount).addPrefix().build());
         }
@@ -220,7 +221,9 @@ public class PlayerShop extends VillagerShop {
         return ConfigManager.getString("menus.edit_item.mode_cycle.player_shop." + (!isItemTrade ? mode : "item_trade"));
     }
 
-    /** Collects money */
+    /**
+     * Collects money
+     */
     public void collectMoney(Player player) {
         Economy economy = VMPlugin.getEconomy();
         economy.depositPlayer(player, collectedMoney.doubleValue());
@@ -230,7 +233,9 @@ public class PlayerShop extends VillagerShop {
         super.updateMenu(ShopMenu.EDIT_SHOP);
     }
 
-    /** Deposits money to the Shop/Owner */
+    /**
+     * Deposits money to the Shop/Owner
+     */
     public void depositOwner(BigDecimal amount) {
         if (ConfigManager.getBoolean("require_collect")) {
             super.collectedMoney = collectedMoney.add(amount);
@@ -296,7 +301,9 @@ public class PlayerShop extends VillagerShop {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ownerUUID);
         Economy economy = VMPlugin.getEconomy();
 
-        if (cost != -1) { economy.depositPlayer(offlinePlayer, ((double) getCost() * (ConfigManager.getDouble("refund_percent") / 100)) * timesRented); }
+        if (cost != -1) {
+            economy.depositPlayer(offlinePlayer, ((double) getCost() * (ConfigManager.getDouble("refund_percent") / 100)) * timesRented);
+        }
         economy.depositPlayer(offlinePlayer, collectedMoney.doubleValue());
 
         List<ItemStack> storage = storageHolder.getItems();
@@ -330,23 +337,29 @@ public class PlayerShop extends VillagerShop {
         super.updateMenu(ShopMenu.EDIT_SHOP);
     }
 
-    /** Increase rent time */
+    /**
+     * Increase rent time
+     */
     public void increaseTime() {
         super.expireDate = expireDate.plusSeconds(seconds);
-        this.timesRented ++;
+        this.timesRented++;
     }
 
     public boolean hasOwner() {
         return ownerUUID != null;
     }
+
     public String getOwnerName() {
         return ownerName;
     }
+
     public UUID getOwnerUUID() {
         return ownerUUID;
     }
 
-    /** Returns true if rent has expired, false if not */
+    /**
+     * Returns true if rent has expired, false if not
+     */
     public boolean hasExpired() {
         return seconds != 0 && expireDate != null && expireDate.isBefore(Instant.now());
     }
@@ -369,7 +382,9 @@ public class PlayerShop extends VillagerShop {
         super.save();
     }
 
-    /** Sets owner and changes name */
+    /**
+     * Sets owner and changes name
+     */
     public void setOwner(Player player) {
         this.expireDate = (seconds == 0 ? null : Instant.now().plusSeconds(seconds));
 
@@ -380,15 +395,23 @@ public class PlayerShop extends VillagerShop {
         super.timesRented = 1;
     }
 
-    /** Adds trusted to the trusted list */
+    /**
+     * Adds trusted to the trusted list
+     */
     public void addTrusted(Player player) {
         trustedPlayers.add(player.getUniqueId().toString());
     }
-    /** Removes trusted from the trusted list */
+
+    /**
+     * Removes trusted from the trusted list
+     */
     public void removeTrusted(Player player) {
         trustedPlayers.remove(player.getUniqueId().toString());
     }
-    /** Returns true if player is trusted, false if not */
+
+    /**
+     * Returns true if player is trusted, false if not
+     */
     public boolean isTrusted(Player player) {
         return trustedPlayers.contains(player.getUniqueId().toString());
     }

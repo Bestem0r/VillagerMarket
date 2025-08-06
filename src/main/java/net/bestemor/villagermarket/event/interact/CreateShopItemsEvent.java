@@ -13,7 +13,9 @@ public class CreateShopItemsEvent extends InteractWithShopEvent {
         super(who, shop, shopItem);
     }
 
-    /** Rest of file is required boilerplate for custom events **/
+    /**
+     * Rest of file is required boilerplate for custom events
+     **/
     @NotNull
     @Override
     public HandlerList getHandlers() {

@@ -6,7 +6,8 @@ public class VillagerMarketAPI {
 
     private static VMPlugin plugin = null;
 
-    private VillagerMarketAPI() {}
+    private VillagerMarketAPI() {
+    }
 
     protected static void init(VMPlugin plugin) {
         VillagerMarketAPI.plugin = plugin;

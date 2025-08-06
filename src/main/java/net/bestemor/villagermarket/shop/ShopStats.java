@@ -28,6 +28,7 @@ public class ShopStats {
     public void addSold(int amount) {
         itemsSold += amount;
     }
+
     public void addBought(int amount) {
         itemsBought += amount;
     }
@@ -35,6 +36,7 @@ public class ShopStats {
     public void addEarned(double amount) {
         moneyEarned += amount;
     }
+
     public void addSpent(double amount) {
         moneySpent += amount;
     }

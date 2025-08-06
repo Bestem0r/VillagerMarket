@@ -47,7 +47,7 @@ public class BuyShopMenu extends Menu {
         String time = shortTime.equals("infinite") ? ConfigManager.getUnit("never", false) : amount + " " + ConfigManager.getUnit(unit, Integer.parseInt(amount) > 1);
 
         ItemStack shopSize = ConfigManager.getItem("menus.buy_shop.items.shop_size").replace("%amount%", shopAmount).build();
-        ItemStack storageSize = ConfigManager.getItem( "menus.buy_shop.items.storage_size").replace("%amount%", storageAmount).build();
+        ItemStack storageSize = ConfigManager.getItem("menus.buy_shop.items.storage_size").replace("%amount%", storageAmount).build();
         ItemStack buyShop = ConfigManager.getItem("menus.buy_shop.items.buy_shop").replaceCurrency("%price%", new BigDecimal(cost)).replace("%time%", time).build();
 
         int[] fillerSlots = ConfigManager.getIntArray("menus.buy_shop.filler_slots");

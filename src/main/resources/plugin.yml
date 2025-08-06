@@ -5,7 +5,7 @@ version: 1.12.1
 author: Bestem0r
 description: A plugin made by Bestem0r to create Villager Shops
 api-version: 1.13
-depend: [Vault]
+depend: [ Vault ]
 softdepend:
   - Essentials
   - CMI
@@ -65,7 +65,7 @@ permissions:
     description: Create Villager Shops
   villagermarket.command.item:
     default: op
-    description:  Give Villager Shop item to other players
+    description: Give Villager Shop item to other players
   villagermarket.command.search:
     default: op
     description: Search for nearby Villager Shops

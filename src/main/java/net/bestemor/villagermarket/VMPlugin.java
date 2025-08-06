@@ -60,7 +60,7 @@ public class VMPlugin extends CorePlugin {
             }
         }, 31);
 
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new PlaceholderManager(this).register();
         }
         loadMappings();
@@ -129,7 +129,9 @@ public class VMPlugin extends CorePlugin {
         loadMappings();
     }
 
-    /** Setup Vault integration */
+    /**
+     * Setup Vault integration
+     */
     private void setupEconomy() {
         RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(Economy.class);
         if (economyProvider != null) {
@@ -139,7 +141,9 @@ public class VMPlugin extends CorePlugin {
         }
     }
 
-    /** Registers event listeners */
+    /**
+     * Registers event listeners
+     */
     private void registerEvents() {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new EntityListener(this), this);
@@ -151,9 +155,11 @@ public class VMPlugin extends CorePlugin {
         return 82965;
     }
 
-    /** Saves log to /log/ folder and clears log */
+    /**
+     * Saves log to /log/ folder and clears log
+     */
     public void saveLog() {
-        String fileName = new Date().toString().replace(":","-");
+        String fileName = new Date().toString().replace(":", "-");
         File file = new File(getDataFolder() + "/logs/" + fileName + ".yml");
         FileConfiguration logConfig = YamlConfiguration.loadConfiguration(file);
         logConfig.set("log", log);
@@ -169,6 +175,7 @@ public class VMPlugin extends CorePlugin {
     public ShopManager getShopManager() {
         return shopManager;
     }
+
     public PlayerListener getPlayerListener() {
         return playerListener;
     }
@@ -180,6 +187,7 @@ public class VMPlugin extends CorePlugin {
     public static Economy getEconomy() {
         return economy;
     }
+
     public boolean isCitizensEnabled() {
         return Bukkit.getPluginManager().isPluginEnabled("Citizens");
     }

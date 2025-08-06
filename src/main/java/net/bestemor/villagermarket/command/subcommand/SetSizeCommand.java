@@ -75,5 +75,6 @@ public class SetSizeCommand implements ISubCommand {
         return "<shop|storage> <size>";
     }
 
-    private record SetAction(String action, int size) { }
+    private record SetAction(String action, int size) {
+    }
 }

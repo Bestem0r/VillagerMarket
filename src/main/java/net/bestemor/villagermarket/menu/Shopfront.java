@@ -74,7 +74,7 @@ public class Shopfront {
     }
 
     private String getDetailedTitle() {
-        String detailedTitle =  (ConfigManager.getString("menus.shopfront.title") + " " + ConfigManager.getString("menus.shopfront.detail_suffix"))
+        String detailedTitle = (ConfigManager.getString("menus.shopfront.title") + " " + ConfigManager.getString("menus.shopfront.detail_suffix"))
                 .replace("%shop%", shop.getShopName());
         if (isInfinite) {
             detailedTitle += " | " + (page + 1);
@@ -96,7 +96,9 @@ public class Shopfront {
             int start = page * 45;
             int end = start + 44;
             for (int slot : shop.getShopfrontHolder().getItemList().keySet()) {
-                if (slot < start || slot > end) { continue; }
+                if (slot < start || slot > end) {
+                    continue;
+                }
                 items.put(slot - start, shop.getShopfrontHolder().getItemList().get(slot));
             }
         } else {
@@ -107,7 +109,8 @@ public class Shopfront {
             for (ShopItem shopItem : shopItems) {
                 shopItem.reloadMeta(shop);
             }
-        } catch (ConcurrentModificationException ignore) {}
+        } catch (ConcurrentModificationException ignore) {
+        }
 
     }
 
@@ -151,6 +154,7 @@ public class Shopfront {
 
         return customerInventory;
     }
+
     private void updateDetailedInventory() {
         detailedInventory.clear();
         for (Integer slot : items.keySet()) {
@@ -168,6 +172,7 @@ public class Shopfront {
             detailedInventory.setItem(size - 1, details);
         }
     }
+
     private void updateEditorInventory() {
         editorInventory = Bukkit.createInventory(null, size, getEditorTitle());
         for (Integer slot : items.keySet()) {
@@ -201,7 +206,7 @@ public class Shopfront {
 
     private void buildBottom(Inventory inventory) {
         if (isInfinite) {
-            for (int i = inventory.getSize() - 9; i < inventory.getSize(); i ++) {
+            for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
                 inventory.setItem(i, filler);
             }
             if (page != 0) {
@@ -240,8 +245,12 @@ public class Shopfront {
         @SuppressWarnings("unused")
         @EventHandler
         public void onClick(InventoryClickEvent event) {
-            if (this.player != event.getWhoClicked()) { return; }
-            if (event.getRawSlot() < 0) { return; }
+            if (this.player != event.getWhoClicked()) {
+                return;
+            }
+            if (event.getRawSlot() < 0) {
+                return;
+            }
 
             if (Instant.now().isBefore(nextClick)) {
                 player.sendMessage(ConfigManager.getMessage("messages.shopfront_cooldown"));
@@ -266,7 +275,7 @@ public class Shopfront {
             if (event.getRawSlot() == event.getView().getTopInventory().getSize() - 1) {
                 event.setCancelled(true);
                 boolean owner;
-                if (shop instanceof PlayerShop playerShop){
+                if (shop instanceof PlayerShop playerShop) {
                     owner = playerShop.hasOwner() && playerShop.getOwnerUUID().equals(player.getUniqueId());
                 } else {
                     owner = player.hasPermission("villagermarket.admin");
@@ -305,7 +314,7 @@ public class Shopfront {
                     case EDITOR:
 
                         ItemStack cursor = event.getCursor();
-                        
+
                         if (cursor != null && cursor.getType() != Material.AIR) {
                             if (plugin.getShopManager().isBlackListed(cursor.getType())) {
                                 player.sendMessage(ConfigManager.getMessage("messages.blacklisted"));
@@ -344,14 +353,18 @@ public class Shopfront {
         @SuppressWarnings("unused")
         @EventHandler
         public void onDrag(InventoryDragEvent event) {
-            if (event.getWhoClicked() != this.player) { return; }
+            if (event.getWhoClicked() != this.player) {
+                return;
+            }
             event.setCancelled(true);
         }
 
         @SuppressWarnings("unused")
         @EventHandler
         public void onClose(InventoryCloseEvent event) {
-            if (this.player != event.getPlayer()) { return; }
+            if (this.player != event.getPlayer()) {
+                return;
+            }
             customerInventories.remove(player.getUniqueId());
 
             HandlerList.unregisterAll(this);
@@ -390,7 +403,7 @@ public class Shopfront {
 
                     open(player, Type.EDITOR);
                     player.playSound(player.getLocation(), ConfigManager.getSound("sounds.add_item"), 0.5f, 1);
-                    CreateShopItemsEvent createShopItemsEvent = new CreateShopItemsEvent(player,shop, shopItem);
+                    CreateShopItemsEvent createShopItemsEvent = new CreateShopItemsEvent(player, shop, shopItem);
                     Bukkit.getPluginManager().callEvent(createShopItemsEvent);
 
                 });
@@ -402,11 +415,11 @@ public class Shopfront {
 
         @SuppressWarnings("unused")
         @EventHandler
-            public void onDrop(PlayerDropItemEvent event) {
-                if (event.getPlayer() != player) {
-                    return;
-                }
-                event.setCancelled(true);
+        public void onDrop(PlayerDropItemEvent event) {
+            if (event.getPlayer() != player) {
+                return;
             }
+            event.setCancelled(true);
         }
+    }
 }

@@ -35,6 +35,7 @@ public class ShopfrontHolder {
     public void open(Player player, Shopfront.Type type, int page) {
         shopfronts.get(page).open(player, type);
     }
+
     public void open(Player player, Shopfront.Type type) {
         open(player, type, 0);
     }
@@ -51,13 +52,15 @@ public class ShopfrontHolder {
         for (int page = 1; page <= midPages; page++) {
             this.shopfronts.add(new Shopfront(plugin, this, shop, page));
         }
-        this.shopfronts.add(new Shopfront(plugin, this, shop,  (midPages + 1)));
+        this.shopfronts.add(new Shopfront(plugin, this, shop, (midPages + 1)));
         shopfronts.forEach(Shopfront::update);
     }
 
     private void loadItems() {
         ConfigurationSection section = shop.getConfig().getConfigurationSection("items_for_sale");
-        if (section == null) { return; }
+        if (section == null) {
+            return;
+        }
 
         for (String slot : section.getKeys(false)) {
             ItemStack itemStack = shop.getConfig().getItemStack("items_for_sale." + slot + ".item");
@@ -105,6 +108,7 @@ public class ShopfrontHolder {
 
     /**
      * Returns a copy of the item list.
+     *
      * @return a copy of the item list.
      */
     public Map<Integer, ShopItem> getItemList() {
@@ -113,6 +117,7 @@ public class ShopfrontHolder {
 
     /**
      * Removes an item from the item list.
+     *
      * @param slot the slot of the item to remove.
      */
     public void removeItem(int slot) {
@@ -122,6 +127,7 @@ public class ShopfrontHolder {
 
     /**
      * Adds an item to the item list.
+     *
      * @param slot the slot to add the item to.
      * @param item the item to add.
      */

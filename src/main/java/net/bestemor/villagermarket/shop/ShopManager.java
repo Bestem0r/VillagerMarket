@@ -84,7 +84,9 @@ public class ShopManager {
         shops.remove(oldID);
     }
 
-    /** Spawns new Villager Entity and sets its attributes to default values */
+    /**
+     * Spawns new Villager Entity and sets its attributes to default values
+     */
     public Entity spawnShop(Location location, String type) {
         Villager villager = (Villager) location.getWorld().spawnEntity(location, EntityType.VILLAGER);
 
@@ -264,11 +266,14 @@ public class ShopManager {
     public boolean isShop(Entity entity) {
         return shops.containsKey(entity.getUniqueId());
     }
+
     public HashMap<UUID, List<ItemStack>> getExpiredStorages() {
         return expiredStorages;
     }
 
-    /** Thread runs save() method for all Villager Shops */
+    /**
+     * Thread runs save() method for all Villager Shops
+     */
     private void beginSaveThread() {
         long interval = 20 * 60L * Math.max(1, ConfigManager.getInt("auto_save_interval"));
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
@@ -284,12 +289,16 @@ public class ShopManager {
         return shops.values();
     }
 
-    /** Returns true if item is blacklisted, false if not */
+    /**
+     * Returns true if item is blacklisted, false if not
+     */
     public boolean isBlackListed(Material material) {
         return blackList.contains(material.toString());
     }
 
-    /** Thread check if rent time has expired and runs abandon() method */
+    /**
+     * Thread check if rent time has expired and runs abandon() method
+     */
     private void beginExpireThread() {
         long interval = 20L * ConfigManager.getInt("expire_check_interval");
 
@@ -331,7 +340,7 @@ public class ShopManager {
                     Instant end = VMUtils.getTimeFromNow(ConfigManager.getString("auto_discount.duration"));
                     villagerShop.addRandomDiscount(discount, end);
                 }
-                discountsToAdd --;
+                discountsToAdd--;
             }
             if (addDiscount) {
                 nextAutoDiscount = VMUtils.getTimeFromNow(ConfigManager.getString("auto_discount.interval"));
@@ -339,7 +348,9 @@ public class ShopManager {
         }
     }
 
-    /** Saves/Resets Villager Config with default values */
+    /**
+     * Saves/Resets Villager Config with default values
+     */
     public File createShopConfig(UUID entityUUID, int storageSize, int shopfrontSize, int cost, String type, String duration) {
         File file = new File(plugin.getDataFolder() + "/Shops/", entityUUID + ".yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -360,7 +371,9 @@ public class ShopManager {
         return file;
     }
 
-    /** Returns new Villager Shop Item */
+    /**
+     * Returns new Villager Shop Item
+     */
     public ItemStack getShopItem(VMPlugin plugin, int shopSize, int storageSize, int amount) {
 
         int maxAmount = (Math.min(amount, 64));

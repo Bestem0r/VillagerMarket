@@ -39,9 +39,11 @@ public class PlaceShopEggEvent extends PlayerEvent implements Cancellable {
     public HandlerList getHandlers() {
         return HANDLERS_LIST;
     }
+
     public static HandlerList getHandlerList() {
         return HANDLERS_LIST;
     }
+
     public Location getLocation() {
         return location;
     }

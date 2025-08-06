@@ -70,6 +70,7 @@ public class ShopItem {
         this.item = item;
         this.amount = item.getAmount();
     }
+
     public ShopItem(VMPlugin plugin, VillagerShop shop, ConfigurationSection section) {
         this.plugin = plugin;
         this.shop = shop;
@@ -121,41 +122,59 @@ public class ShopItem {
             }
         }
     }
-    public Material getType() { return item.getType(); }
+
+    public Material getType() {
+        return item.getType();
+    }
+
     public int getSlot() {
         return slot;
     }
+
     public ItemMode getMode() {
         return mode;
     }
+
     public int getLimit() {
         return limit;
     }
-    public int getAmount() { return amount; }
+
+    public int getAmount() {
+        return amount;
+    }
+
     public List<String> getCommands() {
         return new ArrayList<>(commands);
     }
+
     public boolean isItemTrade() {
         return this.itemTrade != null;
     }
+
     public ItemStack getItemTrade() {
         return itemTrade;
     }
+
     public int getServerTrades() {
         return serverTrades;
     }
+
     public LimitMode getLimitMode() {
         return limitMode;
     }
+
     public String getCooldown() {
         return cooldown;
     }
+
     public Instant getNextReset() {
         return nextReset;
     }
+
     public int getItemTradeAmount() {
         return itemTradeAmount;
     }
+
     public VillagerShop getShop() {
         return shop;
     }
@@ -163,26 +182,33 @@ public class ShopItem {
     public Map<UUID, Integer> getPlayerLimits() {
         return playerLimits;
     }
+
     public void setAdmin(boolean admin) {
         isAdmin = admin;
     }
+
     public void setSellPrice(BigDecimal sellPrice) {
         this.sellPrice = sellPrice;
     }
+
     public void setBuyPrice(BigDecimal buyPrice) {
         this.buyPrice = buyPrice;
     }
+
     public void setLimit(int limit) {
         this.limit = limit;
     }
+
     public void setAmount(int amount) {
         this.item.setAmount(amount > item.getMaxStackSize() ? 1 : amount);
         this.amount = amount;
     }
+
     public void addCommand(String command) {
         this.mode = ItemMode.COMMAND;
         this.commands.add(command);
     }
+
     public void setItemTrade(ItemStack itemTrade, int amount) {
         this.itemTrade = itemTrade;
         this.itemTradeAmount = amount;
@@ -190,9 +216,11 @@ public class ShopItem {
             this.mode = SELL;
         }
     }
+
     public boolean isAllowCustomAmount() {
         return allowCustomAmount && !isItemTrade() && mode != COMMAND;
     }
+
     public void setAllowCustomAmount(boolean allowCustomAmount) {
         this.allowCustomAmount = allowCustomAmount;
     }
@@ -235,15 +263,19 @@ public class ShopItem {
             }
         }
     }
+
     public int getPlayerLimit(Player player) {
         return playerLimits.getOrDefault(player.getUniqueId(), 0);
     }
+
     public void incrementPlayerTrades(Player player) {
         playerLimits.put(player.getUniqueId(), getPlayerLimit(player) + 1);
     }
+
     public void incrementServerTrades() {
-        serverTrades ++;
+        serverTrades++;
     }
+
     private void reloadData(VillagerShop shop) {
         if (shop instanceof PlayerShop playerShop) {
             this.storageAmount = playerShop.getStorageHolder().getAmount(item.clone());
@@ -257,10 +289,12 @@ public class ShopItem {
             this.cooldown = null;
         }
     }
+
     public void setDiscount(int discount, Instant discountEnd) {
         this.discount = discount;
         this.discountEnd = discountEnd;
     }
+
     public int getDiscount() {
         return discount;
     }
@@ -286,6 +320,7 @@ public class ShopItem {
         this.serverTrades = 0;
         resetCooldown();
     }
+
     public void cycleLimitMode() {
         limitMode = limitMode == LimitMode.SERVER ? LimitMode.PLAYER : LimitMode.SERVER;
     }
@@ -300,12 +335,13 @@ public class ShopItem {
     }
 
     public boolean verifyPurchase(Player player, ItemMode verifyMode, int amount) {
-        return verifyPurchase(player, verifyMode, amount, null,null);
+        return verifyPurchase(player, verifyMode, amount, null, null);
     }
+
     public boolean verifyPurchase(Player customer, ItemMode verifyMode, int amount, OfflinePlayer owner, StorageHolder storage) {
 
         if (owner != null && customer.getUniqueId().equals(owner.getUniqueId())) {
-            customer.sendMessage(ConfigManager.getMessage("messages.cannot_" + (verifyMode == SELL ?  "buy_from" :"sell_to") + "_yourself"));
+            customer.sendMessage(ConfigManager.getMessage("messages.cannot_" + (verifyMode == SELL ? "buy_from" : "sell_to") + "_yourself"));
             return false;
         }
         Economy economy = VMPlugin.getEconomy();
@@ -349,7 +385,7 @@ public class ShopItem {
         String bought = String.valueOf(limitMode == LimitMode.SERVER || p == null ? serverTrades : getPlayerLimit(p));
         String limitInfo = limit == 0 ? ConfigManager.getString("quantity.unlimited") : String.valueOf(limit);
 
-        String lorePath = "menus." + path + "." + typePath + (isAdmin && path.startsWith("edit") ? "standard" : modePath)  + "_lore";
+        String lorePath = "menus." + path + "." + typePath + (isAdmin && path.startsWith("edit") ? "standard" : modePath) + "_lore";
         ListBuilder builder = ConfigManager.getListBuilder(lorePath)
                 .replace("%amount%", String.valueOf(amount))
                 .replace("%stock%", String.valueOf(storageAmount))
@@ -458,6 +494,7 @@ public class ShopItem {
     public BigDecimal getSellPrice() {
         return getSellPrice(amount, true);
     }
+
     public BigDecimal getBuyPrice() {
         return getBuyPrice(amount, true);
     }
@@ -471,6 +508,7 @@ public class ShopItem {
             return sellPrice.subtract(sellPrice.multiply(BigDecimal.valueOf(discount / 100.0)));
         }
     }
+
     public BigDecimal getBuyPrice(boolean applyDiscount) {
         if (mode != BUY_AND_SELL) {
             return sellPrice;

@@ -115,7 +115,7 @@ public class StorageMenu extends Menu {
 
     public int getAmount(ItemStack i) {
         int sum = 0;
-        for (int slot = 0; slot < itemsSize && slot < getInventory().getSize(); slot ++) {
+        for (int slot = 0; slot < itemsSize && slot < getInventory().getSize(); slot++) {
             ItemStack storageItem = getInventory().getItem(slot);
             if (VMUtils.compareItems(storageItem, i)) {
                 sum += storageItem.getAmount();
@@ -130,10 +130,10 @@ public class StorageMenu extends Menu {
         if (getInventory() == null) {
             return 0;
         }
-        for (int slot = 0; slot < itemsSize && slot < getInventory().getSize(); slot ++) {
+        for (int slot = 0; slot < itemsSize && slot < getInventory().getSize(); slot++) {
             ItemStack storageItem = getInventory().getItem(slot);
             if (storageItem == null || VMUtils.compareItems(storageItem, i)) {
-                availableSlots ++;
+                availableSlots++;
             }
         }
 
@@ -146,7 +146,7 @@ public class StorageMenu extends Menu {
 
     public List<ItemStack> getItems() {
         List<ItemStack> items = new ArrayList<>();
-        for (int slot = 0; slot < itemsSize && slot < getInventory().getSize(); slot ++) {
+        for (int slot = 0; slot < itemsSize && slot < getInventory().getSize(); slot++) {
             items.add(getInventory().getItem(slot));
         }
         items.removeIf(Objects::isNull);
@@ -156,7 +156,7 @@ public class StorageMenu extends Menu {
     public void addItem(ItemStack item, int amount) {
         int stacks = amount / item.getType().getMaxStackSize();
         int remainder = amount % item.getType().getMaxStackSize();
-        for (int i = 0; i < stacks; i ++) {
+        for (int i = 0; i < stacks; i++) {
             ItemStack clone = item.clone();
             clone.setAmount(item.getType().getMaxStackSize());
             getInventory().addItem(clone);

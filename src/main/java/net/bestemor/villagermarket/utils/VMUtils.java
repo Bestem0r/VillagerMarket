@@ -27,11 +27,16 @@ import java.util.stream.Stream;
 
 public class VMUtils {
 
-    private VMUtils() {}
+    private VMUtils() {
+    }
 
-    /** Convert duration string to seconds */
+    /**
+     * Convert duration string to seconds
+     */
     public static int secondsFromString(String string) {
-        if (string.equalsIgnoreCase("infinite")) { return 0; }
+        if (string.equalsIgnoreCase("infinite")) {
+            return 0;
+        }
 
         String unit = string.substring(string.length() - 1);
         int size = Integer.parseInt(string.substring(0, string.length() - 1));
@@ -47,14 +52,23 @@ public class VMUtils {
         };
     }
 
-    /** Properly checks if two ItemStacks are equal.
+    /**
+     * Properly checks if two ItemStacks are equal.
+     *
      * @param item1 An ItemStack.
      * @param item2 An ItemStack.
-     * @return Whether the two provided ItemStacks are equal or not. */
+     * @return Whether the two provided ItemStacks are equal or not.
+     */
     public static boolean compareItems(ItemStack item1, ItemStack item2) {
-        if (item1 == null || item2 == null) { return false; }
-        if (item1.getType() != item2.getType()) { return false; }
-        if (item1.hasItemMeta() != item2.hasItemMeta()) { return false; }
+        if (item1 == null || item2 == null) {
+            return false;
+        }
+        if (item1.getType() != item2.getType()) {
+            return false;
+        }
+        if (item1.hasItemMeta() != item2.hasItemMeta()) {
+            return false;
+        }
         ItemStack item1clone = item1.clone();
         ItemStack item2clone = item2.clone();
 
@@ -194,7 +208,9 @@ public class VMUtils {
     public static int getAmountInventory(ItemStack itemStack, Inventory inventory) {
         int amount = 0;
         for (ItemStack storageStack : inventory.getContents()) {
-            if (storageStack == null) { continue; }
+            if (storageStack == null) {
+                continue;
+            }
 
             if (compareItems(storageStack, itemStack)) {
                 amount = amount + storageStack.getAmount();

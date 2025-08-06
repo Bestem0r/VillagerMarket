@@ -48,7 +48,7 @@ public class StorageHolder {
         storageMenus.clear();
         if (isInfinite) {
             int pages = (int) (Math.ceil(items.size() / 45d)) + 1;
-            for (int page = 0; page < pages; page ++) {
+            for (int page = 0; page < pages; page++) {
                 storageMenus.add(new StorageMenu(this, size, page));
             }
         } else {
@@ -87,6 +87,7 @@ public class StorageHolder {
     public int getAmount(ItemStack i) {
         return storageMenus.stream().mapToInt(s -> s.getAmount(i)).sum();
     }
+
     public PlayerShop getShop() {
         return shop;
     }

@@ -45,7 +45,7 @@ public class AdminShop extends VillagerShop {
         player.sendMessage(message.build());
 
         if (item.isItemTrade()) {
-            TradeShopItemsEvent tradeShopItemsEvent = new TradeShopItemsEvent(player,this, item);
+            TradeShopItemsEvent tradeShopItemsEvent = new TradeShopItemsEvent(player, this, item);
             Bukkit.getPluginManager().callEvent(tradeShopItemsEvent);
             if (tradeShopItemsEvent.isCancelled()) {
                 return;
@@ -63,7 +63,7 @@ public class AdminShop extends VillagerShop {
         item.incrementPlayerTrades(player);
         item.incrementServerTrades();
 
-        BuyShopItemsEvent buyShopItemsEvent = new BuyShopItemsEvent(player,this, item, amount);
+        BuyShopItemsEvent buyShopItemsEvent = new BuyShopItemsEvent(player, this, item, amount);
         Bukkit.getPluginManager().callEvent(buyShopItemsEvent);
 
         player.playSound(player.getLocation(), ConfigManager.getSound("sounds.buy_item"), 1, 1);
@@ -95,7 +95,7 @@ public class AdminShop extends VillagerShop {
         shopStats.addBought(amount);
         shopStats.addSpent(price.doubleValue());
 
-        SellShopItemsEvent sellShopItemsEvent = new SellShopItemsEvent(player,this, item, amount);
+        SellShopItemsEvent sellShopItemsEvent = new SellShopItemsEvent(player, this, item, amount);
         Bukkit.getPluginManager().callEvent(sellShopItemsEvent);
 
         player.playSound(player.getLocation(), ConfigManager.getSound("sounds.sell_item"), 0.5f, 1);
@@ -116,7 +116,9 @@ public class AdminShop extends VillagerShop {
         return Integer.MAX_VALUE;
     }
 
-    /** Runs when a Player wants to buy a command */
+    /**
+     * Runs when a Player wants to buy a command
+     */
     public void buyCommand(Player player, ShopItem shopItem) {
         Economy economy = VMPlugin.getEconomy();
 

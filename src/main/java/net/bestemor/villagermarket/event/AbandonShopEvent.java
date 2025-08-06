@@ -5,7 +5,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class AbandonShopEvent extends Event  {
+public class AbandonShopEvent extends Event {
 
     private static final HandlerList HANDLERS_LIST = new HandlerList();
 
@@ -20,6 +20,7 @@ public class AbandonShopEvent extends Event  {
     public HandlerList getHandlers() {
         return HANDLERS_LIST;
     }
+
     public static HandlerList getHandlerList() {
         return HANDLERS_LIST;
     }

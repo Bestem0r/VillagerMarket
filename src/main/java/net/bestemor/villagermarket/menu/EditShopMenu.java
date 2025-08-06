@@ -105,7 +105,7 @@ public class EditShopMenu extends Menu {
 
         int villagerSlot = ConfigManager.getInt("menus.edit_shop.items.edit_villager.slot" + slotSuffix);
         content.setClickable(villagerSlot, Clickable.fromConfig("menus.edit_shop.items.edit_villager", event -> {
-          shop.openInventory(event.getWhoClicked(), ShopMenu.EDIT_VILLAGER);
+            shop.openInventory(event.getWhoClicked(), ShopMenu.EDIT_VILLAGER);
         }));
 
         int nameSlot = ConfigManager.getInt("menus.edit_shop.items.change_name.slot" + slotSuffix);

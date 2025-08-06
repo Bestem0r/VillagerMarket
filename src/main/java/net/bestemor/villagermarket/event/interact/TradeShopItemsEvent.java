@@ -10,10 +10,12 @@ public class TradeShopItemsEvent extends InteractWithShopEvent {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
 
     public TradeShopItemsEvent(@NotNull Player who, VillagerShop shop, ShopItem shopItem) {
-        super(who,shop,shopItem);
+        super(who, shop, shopItem);
     }
 
-    /** Rest of file is required boilerplate for custom events **/
+    /**
+     * Rest of file is required boilerplate for custom events
+     **/
     @NotNull
     @Override
     public HandlerList getHandlers() {

@@ -36,6 +36,7 @@ public class EntityInfo {
             }
         }
     }
+
     public void save() {
         if (plugin.isEnabled()) {
             Bukkit.getScheduler().runTask(plugin, this::saveSync);

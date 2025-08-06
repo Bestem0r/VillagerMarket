@@ -21,7 +21,7 @@ public class GetIDCommand implements ISubCommand {
     private final VMPlugin plugin;
     private final GetIDEvent listener;
 
-    public GetIDCommand(VMPlugin plugin ) {
+    public GetIDCommand(VMPlugin plugin) {
         this.plugin = plugin;
 
         this.listener = new GetIDEvent();
@@ -69,7 +69,9 @@ public class GetIDCommand implements ISubCommand {
         @EventHandler(priority = EventPriority.LOW)
         public void onInteract(PlayerInteractEntityEvent event) {
 
-            if (!players.contains(event.getPlayer().getUniqueId())) { return; }
+            if (!players.contains(event.getPlayer().getUniqueId())) {
+                return;
+            }
             event.setCancelled(true);
 
             VillagerShop shop = plugin.getShopManager().getShop(event.getRightClicked().getUniqueId());
