@@ -688,6 +688,19 @@ menus:
           - "&7Termina: &e%discount_end%"
           - ""
           - "&7>> Clique para editar"
+      custom_amount_enabled:
+        material: LIME_TERRACOTTA
+        slot: 40
+        name: "&eQuantidade personalizada&7: &aAtivada"
+        lore:
+          - "&7Clique para desativar a quantidade personalizada"
+      custom_amount_disabled:
+        material: RED_TERRACOTTA
+        slot: 40
+        name: "&eQuantidade personalizada&7: &cDesativada"
+        lore:
+          - "&7Clique para ativar a quantidade personalizada"
+
   confirm_action:
     title: "&8Você tem certeza?"
     size: 27
@@ -701,6 +714,60 @@ menus:
         material: RED_TERRACOTTA
         slot: 14
         name: "&cNão, cancelar"
+  buy_item:
+    title_buy: "&8Comprar item"
+    title_sell: "&8Vender item"
+    title_trade: "&8Trocar item"
+    title_command: "&8Comprar comando"
+    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+    back_slot: 26
+    size: 27
+    confirm_slot: 13
+    items:
+      increase_one:
+        material: LIME_TERRACOTTA
+        slot: 15
+        name: "&aAumentar em 1"
+        lore:
+          - "&7Clique para aumentar a quantidade em um"
+      increase_stack:
+        material: LIME_TERRACOTTA
+        slot: 16
+        amount: 64
+        name: "&aAumentar por pilha"
+        lore:
+          - "&7Clique para aumentar a quantidade em 64"
+      increase_max:
+        material: EMERALD_BLOCK
+        slot: 4
+        name: "&aAumentar ao máximo"
+        lore:
+          - "&7Clique para aumentar a quantidade ao máximo"
+      decrease_one:
+        material: RED_TERRACOTTA
+        slot: 10
+        name: "&cDiminuir em 1"
+        lore:
+          - "&7Clique para diminuir a quantidade em um"
+      decrease_stack:
+        material: RED_TERRACOTTA
+        slot: 11
+        amount: 64
+        name: "&cDiminuir por pilha"
+        lore:
+          - "&7Clique para diminuir a quantidade em 64"
+      toggle_sell:
+        material: BOOK
+        slot: 22
+        name: "&7Vender | &eComprar"
+        lore:
+          - "&7Clique para mudar para vender"
+      toggle_buy:
+        material: BOOK
+        name: "&eVender &7| Comprar"
+        slot: 22
+        lore:
+          - "&7Clique para mudar para comprar"
 
 
   #-------------------- Expired Storage --------------------#

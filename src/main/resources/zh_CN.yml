@@ -679,6 +679,18 @@ menus:
           - "&7结束时间: &e%discount_end%"
           - ""
           - "&7>> 点击编辑"
+      custom_amount_enabled:
+        material: LIME_TERRACOTTA
+        slot: 40
+        name: "&e自定义数量&7: &a启用"
+        lore:
+          - "&7点击以禁用自定义数量"
+      custom_amount_disabled:
+        material: RED_TERRACOTTA
+        slot: 40
+        name: "&e自定义数量&7: &c禁用"
+        lore:
+          - "&7点击以启用自定义数量"
   confirm_action:
     title: "&8是否进行该操作?"
     size: 27
@@ -692,6 +704,60 @@ menus:
         material: RED_TERRACOTTA
         slot: 14
         name: "&c否, 取消本次操作"
+  buy_item:
+    title_buy: "&8购买物品"
+    title_sell: "&8出售物品"
+    title_trade: "&8交易物品"
+    title_command: "&8购买命令"
+    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+    back_slot: 26
+    size: 27
+    confirm_slot: 13
+    items:
+      increase_one:
+        material: LIME_TERRACOTTA
+        slot: 15
+        name: "&a增加1个"
+        lore:
+          - "&7点击增加1个数量"
+      increase_stack:
+        material: LIME_TERRACOTTA
+        slot: 16
+        amount: 64
+        name: "&a增加一组"
+        lore:
+          - "&7点击增加64个数量"
+      increase_max:
+        material: EMERALD_BLOCK
+        slot: 4
+        name: "&a增加到最大"
+        lore:
+          - "&7点击将数量增加到最大值"
+      decrease_one:
+        material: RED_TERRACOTTA
+        slot: 10
+        name: "&c减少1个"
+        lore:
+          - "&7点击减少1个数量"
+      decrease_stack:
+        material: RED_TERRACOTTA
+        slot: 11
+        amount: 64
+        name: "&c减少一组"
+        lore:
+          - "&7点击减少64个数量"
+      toggle_sell:
+        material: BOOK
+        slot: 22
+        name: "&7出售 | &e购买"
+        lore:
+          - "&7点击切换到出售"
+      toggle_buy:
+        material: BOOK
+        name: "&e出售 &7| 购买"
+        slot: 22
+        lore:
+          - "&7点击切换到购买"
 
 
   #-------------------- Expired Storage --------------------#
