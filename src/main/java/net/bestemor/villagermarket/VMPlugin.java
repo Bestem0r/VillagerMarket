@@ -23,7 +23,7 @@ import java.util.*;
 
 public class VMPlugin extends CorePlugin {
 
-    private Economy econ = null;
+    private static Economy economy = null;
 
     public static final List<String> log = new ArrayList<>();
 
@@ -51,7 +51,7 @@ public class VMPlugin extends CorePlugin {
         boolean enableUpdate = !getConfig().contains("auto_update") || getConfig().getBoolean("auto_update");
         Bukkit.getLogger().info("[VillagerMarket] Auto config update is " + (enableUpdate ? "enabled" : "disabled"));
 
-        //Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.12.0-#3 of VillagerMarket! Please expect and report all bugs in my discord server");
+        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.13.0-#1 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
@@ -134,7 +134,7 @@ public class VMPlugin extends CorePlugin {
     private void setupEconomy() {
         RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(Economy.class);
         if (economyProvider != null) {
-            econ = economyProvider.getProvider();
+            economy = economyProvider.getProvider();
         } else {
             Bukkit.getLogger().severe("[VillagerMarket] Could not find Economy Provider!");
         }
@@ -178,8 +178,8 @@ public class VMPlugin extends CorePlugin {
         return localizedMaterials.get(material);
     }
 
-    public Economy getEconomy() {
-        return econ;
+    public static Economy getEconomy() {
+        return economy;
     }
     public boolean isCitizensEnabled() {
         return Bukkit.getPluginManager().isPluginEnabled("Citizens");

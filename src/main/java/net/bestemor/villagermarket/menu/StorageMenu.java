@@ -70,7 +70,7 @@ public class StorageMenu extends Menu {
         content.setClickable(inventorySize - 1, Clickable.of(ConfigManager.getItem("items.back").build(), event -> {
             Player player = (Player) event.getWhoClicked();
             this.holder.back(player);
-            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.back"), 0.5f, 1);
         }));
     }
 

@@ -130,6 +130,10 @@ public class EntityInfo {
         }
     }
 
+    public String getName() {
+        return name;
+    }
+
     public Location getLocation() {
         return location;
     }
