@@ -29,10 +29,9 @@ public class EditShopMenu extends Menu {
 
     @Override
     protected void onUpdate(MenuContent content) {
-        if (!(shop instanceof PlayerShop)) {
+        if (!(shop instanceof PlayerShop playerShop)) {
             return;
         }
-        PlayerShop playerShop = (PlayerShop) shop;
 
         String path = playerShop.isDisableNotifications() ? "menus.edit_shop.items.enable_trade_notifications" :
                 "menus.edit_shop.items.disable_trade_notifications";
@@ -62,7 +61,7 @@ public class EditShopMenu extends Menu {
                     player.sendMessage(ConfigManager.getMessage("messages.max_rent_time"));
                     return;
                 }
-                Economy economy = plugin.getEconomy();
+                Economy economy = VMPlugin.getEconomy();
                 if (economy.getBalance(player) < playerShop.getCost()) {
                     player.sendMessage(ConfigManager.getMessage("messages.not_enough_money"));
                     return;
@@ -145,14 +144,13 @@ public class EditShopMenu extends Menu {
             });
         }));
 
-        if (shop instanceof PlayerShop) {
+        if (shop instanceof PlayerShop playerShop) {
 
             content.setPlaced(PlacedClickable.fromConfig("menus.edit_shop.items.sell_shop", event -> {
                 shop.openInventory(event.getWhoClicked(), ShopMenu.SELL_SHOP);
             }));
 
             content.setPlaced(PlacedClickable.fromConfig("menus.edit_shop.items.edit_storage", event -> {
-                PlayerShop playerShop = (PlayerShop) shop;
                 playerShop.openStorage((Player) event.getWhoClicked());
             }));
         }

@@ -118,7 +118,7 @@ public class AdminShop extends VillagerShop {
 
     /** Runs when a Player wants to buy a command */
     public void buyCommand(Player player, ShopItem shopItem) {
-        Economy economy = plugin.getEconomy();
+        Economy economy = VMPlugin.getEconomy();
 
         BigDecimal price = shopItem.getSellPrice();
         if (economy.getBalance(player) < price.doubleValue()) {

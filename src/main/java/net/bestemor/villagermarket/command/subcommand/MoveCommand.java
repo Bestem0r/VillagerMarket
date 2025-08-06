@@ -36,9 +36,8 @@ public class MoveCommand implements ISubCommand {
 
     @Override
     public void run(CommandSender sender, String[] args) {
-        if (sender instanceof Player) {
+        if (sender instanceof Player player) {
 
-            Player player = (Player) sender;
             if (listener.selectShop.contains(player.getUniqueId())) {
                 return;
             }

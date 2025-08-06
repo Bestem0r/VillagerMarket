@@ -51,7 +51,7 @@ public class VMPlugin extends CorePlugin {
         boolean enableUpdate = !getConfig().contains("auto_update") || getConfig().getBoolean("auto_update");
         Bukkit.getLogger().info("[VillagerMarket] Auto config update is " + (enableUpdate ? "enabled" : "disabled"));
 
-        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.13.0-#1 of VillagerMarket! Please expect and report all bugs in my discord server");
+        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.13.0-#2 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
@@ -111,7 +111,6 @@ public class VMPlugin extends CorePlugin {
                 .addSubCommand("trusted", new TrustedCommand(this))
                 .addSubCommand("getid", new GetIDCommand(this))
                 .addSubCommand("expiredstorage", new ExpiredStorageCommand(this))
-                .addSubCommand("regen", new RegenCommand(this))
                 .addSubCommand("clone", new CloneCommand(this))
                 .addSubCommand("setsize", new SetSizeCommand(this))
                 .addSubCommand("toggleperm", new ToggleRequirePermissionCommand(this))

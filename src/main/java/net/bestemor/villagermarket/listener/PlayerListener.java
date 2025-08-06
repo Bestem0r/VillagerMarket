@@ -71,6 +71,7 @@ public class PlayerListener implements Listener {
         clickListeners.put(uuid, consumer);
     }
 
+    @SuppressWarnings("unused")
     @EventHandler (priority = EventPriority.LOWEST)
     public void playerRightClick(PlayerInteractEntityEvent event) {
         Player p = event.getPlayer();
@@ -119,11 +120,13 @@ public class PlayerListener implements Listener {
             }
         }
     }
+
+    @SuppressWarnings("unused")
     @EventHandler
     public void onItemClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack itemStack = player.getInventory().getItemInHand();
-        if (itemStack.getItemMeta() == null || event.getClickedBlock() == null || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_AIR) {
+        if (itemStack.getItemMeta() == null || event.getClickedBlock() == null || event.getAction() == Action.LEFT_CLICK_AIR) {
             return;
         }
 
@@ -278,6 +281,7 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @SuppressWarnings("unused")
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
 

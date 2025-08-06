@@ -308,7 +308,7 @@ public class ShopItem {
             customer.sendMessage(ConfigManager.getMessage("messages.cannot_" + (verifyMode == SELL ?  "buy_from" :"sell_to") + "_yourself"));
             return false;
         }
-        Economy economy = plugin.getEconomy();
+        Economy economy = VMPlugin.getEconomy();
         if (verifyMode == SELL && isItemTrade() && VMUtils.getAmountInventory(itemTrade, customer.getInventory()) < itemTradeAmount) {
             customer.sendMessage(ConfigManager.getMessage("messages.not_enough_in_inventory"));
             return false;

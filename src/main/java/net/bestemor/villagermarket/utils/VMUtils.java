@@ -35,19 +35,16 @@ public class VMUtils {
 
         String unit = string.substring(string.length() - 1);
         int size = Integer.parseInt(string.substring(0, string.length() - 1));
-        switch (unit) {
-            case "s":
-                return size;
-            case "m":
-                return size * 60;
-            case "h":
-                return size * 3600;
-            case "d":
-                return size * 86400;
-            default:
+        return switch (unit) {
+            case "s" -> size;
+            case "m" -> size * 60;
+            case "h" -> size * 3600;
+            case "d" -> size * 86400;
+            default -> {
                 Bukkit.getLogger().severe("Could not convert unit: " + unit);
-                return 0;
-        }
+                yield 0;
+            }
+        };
     }
 
     /** Properly checks if two ItemStacks are equal.
@@ -86,18 +83,8 @@ public class VMUtils {
         }
     }
 
-    public static boolean hasComma(String s) {
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c == ',') {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static boolean isInteger(String s) {
-        if (s.length() == 0) {
+        if (s.isEmpty()) {
             return false;
         }
         for (int i = 0; i < s.length(); i++) {

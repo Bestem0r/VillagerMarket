@@ -29,20 +29,20 @@ public abstract class VillagerShop {
     private final EntityInfo entityInfo;
 
     protected String duration;
-    protected int seconds;
+    protected final int seconds;
     protected int timesRented;
     protected Instant expireDate;
 
-    protected int cost;
+    protected final int cost;
     protected BigDecimal collectedMoney = BigDecimal.valueOf(0);
 
     protected int shopSize;
     protected int storageSize;
 
     protected File file;
-    protected FileConfiguration config;
+    protected final FileConfiguration config;
 
-    protected EnumMap<ShopMenu, Menu> menus = new EnumMap<>(ShopMenu.class);
+    protected final EnumMap<ShopMenu, Menu> menus = new EnumMap<>(ShopMenu.class);
 
     protected String shopName;
 

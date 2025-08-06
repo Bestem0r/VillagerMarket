@@ -4,7 +4,6 @@ import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.menu.Clickable;
 import net.bestemor.core.menu.Menu;
 import net.bestemor.core.menu.MenuContent;
-import net.bestemor.core.menu.MenuListener;
 import net.bestemor.villagermarket.utils.VMUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,8 +29,8 @@ public class StorageMenu extends Menu {
 
     private List<ItemStack> items = new ArrayList<>();
 
-    public StorageMenu(MenuListener listener, StorageHolder holder, int size, int page) {
-        super(listener, size == 0 ? 54 : size, ConfigManager.getString("menus.storage.title") + (size == 0 ? " | " + (page + 1) : ""));
+    public StorageMenu(StorageHolder holder, int size, int page) {
+        super(size == 0 ? 54 : size, ConfigManager.getString("menus.storage.title") + (size == 0 ? " | " + (page + 1) : ""));
         this.holder = holder;
 
         this.page = page;

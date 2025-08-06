@@ -2,7 +2,6 @@ package net.bestemor.villagermarket.shop;
 
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.config.CurrencyBuilder;
-import net.bestemor.core.config.VersionUtils;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.event.AbandonShopEvent;
 import net.bestemor.villagermarket.event.interact.BuyShopItemsEvent;
@@ -10,14 +9,9 @@ import net.bestemor.villagermarket.event.interact.SellShopItemsEvent;
 import net.bestemor.villagermarket.event.interact.TradeShopItemsEvent;
 import net.bestemor.villagermarket.menu.BuyShopMenu;
 import net.bestemor.villagermarket.menu.StorageHolder;
-import net.bestemor.villagermarket.utils.VMUtils;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -38,7 +32,7 @@ public class PlayerShop extends VillagerShop {
 
     protected UUID ownerUUID;
     protected String ownerName;
-    private boolean disableNotifications = false;
+    private boolean disableNotifications;
 
     public PlayerShop(VMPlugin plugin, File file) {
         super(plugin, file);
@@ -66,31 +60,7 @@ public class PlayerShop extends VillagerShop {
         this.menus.put(ShopMenu.BUY_SHOP, new BuyShopMenu(plugin, this));
 
         this.trustedPlayers = config.getStringList("trusted");
-
-        if (ConfigManager.getBoolean("enable_redstone_output")) {
-            updateRedstone(false);
-        }
         shopfrontHolder.load();
-    }
-
-    public void updateRedstone(boolean forceOff) {
-        if (cost == -1) { return; }
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            Entity entity = VMUtils.getEntity(entityUUID);
-
-            if (entity != null) {
-                Location location = entity.getLocation();
-                Material standingOn = entity.getLocation().clone().subtract(0, 1, 0).getBlock().getType();
-
-                boolean legacy = VersionUtils.getMCVersion() < 13;
-                String piston = legacy ? "PISTON_EXTENSION" : "PISTON_HEAD";
-
-                boolean isOnPiston = (standingOn == Material.valueOf(piston) || (!legacy && standingOn == Material.MOVING_PISTON));
-
-                Block replace = location.subtract(0, (isOnPiston ? 3 : 2), 0).getBlock();
-                replace.setType(ownerUUID == null || forceOff ? Material.AIR : Material.REDSTONE_BLOCK);
-            }
-        });
     }
 
     public void openStorage(Player player) {
@@ -102,7 +72,7 @@ public class PlayerShop extends VillagerShop {
 
     @Override
     public void buyItem(ShopItem item, int amount, Player player) {
-        Economy economy = plugin.getEconomy();
+        Economy economy = VMPlugin.getEconomy();
 
         BigDecimal price = item.getSellPrice(amount, true);
         OfflinePlayer owner = Bukkit.getOfflinePlayer(ownerUUID);
@@ -189,7 +159,7 @@ public class PlayerShop extends VillagerShop {
 
     @Override
     public void sellItem(ShopItem item, int amount, Player player) {
-        Economy economy = plugin.getEconomy();
+        Economy economy = VMPlugin.getEconomy();
         OfflinePlayer owner = Bukkit.getOfflinePlayer(ownerUUID);
 
         BigDecimal tax = BigDecimal.valueOf(ConfigManager.getDouble("tax"));
@@ -252,7 +222,7 @@ public class PlayerShop extends VillagerShop {
 
     /** Collects money */
     public void collectMoney(Player player) {
-        Economy economy = plugin.getEconomy();
+        Economy economy = VMPlugin.getEconomy();
         economy.depositPlayer(player, collectedMoney.doubleValue());
         player.sendMessage(ConfigManager.getCurrencyBuilder("messages.collected_money").replaceCurrency("%amount%", collectedMoney).addPrefix().build());
         player.playSound(player.getLocation(), ConfigManager.getSound("sounds.collect_money"), 1, 1);
@@ -276,19 +246,19 @@ public class PlayerShop extends VillagerShop {
             trusted.add(Bukkit.getOfflinePlayer(ownerUUID));
             BigDecimal split = amount.divide(BigDecimal.valueOf(trusted.size()), 2, RoundingMode.HALF_UP);
             for (OfflinePlayer p : trusted) {
-                Economy economy = plugin.getEconomy();
+                Economy economy = VMPlugin.getEconomy();
                 economy.depositPlayer(p, split.doubleValue());
             }
 
         } else {
-            Economy economy = plugin.getEconomy();
+            Economy economy = VMPlugin.getEconomy();
             economy.depositPlayer(Bukkit.getOfflinePlayer(ownerUUID), amount.doubleValue());
         }
     }
 
     @Override
     public int getAvailable(ShopItem shopItem) {
-        Economy economy = plugin.getEconomy();
+        Economy economy = VMPlugin.getEconomy();
         OfflinePlayer owner = ownerUUID == null ? null : Bukkit.getOfflinePlayer(ownerUUID);
 
         ItemStack i = shopItem.isItemTrade() ? shopItem.getItemTrade() : shopItem.getRawItem();
@@ -324,7 +294,7 @@ public class PlayerShop extends VillagerShop {
         closeAllMenus();
 
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ownerUUID);
-        Economy economy = plugin.getEconomy();
+        Economy economy = VMPlugin.getEconomy();
 
         if (cost != -1) { economy.depositPlayer(offlinePlayer, ((double) getCost() * (ConfigManager.getDouble("refund_percent") / 100)) * timesRented); }
         economy.depositPlayer(offlinePlayer, collectedMoney.doubleValue());
@@ -358,8 +328,6 @@ public class PlayerShop extends VillagerShop {
         super.shopStats = new ShopStats(config);
         super.timesRented = 0;
         super.updateMenu(ShopMenu.EDIT_SHOP);
-
-        updateRedstone(false);
     }
 
     /** Increase rent time */

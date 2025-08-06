@@ -60,8 +60,7 @@ public class EntityListener implements Listener {
     @EventHandler
     public void onHitEntity(EntityDamageByEntityEvent event) {
         if (plugin.getShopManager().getShop(event.getEntity().getUniqueId()) != null) {
-            if (event.getDamager() instanceof Player) {
-                Player player = (Player) event.getDamager();
+            if (event.getDamager() instanceof Player player) {
                 if (!player.isSneaking()) return;
                 if (!player.hasPermission("villagermarket.spy")) return;
                 VillagerShop villagerShop = plugin.getShopManager().getShop(event.getEntity().getUniqueId());

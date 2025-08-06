@@ -8,12 +8,6 @@ auto_update: true
 refund_percent: 50.0
 #How often should villager shops auto-save? (minutes)
 auto_save_interval: 10
-#Enabling this will change all blocks two blocks beneath
-#all buyable playershops to a redstone block if the shop has an
-#owner, and to air if the shop is available for purchase
-enable_redstone_output: false
-#How often should redstone output from bought villagers update? (seconds)
-redstone_update_interval: 20
 #How much (%) should be taken as tax?
 tax: 0
 #Currency symbol

@@ -58,10 +58,9 @@ public class CreateCommand implements ISubCommand {
 
     @Override
     public void run(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             return;
         }
-        Player player = (Player) sender;
         if (args.length < 2) {
             player.sendMessage(ChatColor.RED + "Incorrect usage: Please specify shop type!");
             player.sendMessage(ChatColor.RED + "Use /vm help for command description");

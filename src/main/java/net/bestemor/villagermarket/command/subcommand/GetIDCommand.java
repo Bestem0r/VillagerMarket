@@ -35,8 +35,7 @@ public class GetIDCommand implements ISubCommand {
 
     @Override
     public void run(CommandSender sender, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
 
             if (listener.players.contains(player.getUniqueId())) {
                 return;

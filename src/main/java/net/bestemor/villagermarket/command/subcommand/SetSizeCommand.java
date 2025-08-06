@@ -22,19 +22,16 @@ public class SetSizeCommand implements ISubCommand {
 
     @Override
     public List<String> getCompletion(String[] args) {
-        switch (args.length) {
-            case 2:
-                return Arrays.asList("storage", "shopfront");
-            case 3:
-                return sizes;
-        }
-        return new ArrayList<>();
+        return switch (args.length) {
+            case 2 -> Arrays.asList("storage", "shopfront");
+            case 3 -> sizes;
+            default -> new ArrayList<>();
+        };
     }
 
     @Override
     public void run(CommandSender sender, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
 
             if (args.length != 3) {
                 player.sendMessage(ChatColor.RED + "Incorrect usage: Please specify storage or shopfront and a size.");
@@ -78,13 +75,5 @@ public class SetSizeCommand implements ISubCommand {
         return "<shop|storage> <size>";
     }
 
-    private static class SetAction {
-        private final String action;
-        private final int size;
-
-        public SetAction(String action, int size) {
-            this.action = action;
-            this.size = size;
-        }
-    }
+    private record SetAction(String action, int size) { }
 }

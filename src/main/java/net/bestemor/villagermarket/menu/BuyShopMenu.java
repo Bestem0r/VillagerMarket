@@ -61,7 +61,7 @@ public class BuyShopMenu extends Menu {
         content.setClickable(buyShopSlot, Clickable.of(buyShop, (event) -> {
             Player player = (Player) event.getWhoClicked();
 
-            Economy economy = plugin.getEconomy();
+            Economy economy = VMPlugin.getEconomy();
             if (ConfigManager.getBoolean("buy_shop_permission") && !player.hasPermission("villagermarket.buy_shop")) {
                 player.sendMessage(ConfigManager.getMessage("messages.no_permission_buy_shop"));
                 return;
@@ -95,7 +95,6 @@ public class BuyShopMenu extends Menu {
             player.playSound(player.getLocation(), ConfigManager.getSound("sounds.buy_shop"), 1, 1);
 
             VMPlugin.log.add(new Date() + ": " + player.getName() + " bought shop for " + shop.getCost());
-            shop.updateRedstone(false);
             shop.openInventory(player, ShopMenu.EDIT_SHOP);
         }));
         content.setClickable(storageSizeSlot, Clickable.empty(storageSize));

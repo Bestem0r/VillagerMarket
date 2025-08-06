@@ -32,10 +32,9 @@ public class SearchCommand implements ISubCommand {
 
     @Override
     public void run(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             return;
         }
-        Player player = (Player) sender;
 
         if (args.length != 2) {
             player.sendMessage(ChatColor.RED + "Incorrect usage: Specify radius!");

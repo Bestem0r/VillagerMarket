@@ -38,7 +38,7 @@ public class StorageHolder {
     private void reload() {
         if (isInfinite) {
             if (!storageMenus.get(storageMenus.size() - 1).isEmpty()) {
-                storageMenus.add(new StorageMenu(plugin.getMenuListener(), this, size, storageMenus.size()));
+                storageMenus.add(new StorageMenu(this, size, storageMenus.size()));
             }
         }
         storageMenus.forEach(StorageMenu::update);
@@ -49,10 +49,10 @@ public class StorageHolder {
         if (isInfinite) {
             int pages = (int) (Math.ceil(items.size() / 45d)) + 1;
             for (int page = 0; page < pages; page ++) {
-                storageMenus.add(new StorageMenu(plugin.getMenuListener(), this, size, page));
+                storageMenus.add(new StorageMenu(this, size, page));
             }
         } else {
-            storageMenus.add(new StorageMenu(plugin.getMenuListener(), this, size, 0));
+            storageMenus.add(new StorageMenu(this, size, 0));
         }
         storageMenus.forEach(s -> s.setItems(items));
     }

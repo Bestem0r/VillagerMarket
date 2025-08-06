@@ -37,7 +37,7 @@ public class PlaceShopEggEvent extends PlayerEvent implements Cancellable {
     @NotNull
     @Override
     public HandlerList getHandlers() {
-        return this.HANDLERS_LIST;
+        return HANDLERS_LIST;
     }
     public static HandlerList getHandlerList() {
         return HANDLERS_LIST;

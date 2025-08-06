@@ -49,7 +49,6 @@ public class ShopManager {
         this.blackList = ConfigManager.getStringList("item_blacklist");
 
         beginSaveThread();
-        beginRedstoneThread();
         beginExpireThread();
     }
 
@@ -307,8 +306,7 @@ public class ShopManager {
         Collections.shuffle(shopsCopy);
         for (VillagerShop villagerShop : shopsCopy) {
             villagerShop.checkDiscounts();
-            if (villagerShop instanceof PlayerShop) {
-                PlayerShop playerShop = (PlayerShop) villagerShop;
+            if (villagerShop instanceof PlayerShop playerShop) {
 
                 if (playerShop.hasExpired() && playerShop.hasOwner()) {
                     Bukkit.getScheduler().runTask(plugin, playerShop::abandon);
@@ -339,23 +337,6 @@ public class ShopManager {
                 nextAutoDiscount = VMUtils.getTimeFromNow(ConfigManager.getString("auto_discount.interval"));
             }
         }
-    }
-
-    /** Thread updates redstone output for all Villagers */
-    private void beginRedstoneThread() {
-        long interval = 20L * ConfigManager.getInt("redstone_update_interval");
-
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-            if (!ConfigManager.getBoolean("enable_redstone_output")) {
-                return;
-            }
-            for (VillagerShop villagerShop : shops.values()) {
-                if (villagerShop instanceof PlayerShop) {
-                    PlayerShop playerShop = (PlayerShop) villagerShop;
-                    playerShop.updateRedstone(false);
-                }
-            }
-        }, 20L, interval);
     }
 
     /** Saves/Resets Villager Config with default values */
