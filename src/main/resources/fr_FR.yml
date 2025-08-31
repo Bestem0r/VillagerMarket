@@ -156,12 +156,12 @@ items:
     name: "&eSuivant"
     material: FEATHER
     lore:
-    - "&7Page suivante"
+      - "&7Page suivante"
   previous:
     name: "&ePrécédent"
     material: FEATHER
     lore:
-    - "&7Page précédente"
+      - "&7Page précédente"
 
 
 #----------------------- Paramètres du menu -----------------------#
@@ -171,7 +171,7 @@ menus:
   buy_shop:
     title: "&8Acheter une boutique disponible"
     size: 27
-    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+    filler_slots: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26 ]
     items:
       shop_size:
         material: CHEST
@@ -179,30 +179,30 @@ menus:
         #Placeholders : %amount%
         name: "&a%amount%&7 emplacements de boutique"
         lore:
-        - ""
+          - ""
       storage_size:
         material: WRITABLE_BOOK
         slot: 14
         #Placeholders : %amount%
         name: "&a%amount%&7 emplacements de stockage"
         lore:
-        - ""
+          - ""
       buy_shop:
         material: EMERALD
         slot: 13
         name: "&aAcheter cette boutique !"
         lore:
-        - "&7Cliquez pour acheter cette boutique pour &a%price%&7 !"
-        - ""
-        - "&7La boutique sera"
-        - "&7vôtre pendant &b%time%&7 !"
+          - "&7Cliquez pour acheter cette boutique pour &a%price%&7 !"
+          - ""
+          - "&7La boutique sera"
+          - "&7vôtre pendant &b%time%&7 !"
 
   
   #-------------------- Edit Shop --------------------#
   edit_shop:
     title: "&8Éditer la boutique"
     size: 54
-    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]
+    filler_slots: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53 ]
     items:
       # Modifier les articles en vente
       edit_shopfront:
@@ -211,8 +211,8 @@ menus:
         slot_admin: 21
         name: "&bModifier la vitrine"
         lore:
-        - "&7Cliquez pour modifier les articles en vente"
-        - "&7dans votre boutique"
+          - "&7Cliquez pour modifier les articles en vente"
+          - "&7dans votre boutique"
       # Aperçu de la boutique
       preview_shop:
         material: BOOK
@@ -220,14 +220,14 @@ menus:
         slot_admin: 23
         name: "&eAperçu de la boutique"
         lore:
-        - "&7Cliquez pour prévisualiser votre vitrine"
+          - "&7Cliquez pour prévisualiser votre vitrine"
       # Modifier les articles de stockage
       edit_storage:
         material: CHEST
         slot: 22
         name: "&cModifier le stockage"
         lore:
-        - "&7Cliquez pour modifier le stockage de la boutique"
+          - "&7Cliquez pour modifier le stockage de la boutique"
       # Modifier l'article Villager
       edit_villager:
         material: VILLAGER_SPAWN_EGG
@@ -235,8 +235,8 @@ menus:
         slot_admin: 30
         name: "&eModifier le villageois"
         lore:
-        - "&7Cliquez pour modifier la profession"
-        - "&7de votre villageois"
+          - "&7Cliquez pour modifier la profession"
+          - "&7de votre villageois"
       # Modifier le nom du villageois
       change_name:
         material: NAME_TAG
@@ -244,15 +244,15 @@ menus:
         slot_admin: 32
         name: "&eModifier le nom du villageois"
         lore:
-        - "&7Cliquez pour changer le nom de votre villageois"
+          - "&7Cliquez pour changer le nom de votre villageois"
       # Vendre/abandonner la boutique
       sell_shop:
         material: FEATHER
         slot: 31
         name: "&cVendre/abandonner la boutique"
         lore:
-        - "&7Cliquez pour abandonner cette"
-        - "&7Boutique Villager !"
+          - "&7Cliquez pour abandonner cette"
+          - "&7Boutique Villager !"
       # Collecter de l'argent (cette fonctionnalité doit être activée dans les paramètres généraux)
       collect_money:
         material: GOLD_INGOT
@@ -260,7 +260,7 @@ menus:
         name: "&aCollecter de l'argent"
         #Placeholders: %worth%
         lore:
-        - "&7Cliquez pour collecter &a%worth%$"
+          - "&7Cliquez pour collecter &a%worth%$"
       # Ajouter plus de temps
       increase_time:
         material: EMERALD
@@ -268,10 +268,10 @@ menus:
         name: "&aAugmenter la durée de location"
         # Placeholders : %expire%, %time%, %price%
         lore:
-        - "&7Votre boutique expirera dans : &e%expire%"
-        - ""
-        - "&7Cliquez pour augmenter la durée de location"
-        - "&7de &b%time%&7 pour &a%price%&7 !"
+          - "&7Votre boutique expirera dans : &e%expire%"
+          - ""
+          - "&7Cliquez pour augmenter la durée de location"
+          - "&7de &b%time%&7 pour &a%price%&7 !"
 
       # Activer les notifications de commerce
       enable_trade_notifications:
@@ -279,7 +279,7 @@ menus:
         slot: 40
         name: "&eNotifications de commerce&7 : &cDésactivées"
         lore:
-        - "&7Cliquez pour activer les notifications de commerce"
+          - "&7Cliquez pour activer les notifications de commerce"
 
       # Désactiver les notifications de commerce
       disable_trade_notifications:
@@ -287,7 +287,7 @@ menus:
         slot: 40
         name: "&eNotifications de commerce&7 : &aActivées"
         lore:
-        - "&7Cliquez pour désactiver les notifications de commerce"
+          - "&7Cliquez pour désactiver les notifications de commerce"
 
   
   #-------------------- Vitrine --------------------#
@@ -303,11 +303,11 @@ menus:
         name: "&eBasculer les détails"
         material: BOOK
         lore:
-        - "&7>> Clic gauche pour basculer"
-        - "&7entre la &edescription de l'article"
-        - "&7et le &emenu&7 !"
-        - ""
-        - "&7>> Clic droit &7pour revenir en arrière"
+          - "&7>> Clic gauche pour basculer"
+          - "&7entre la &edescription de l'article"
+          - "&7et le &emenu&7 !"
+          - ""
+          - "&7>> Clic droit &7pour revenir en arrière"
     modes:
       buy: "&8[&aACHETER&8]"
       sell: "&8[&aVENDRE&8]"
@@ -321,109 +321,106 @@ menus:
     player_shop:
       # Placeholders : %amount%, %price%, %stock%, %mode%
       trade_lore:
-      - "&7Mode&f : %mode%"
-      - ""
-      - "&7Quantité&f : &e%amount%"
-      - "&7Prix&f : &a%price%"
-      - "&7Vous pouvez échanger &b%available% &7de plus"
-      - ""
-      - "&7>> Cliquez pour échanger"
+        - "&7Mode&f : %mode%"
+        - ""
+        - "&7Quantité&f : &e%amount%"
+        - "&7Prix&f : &a%price%"
+        - "&7Vous pouvez échanger &b%available% &7de plus"
+        - ""
+        - "&7>> Cliquez pour échanger"
 
       # Placeholders : %amount%, %price%, %stock%, %mode%
       buy_lore:
-      - "&7Mode&f : %mode%"
-      - ""
-      - "&7Quantité&f : &e%amount%"
-      - "&7Prix&f : &a%price%"
-      - "&7Prix/unité&f : &a%price_per_unit%"
-      - "&7Actuellement &b%stock% &7en stock"
-      - ""
-      - "&7>> Cliquez pour acheter"
+        - "&7Mode&f : %mode%"
+        - ""
+        - "&7Quantité&f : &e%amount%"
+        - "&7Prix&f : &a%price%"
+        - "&7Prix/unité&f : &a%price_per_unit%"
+        - "&7Actuellement &b%stock% &7en stock"
+        - ""
+        - "&7>> Cliquez pour acheter"
 
       #Placeholders : %amount%, %price%, %available%, %mode%
       sell_lore:
-      - "&7Mode&f : %mode%"
-      - ""
-      - "&7Quantité&f : &e%amount%"
-      - "&7Prix&f : &a%price%"
-      - "&7Vous pouvez vendre &b%available% &7de plus"
-      - ""
-      - "&7>> Cliquez pour vendre"
+        - "&7Mode&f : %mode%"
+        - ""
+        - "&7Quantité&f : &e%amount%"
+        - "&7Prix&f : &a%price%"
+        - "&7Vous pouvez vendre &b%available% &7de plus"
+        - ""
+        - "&7>> Cliquez pour vendre"
 
       #Placeholders : %amount%, %price%, %available%, %mode%
       buy_and_sell_lore:
-      - "&7Mode&f : %mode%"
-      - ""
-      - "&7Quantité&f : &e%amount%"
-      - "&7Prix d'achat&f : &a%buy_price%"
-      - "&7Prix de vente&f : &a%sell_price%"
-      - "&7Actuellement &b%stock% &7en stock"
-      - "&7Vous pouvez vendre &b%available% &7de plus"
-      - ""
-      - "&7>> Clic gauche pour acheter"
-      - "&7>> Clic droit pour vendre"
+        - "&7Mode&f : %mode%"
+        - ""
+        - "&7Quantité&f : &e%amount%"
+        - "&7Prix d'achat&f : &a%buy_price%"
+        - "&7Prix de vente&f : &a%sell_price%"
+        - "&7Actuellement &b%stock% &7en stock"
+        - "&7Vous pouvez vendre &b%available% &7de plus"
+        - ""
+        - "&7>> Cliquez pour choisir"
     admin_shop:
       buy_and_sell_lore:
-      - "&7Mode&f : %mode%"
-      - ""
-      - "&7Quantité&f : &e%amount%"
-      - "&7Prix d'achat&f : &a%buy_price%"
-      - "&7Prix de vente&f : &a%sell_price%"
-      - "%limit_lore%"
-      - ""
-      - "&7>> Clic gauche pour acheter"
-      - "&7>> Clic droit pour vendre"
-
+        - "&7Mode&f : %mode%"
+        - ""
+        - "&7Quantité&f : &e%amount%"
+        - "&7Prix d'achat&f : &a%buy_price%"
+        - "&7Prix de vente&f : &a%sell_price%"
+        - "%limit_lore%"
+        - ""
+        - "&7>> Cliquez pour choisir"
       trade_lore:
-      - "&7Mode&f : %mode%"
-      - ""
-      - "&7Quantité&f : &e%amount%"
-      - "&7Prix&f : &a%price%"
-      - "%limit_lore%"
-      - ""
-      - "&7>> Cliquez pour échanger"
+        - "&7Mode&f : %mode%"
+        - ""
+        - "&7Quantité&f : &e%amount%"
+        - "&7Prix&f : &a%price%"
+        - "%limit_lore%"
+        - ""
+        - "&7>> Cliquez pour échanger"
 
       sell_lore:
-      - "&7Mode&f : %mode%"
-      - ""
-      - "&7Quantité&f : &e%amount%"
-      - "&7Prix&f : &a%price%"
-      - "%limit_lore%"
-      - ""
-      - "&7>> Cliquez pour vendre"
+        - "&7Mode&f : %mode%"
+        - ""
+        - "&7Quantité&f : &e%amount%"
+        - "&7Prix&f : &a%price%"
+        - "%limit_lore%"
+        - ""
+        - "&7>> Cliquez pour vendre"
 
       buy_lore:
-      - "&7Mode&f : %mode%"
-      - ""
-      - "&7Quantité&f : &e%amount%"
-      - "&7Prix&f : &a%price%"
-      - "%limit_lore%"
-      - ""
-      - "&7>> Cliquez pour acheter"
+        - "&7Mode&f : %mode%"
+        - ""
+        - "&7Quantité&f : &e%amount%"
+        - "&7Prix&f : &a%price%"
+        - "%limit_lore%"
+        - ""
+        - "&7>> Cliquez pour acheter"
 
       command_lore:
-      - "&7Mode&f : %mode%"
-      - ""
-      - "&7Quantité&f : &e%amount%"
-      - "&7Prix&f : &a%price%"
-      - "%limit_lore%"
-      - ""
-      - "&7>> Cliquez pour acheter la commande"
+        - "&7Mode&f : %mode%"
+        - ""
+        - "&7Quantité&f : &e%amount%"
+        - "&7Prix&f : &a%price%"
+        - "%limit_lore%"
+        - ""
+        - "&7>> Cliquez pour acheter la commande"
 
       buy_limit_lore:
-      - ""
-      - "&7Acheté : (&e%bought%&7/&e%limit%&7)"
-      - "&7Réinitialisé dans : &e%reset%"
+        - ""
+        - "&7Acheté : (&e%bought%&7/&e%limit%&7)"
+        - "&7Réinitialisé dans : &e%reset%"
 
       sell_limit_lore:
-      - ""
-      - "&7Vendu : (&e%bought%&7/&e%limit%&7)"
-      - "&7Réinitialisé dans : &e%reset%"
+        - ""
+        - "&7Vendu : (&e%bought%&7/&e%limit%&7)"
+        - "&7Réinitialisé dans : &e%reset%"
 
       buy_and_sell_limit_lore:
-      - ""
-      - "&7Acheté ou vendu : (&e%bought%&7/&e%limit%&7)"
-      - "&7Réinitialisé dans : &e%reset%"
+        - ""
+        - "&7Acheté ou vendu : (&e%bought%&7/&e%limit%&7)"
+        - "&7Réinitialisé dans : &e%reset%"
 
   
   #------------------ Modifier la façade de la boutique ------------------#
@@ -440,52 +437,52 @@ menus:
 
     player_shop:
       trade_lore:
-      - "&7Mode&f : %mode%"
-      - ""
-      - "&7Quantité&f : &e%amount%"
-      - "&7Prix&f : &a%price%"
-      - "&7Vous pouvez échanger &b%available% &7de plus"
-      - ""
-      - "&7>> Cliquez pour modifier"
+        - "&7Mode&f : %mode%"
+        - ""
+        - "&7Quantité&f : &e%amount%"
+        - "&7Prix&f : &a%price%"
+        - "&7Vous pouvez échanger &b%available% &7de plus"
+        - ""
+        - "&7>> Cliquez pour modifier"
 
       sell_lore:
-      - "&7Mode&f : %mode%"
-      - ""
-      - "&7Quantité&f : &e%amount%"
-      - "&7Prix&f : &a%price%"
-      - "&7Actuellement &b%stock% &7en stock !"
-      - ""
-      - "&7>> Cliquez pour modifier"
+        - "&7Mode&f : %mode%"
+        - ""
+        - "&7Quantité&f : &e%amount%"
+        - "&7Prix&f : &a%price%"
+        - "&7Actuellement &b%stock% &7en stock !"
+        - ""
+        - "&7>> Cliquez pour modifier"
 
       buy_lore:
-      - "&7Mode&f : %mode%"
-      - ""
-      - "&7Quantité&f : &e%amount%"
-      - "&7Prix&f : &a%price%"
-      - "&7Vous pouvez acheter &c%available% &7de plus !"
-      - ""
-      - "&7>> Cliquez pour modifier"
+        - "&7Mode&f : %mode%"
+        - ""
+        - "&7Quantité&f : &e%amount%"
+        - "&7Prix&f : &a%price%"
+        - "&7Vous pouvez acheter &c%available% &7de plus !"
+        - ""
+        - "&7>> Cliquez pour modifier"
 
       buy_and_sell_lore:
-      - "&7Mode&f : %mode%"
-      - ""
-      - "&7Quantité&f : &e%amount%"
-      - "&7Prix d'achat&f : &a%buy_price%"
-      - "&7Prix de vente&f : &a%sell_price%"
-      - "&7Vous pouvez acheter &c%available% &7de plus !"
-      - "&7Actuellement &b%stock% &7en stock !"
-      - ""
-      - "&7>> Cliquez pour modifier"
+        - "&7Mode&f : %mode%"
+        - ""
+        - "&7Quantité&f : &e%amount%"
+        - "&7Prix d'achat&f : &a%buy_price%"
+        - "&7Prix de vente&f : &a%sell_price%"
+        - "&7Vous pouvez acheter &c%available% &7de plus !"
+        - "&7Actuellement &b%stock% &7en stock !"
+        - ""
+        - "&7>> Cliquez pour modifier"
 
     admin_shop:
       standard_lore:
-      - "&7Mode&f : %mode%"
-      - ""
-      - "&7Quantité&f : &e%amount%"
-      - "&7Prix&f : &a%price%"
-      - "&7Limite du joueur&f : &a%limit%"
-      - ""
-      - "&7>> Cliquez pour modifier"
+        - "&7Mode&f : %mode%"
+        - ""
+        - "&7Quantité&f : &e%amount%"
+        - "&7Prix&f : &a%price%"
+        - "&7Limite du joueur&f : &a%limit%"
+        - ""
+        - "&7>> Cliquez pour modifier"
   
   #--------------------- Stockage ---------------------#
   storage:
@@ -502,9 +499,9 @@ menus:
       slot: 31
       name: "&eChanger l'apparence"
       lore:
-      - "&7Cliquez pour changer l'apparence du joueur pour cette boutique"
+        - "&7Cliquez pour changer l'apparence du joueur pour cette boutique"
     back_slot: 35
-    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 27, 28, 29, 30, 31, 32, 33, 34]
+    filler_slots: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 27, 28, 29, 30, 31, 32, 33, 34 ]
     items:
       armorer:
         material: IRON_CHESTPLATE
@@ -585,7 +582,7 @@ menus:
   sell_shop:
     title: "&8Êtes-vous sûr ?"
     size: 27
-    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+    filler_slots: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26 ]
     items:
       no_cancel:
         material: RED_TERRACOTTA
@@ -598,26 +595,26 @@ menus:
         name: "&aOui, vendre la boutique"
         # Placeholders : %amount%
         lore:
-        - "&7Vous recevrez &a50%"
-        - "&7(&a%amount%&7) de l'argent dépensé"
-        - "&7lorsque vous abandonnez/vendez cette boutique"
-        - ""
+          - "&7Vous recevrez &a50%"
+          - "&7(&a%amount%&7) de l'argent dépensé"
+          - "&7lorsque vous abandonnez/vendez cette boutique"
+          - ""
       # Si la boutique n'est pas réutilisable (créée avec un œuf d'apparition)
       yes_remove:
         material: LIME_TERRACOTTA
         slot: 12
         name: "&aOui, supprimer la boutique"
         lore:
-        - "&7Cela &csupprimera &7la"
-        - "&7Villager Shop et vous donnera"
-        - "&7un nouvel œuf d'apparition de boutique !"
+          - "&7Cela &csupprimera &7la"
+          - "&7Villager Shop et vous donnera"
+          - "&7un nouvel œuf d'apparition de boutique !"
 
   #-------------------- Edit Item --------------------#
   edit_item:
     title: "&8Éditer l'objet"
     size: 54
     item_slot: 4
-    filler_slots: [0, 1, 2, 3, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]
+    filler_slots: [ 0, 1, 2, 3, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53 ]
     back_slot: 53
     limit_cycle:
       player: "&eJoueur&7 | Serveur"
@@ -643,77 +640,77 @@ menus:
         name: "&eMode&7: %mode%"
         #%cycle% is replaced with cycle values above
         lore:
-        - "&7Click to cycle:"
-        - "%cycle%"
+          - "&7Click to cycle:"
+          - "%cycle%"
       amount:
         material: CHEST
         slot: 21
         name: "&eAmount&7: &r%amount%"
         lore:
-        - "&7Click to edit"
+          - "&7Click to edit"
       price:
         material: GOLD_INGOT
         slot: 23
         name: "&ePrice&7: &r%price%"
         lore:
-        - "&7Click to edit price"
-        - ""
-        - "&7>> Click with an item to trade"
-        - "&7for item instead of money"
+          - "&7Click to edit price"
+          - ""
+          - "&7>> Click with an item to trade"
+          - "&7for item instead of money"
         buy_and_sell_lore:
-        - "&7>> Left click to set buy price"
-        - "&7>> Right click to set sell price"
-        - ""
-        - "&7>> Click with an item to trade"
-        - "&7for item instead of money"
+          - "&7>> Left click to set buy price"
+          - "&7>> Right click to set sell price"
+          - ""
+          - "&7>> Click with an item to trade"
+          - "&7for item instead of money"
       delete:
         material: BARRIER
         slot: 49
         name: "&cRemove"
         lore:
-        - "&7Click to &cremove &7item"
+          - "&7Click to &cremove &7item"
       command:
         material: COMMAND_BLOCK
         slot: 31
         name: "&eCommand"
         lore:
-        - "&7Current command(s):"
-        - "&7- &e%command%&7"
-        - ""
-        - "&7>> Left click to add"
-        - "&7>> Right click to reset"
+          - "&7Current command(s):"
+          - "&7- &e%command%&7"
+          - ""
+          - "&7>> Left click to add"
+          - "&7>> Right click to reset"
       buy_limit:
         material: FEATHER
         slot: 31
         name: "&eBuy Limit&7: %limit%"
         lore:
-        - "&7>> Click to edit"
+          - "&7>> Click to edit"
       player_limit:
         material: PLAYER_HEAD
         slot: 30
         name: "&ePlayer Limit&7: &f%limit%"
         lore:
-        - "&7>> Right click to cycle:"
-        - "%cycle%"
-        - ""
-        - "&7>> Left click to edit"
+          - "&7>> Right click to cycle:"
+          - "%cycle%"
+          - ""
+          - "&7>> Left click to edit"
       limit_cooldown:
         material: CLOCK
         slot: 32
         name: "&eLimit cooldown&7: &f%cooldown%"
         lore:
-        - "&7Next limit reset: &e%next%"
-        - ""
-        - "&7>> Left click to edit cooldown"
-        - "&7>> Right click to &cclear &7limits"
+          - "&7Next limit reset: &e%next%"
+          - ""
+          - "&7>> Left click to edit cooldown"
+          - "&7>> Right click to &cclear &7limits"
       discount:
         material: EMERALD
         slot: 13
         name: "&eDiscount&7: &f%discount%%"
         lore:
-        - "&7Ends: &e%discount_end%"
-        - ""
-        - "&7>> Click to edit"
+          - "&7Ends: &e%discount_end%"
+          - ""
+          - "&7>> Click to edit"
       custom_amount_enabled:
         material: LIME_TERRACOTTA
         slot: 40
@@ -730,7 +727,7 @@ menus:
   confirm_action:
     title: "&8Êtes-vous sûr ?"
     size: 27
-    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+    filler_slots: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26 ]
     items:
       accept:
         material: GREEN_TERRACOTTA
@@ -745,7 +742,7 @@ menus:
     title_sell: "&8Vendre objet"
     title_trade: "&8Échanger objet"
     title_command: "&8Acheter commande"
-    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+    filler_slots: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26 ]
     back_slot: 26
     size: 27
     confirm_slot: 13
@@ -808,11 +805,11 @@ shop_item:
   material: VILLAGER_SPAWN_EGG
   #Placeholders: %shop_size%, %storage_size%
   lore:
-  - "&aPlacez cet œuf d'apparition"
-  - "&7pour créer votre propre"
-  - "&aBoutique de Villageois&7!"
-  - ""
-  - "&7>> &aTaille de la boutique&7 : &c%shop_size%"
-  - "&7>> &aTaille de stockage&7 : &c%storage_size%"
+    - "&aPlacez cet œuf d'apparition"
+    - "&7pour créer votre propre"
+    - "&aBoutique de Villageois&7!"
+    - ""
+    - "&7>> &aTaille de la boutique&7 : &c%shop_size%"
+    - "&7>> &aTaille de stockage&7 : &c%storage_size%"
 
   name: "&b&lCréer une boutique de villageois !"

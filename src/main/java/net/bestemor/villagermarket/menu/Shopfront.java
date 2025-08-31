@@ -336,11 +336,26 @@ public class Shopfront {
                         break;
                     case CUSTOMER:
                         ItemMode mode = shopItem.getMode();
-                        if (mode == ItemMode.BUY_AND_SELL) {
-                            mode = ItemMode.BUY;
+                        if (mode == ItemMode.BUY_AND_SELL || shopItem.isAllowCustomAmount()) {
+                            mode = mode == ItemMode.BUY_AND_SELL ? ItemMode.BUY : mode;
+                            BuyItemMenu buyItemMenu = new BuyItemMenu(shopItem, mode.inverted(), player, page);
+                            buyItemMenu.open(player);
+                        } else {
+                            if (mode == ItemMode.COMMAND && shop instanceof AdminShop adminShop) {
+                                adminShop.buyCommand(player, shopItem);
+                                Bukkit.getScheduler().runTaskAsynchronously(plugin, Shopfront.this::update);
+                                return;
+                            }
+                            switch (mode) {
+                                case SELL:
+                                    shop.buyItem(shopItem, shopItem.getAmount(), player);
+                                    break;
+                                case BUY:
+                                    shop.sellItem(shopItem, shopItem.getAmount(), player);
+                                    break;
+                            }
+                            Bukkit.getScheduler().runTaskAsynchronously(plugin, Shopfront.this::update);
                         }
-                        BuyItemMenu buyItemMenu = new BuyItemMenu(shopItem, mode.inverted(), player, page);
-                        buyItemMenu.open(player);
                         break;
                     case DETAILED:
                         if (event.isCancelled() && event.getCurrentItem() != null) {

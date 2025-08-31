@@ -408,7 +408,7 @@ public class ShopItem {
                 String currentPrice = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getSellPrice(amount, true)).build();
                 builder.replace("%price%", "§m" + prePrice + c + " " + currentPrice);
             } else {
-                builder.replaceCurrency("%price%", getSellPrice());
+                builder.replaceCurrency("%price%", getSellPrice(amount, false));
             }
             builder.replaceCurrency("%price_per_unit%", getSellPrice().divide(BigDecimal.valueOf(getAmount()), RoundingMode.HALF_UP));
         } else {
@@ -522,7 +522,7 @@ public class ShopItem {
     }
 
     public BigDecimal getBuyPrice(int amount, boolean applyDiscount) {
-        if (buyPrice == null) {
+        if (getBuyPrice(applyDiscount) == null) {
             return BigDecimal.ZERO;
         }
         return getBuyPrice(applyDiscount).divide(BigDecimal.valueOf(item.getAmount()), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(amount));

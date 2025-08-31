@@ -166,7 +166,7 @@ menus:
   buy_shop:
     title: "&8Comprar loja disponível"
     size: 27
-    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+    filler_slots: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26 ]
     items:
       shop_size:
         material: CHEST
@@ -196,7 +196,7 @@ menus:
   edit_shop:
     title: "&8Editar loja"
     size: 54
-    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]
+    filler_slots: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53 ]
     items:
       #Edit items for sale item
       edit_shopfront:
@@ -348,8 +348,7 @@ menus:
         - "&7Atualmente &b%stock% &7em estoque"
         - "&7Você pode vender &b%available% &7mais"
         - ""
-        - "&7>> Clique esquerdo para comprar"
-        - "&7>> Clique direito para vender"
+        - "&7>> Clique para escolher"
     admin_shop:
       buy_and_sell_lore:
         - "&7Modo&f: %mode%"
@@ -359,8 +358,7 @@ menus:
         - "&7Vender preço&f: &a%sell_price%"
         - "%limit_lore%"
         - ""
-        - "&7>> Clique esquerdo para comprar"
-        - "&7>> Clique direito para vender"
+        - "&7>> Clique para escolher"
       trade_lore:
         - "&7Modo&f: %mode%"
         - ""
@@ -480,7 +478,7 @@ menus:
       lore:
         - "&7Clique para definir uma skin para essa loja"
     back_slot: 35
-    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 27, 28, 29, 30, 31, 32, 33, 34]
+    filler_slots: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 27, 28, 29, 30, 31, 32, 33, 34 ]
     items:
       armorer:
         material: IRON_CHESTPLATE
@@ -560,7 +558,7 @@ menus:
   sell_shop:
     title: "&8Você tem certeza?"
     size: 27
-    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+    filler_slots: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26 ]
     items:
       no_cancel:
         material: RED_TERRACOTTA
@@ -592,7 +590,7 @@ menus:
     title: "&8Editar Item"
     size: 54
     item_slot: 4
-    filler_slots: [0, 1, 2, 3, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]
+    filler_slots: [ 0, 1, 2, 3, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53 ]
     back_slot: 53
     limit_cycle:
       player: "&eJogador&7 | Servidor"
@@ -704,7 +702,7 @@ menus:
   confirm_action:
     title: "&8Você tem certeza?"
     size: 27
-    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+    filler_slots: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26 ]
     items:
       accept:
         material: GREEN_TERRACOTTA
@@ -719,7 +717,7 @@ menus:
     title_sell: "&8Vender item"
     title_trade: "&8Trocar item"
     title_command: "&8Comprar comando"
-    filler_slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+    filler_slots: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 14, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26 ]
     back_slot: 26
     size: 27
     confirm_slot: 13

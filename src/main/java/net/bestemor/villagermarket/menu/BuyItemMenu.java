@@ -14,6 +14,9 @@ import net.bestemor.villagermarket.utils.VMUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class BuyItemMenu extends Menu {
 
     private final ShopItem item;
@@ -116,6 +119,13 @@ public class BuyItemMenu extends Menu {
             double balance = VMPlugin.getEconomy().getBalance(player);
             maxPurchasable = (int) Math.floor(balance / item.getBuyPrice(1, false).doubleValue());
             maxPurchasable = Math.min(shop.getAvailable(item), maxPurchasable);
+
+            int stackSize = item.getRawItem().getMaxStackSize();
+            long availableSlots = Arrays.stream(player.getInventory().getStorageContents())
+                    .filter(Objects::isNull)
+                    .count();
+
+            maxPurchasable = Math.min(maxPurchasable, (int) (availableSlots * stackSize));
         }
         return Math.max(1, maxPurchasable);
     }

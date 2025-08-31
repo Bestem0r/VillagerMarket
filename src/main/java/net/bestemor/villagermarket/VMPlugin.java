@@ -51,7 +51,7 @@ public class VMPlugin extends CorePlugin {
         boolean enableUpdate = !getConfig().contains("auto_update") || getConfig().getBoolean("auto_update");
         Bukkit.getLogger().info("[VillagerMarket] Auto config update is " + (enableUpdate ? "enabled" : "disabled"));
 
-        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.13.0-#2 of VillagerMarket! Please expect and report all bugs in my discord server");
+        Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.13.0-#3 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
