@@ -95,6 +95,7 @@ messages:
   no_permission_adminshop: "&c你没有权限使用该管理员商店!"
   no_permission_playershop: "&c你没有权限使用该玩家商店!"
   no_permission_change_name: "&c你没有权限修改商店名称!"
+  no_permission_edit_villager: "&cYou do not have permission to change villager appearance!"
   no_permission_command: "&c你没有权限使用此命令!"
   no_permission_buy_shop: "&c你没有权限购买商店!"
   no_permission_use_item: "&c你没有权限使用该物品!"

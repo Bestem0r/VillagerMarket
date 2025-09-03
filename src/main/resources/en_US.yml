@@ -95,6 +95,7 @@ messages:
   no_permission_adminshop: "&cYou do not have permission to use this Admin Shop!"
   no_permission_playershop: "&cYou do not have permission to buy this Player Shop!"
   no_permission_change_name: "&cYou do not have permission to change name!"
+  no_permission_edit_villager: "&cYou do not have permission to change villager appearance!"
   no_permission_command: "&cYou do not have permission to use this command!"
   no_permission_buy_shop: "&cYou do not have permission to buy shops!"
   no_permission_use_item: "&cYou do not have permission to use this item!"

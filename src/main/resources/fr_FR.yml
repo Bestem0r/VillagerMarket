@@ -96,6 +96,7 @@ messages:
   no_permission_adminshop: "&cVous n'avez pas la permission d'utiliser cette boutique d'administrateur !"
   no_permission_playershop: "&cVous n'avez pas la permission d'acheter cette boutique de joueur !"
   no_permission_change_name: "&cVous n'avez pas la permission de changer le nom !"
+  no_permission_edit_villager: "&cVous n'avez pas la permission de changer l'apparence du villageois!"
   no_permission_command: "&cVous n'avez pas la permission d'utiliser cette commande !"
   no_permission_buy_shop: "&cVous n'avez pas la permission d'acheter des boutiques !"
   no_permission_use_item: "&cVous n'avez pas la permission d'utiliser cet objet !"

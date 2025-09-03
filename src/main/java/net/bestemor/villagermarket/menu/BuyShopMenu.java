@@ -87,6 +87,8 @@ public class BuyShopMenu extends Menu {
                 return;
             }
 
+            if (plugin.isCitizensEnabled()) shop.setCitizensSkin(player.getName());
+
             economy.withdrawPlayer(player, shop.getCost());
             shop.setOwner(player);
 

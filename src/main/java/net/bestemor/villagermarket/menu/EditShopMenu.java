@@ -105,6 +105,11 @@ public class EditShopMenu extends Menu {
 
         int villagerSlot = ConfigManager.getInt("menus.edit_shop.items.edit_villager.slot" + slotSuffix);
         content.setClickable(villagerSlot, Clickable.fromConfig("menus.edit_shop.items.edit_villager", event -> {
+            Player player = (Player) event.getWhoClicked();
+            if (!player.hasPermission("villagermarket.edit_villager")) {
+                player.sendMessage(ConfigManager.getMessage("messages.no_permission_edit_villager"));
+                return;
+            }
             shop.openInventory(event.getWhoClicked(), ShopMenu.EDIT_VILLAGER);
         }));
 
