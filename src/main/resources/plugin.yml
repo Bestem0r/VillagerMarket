@@ -96,6 +96,9 @@ permissions:
   villagermarket.change_name:
     default: op
     description: Rename your shop
+  villagermarket.edit_villager:
+    default: op
+    description: Change your shop skin
   villagermarket.use_spawn_item:
     default: op
     description: Use shop spawn item
