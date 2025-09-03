@@ -289,8 +289,8 @@ public class PlayerShop extends VillagerShop {
     }
 
     protected String getGeneratedShopName() {
-        String ownerName = config.getString("ownerName");
-        return ConfigManager.getString("villager.name_taken").replace("%player%", ownerName == null ? "" : ownerName);
+        String shopOwnerName = this.getOwnerName().isBlank() ? config.getString("ownerName") : this.getOwnerName();
+        return ConfigManager.getString("villager.name_taken").replace("%player%", shopOwnerName == null ? "" : shopOwnerName);
     }
 
     public void abandon() {
