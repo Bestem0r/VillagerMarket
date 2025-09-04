@@ -40,6 +40,7 @@ public class BuyItemMenu extends Menu {
 
     @Override
     protected void onCreate(MenuContent content) {
+        int stackSize = item.getRawItem() == null ? 64 : item.getRawItem().getMaxStackSize();
         int[] fillerSlots = ConfigManager.getIntegerList("menus.buy_item.filler_slots").stream().mapToInt(i -> i).toArray();
         content.fillSlots(ConfigManager.getItem("items.filler").build(), fillerSlots);
 
@@ -60,11 +61,11 @@ public class BuyItemMenu extends Menu {
                 update();
             }));
             content.setPlaced(PlacedClickable.fromConfig("menus.buy_item.items.increase_stack", event -> {
-                amount += 64;
+                amount += amount == 1 ? Math.max(stackSize - 1, 1) : stackSize;
                 update();
             }));
             content.setPlaced(PlacedClickable.fromConfig("menus.buy_item.items.decrease_stack", event -> {
-                amount = Math.max(amount - 64, 1);
+                amount = Math.max(amount - stackSize, 1);
                 update();
             }));
             content.setPlaced(PlacedClickable.fromConfig("menus.buy_item.items.increase_max", event -> {
@@ -105,6 +106,7 @@ public class BuyItemMenu extends Menu {
                 case SELL:
                     shop.sellItem(item, amount, player);
                     break;
+                default: break;
             }
             shop.getShopfrontHolder().update();
             update();
