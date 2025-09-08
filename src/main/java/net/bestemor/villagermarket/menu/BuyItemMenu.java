@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 public class BuyItemMenu extends Menu {
 
@@ -115,8 +116,10 @@ public class BuyItemMenu extends Menu {
 
     private int getMaxAmount() {
         int maxPurchasable;
+        Optional<Integer> itemLimit = getPerItemLimit();
         if (mode == ItemMode.SELL) {
-            maxPurchasable = VMUtils.getAmountInventory(item.getRawItem(), player.getInventory());
+            int inventoryAmount = VMUtils.getAmountInventory(item.getRawItem(), player.getInventory());
+            maxPurchasable = itemLimit.map(integer -> Math.min(integer, inventoryAmount)).orElse(inventoryAmount);
         } else {
             double balance = VMPlugin.getEconomy().getBalance(player);
             maxPurchasable = (int) Math.floor(balance / item.getBuyPrice(1, false).doubleValue());
@@ -127,8 +130,18 @@ public class BuyItemMenu extends Menu {
                     .filter(Objects::isNull)
                     .count();
 
-            maxPurchasable = Math.min(maxPurchasable, (int) (availableSlots * stackSize));
+            int max = Math.min(maxPurchasable, (int) (availableSlots * stackSize));
+            maxPurchasable = itemLimit.map(integer -> Math.min(integer, max)).orElse(max);
         }
         return Math.max(1, maxPurchasable);
+    }
+
+    private Optional<Integer> getPerItemLimit() {
+        if (this.item.getLimit() <= 0 || this.player.hasPermission("villagermarket.bypass_limit")) return Optional.empty();
+        if (this.item.getLimitMode().equals(ShopItem.LimitMode.PLAYER)) {
+            return Optional.of(this.item.getLimit() - this.item.getPlayerLimit(player));
+        } else {
+            return Optional.of(this.item.getLimit() - this.item.getServerTrades());
+        }
     }
 }
