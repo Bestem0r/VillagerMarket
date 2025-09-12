@@ -270,7 +270,7 @@ public class PlayerListener implements Listener {
             PlayerShop playerShop = (PlayerShop) plugin.getShopManager().getShop(entity.getUniqueId());
             playerShop.setOwner(player);
         } else {
-            Bukkit.getLogger().severe(ChatColor.RED + "[VillagerMarket] Unable to spawn Villager! Does WorldGuard deny mobs pawn?");
+            Bukkit.getLogger().severe(ChatColor.RED + "[VillagerMarket] Unable to spawn Villager! Does WorldGuard deny mobs spawn?");
         }
 
         player.playSound(clickedLoc, ConfigManager.getSound("sounds.create_shop"), 1, 1);
