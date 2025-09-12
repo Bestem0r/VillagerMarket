@@ -24,8 +24,7 @@ public class CloneCommand implements ISubCommand {
 
     @Override
     public void run(CommandSender sender, String[] strings) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
 
             player.sendMessage(ConfigManager.getMessage("messages.clone_shop"));
 

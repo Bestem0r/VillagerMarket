@@ -25,9 +25,9 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 public class EntityListener implements Listener {
-    
+
     private final VMPlugin plugin;
-    
+
     public EntityListener(VMPlugin plugin) {
         this.plugin = plugin;
         if (VersionUtils.getMCVersion() > 13) {
@@ -41,7 +41,7 @@ public class EntityListener implements Listener {
             }, plugin);
         }
     }
-    
+
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         Entity entity = event.getEntity();
@@ -50,7 +50,7 @@ public class EntityListener implements Listener {
         }
     }
 
-    @EventHandler (priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onEntityDamage(EntityDamageEvent event) {
         if (plugin.getShopManager().getShop(event.getEntity().getUniqueId()) != null) {
             event.setCancelled(true);
@@ -60,8 +60,7 @@ public class EntityListener implements Listener {
     @EventHandler
     public void onHitEntity(EntityDamageByEntityEvent event) {
         if (plugin.getShopManager().getShop(event.getEntity().getUniqueId()) != null) {
-            if (event.getDamager() instanceof Player) {
-                Player player = (Player) event.getDamager();
+            if (event.getDamager() instanceof Player player) {
                 if (!player.isSneaking()) return;
                 if (!player.hasPermission("villagermarket.spy")) return;
                 VillagerShop villagerShop = plugin.getShopManager().getShop(event.getEntity().getUniqueId());

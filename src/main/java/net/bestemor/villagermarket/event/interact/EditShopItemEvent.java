@@ -13,8 +13,9 @@ public class EditShopItemEvent extends InteractWithShopEvent {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
     private BigDecimal newValue;
     private EditType type;
-    public EditShopItemEvent(@NotNull Player who, VillagerShop shop, ShopItem shopItem,BigDecimal newValue,EditType type) {
-        super(who,shop,shopItem);
+
+    public EditShopItemEvent(@NotNull Player who, VillagerShop shop, ShopItem shopItem, BigDecimal newValue, EditType type) {
+        super(who, shop, shopItem);
         this.newValue = newValue;
         this.type = type;
     }
@@ -35,7 +36,9 @@ public class EditShopItemEvent extends InteractWithShopEvent {
         this.type = type;
     }
 
-    /** Rest of file is required boilerplate for custom events **/
+    /**
+     * Rest of file is required boilerplate for custom events
+     **/
     @NotNull
     @Override
     public HandlerList getHandlers() {

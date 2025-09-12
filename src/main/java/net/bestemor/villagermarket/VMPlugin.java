@@ -23,7 +23,7 @@ import java.util.*;
 
 public class VMPlugin extends CorePlugin {
 
-    private Economy econ = null;
+    private static Economy economy = null;
 
     public static final List<String> log = new ArrayList<>();
 
@@ -51,7 +51,7 @@ public class VMPlugin extends CorePlugin {
         boolean enableUpdate = !getConfig().contains("auto_update") || getConfig().getBoolean("auto_update");
         Bukkit.getLogger().info("[VillagerMarket] Auto config update is " + (enableUpdate ? "enabled" : "disabled"));
 
-        //Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.12.0-#3 of VillagerMarket! Please expect and report all bugs in my discord server");
+        //Bukkit.getLogger().warning("[VillagerMarket] §cYou are running a §aBETA 1.13.0-#3 of VillagerMarket! Please expect and report all bugs in my discord server");
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().getPlugin("VillagerBank") != null) {
@@ -60,7 +60,7 @@ public class VMPlugin extends CorePlugin {
             }
         }, 31);
 
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new PlaceholderManager(this).register();
         }
         loadMappings();
@@ -111,7 +111,6 @@ public class VMPlugin extends CorePlugin {
                 .addSubCommand("trusted", new TrustedCommand(this))
                 .addSubCommand("getid", new GetIDCommand(this))
                 .addSubCommand("expiredstorage", new ExpiredStorageCommand(this))
-                .addSubCommand("regen", new RegenCommand(this))
                 .addSubCommand("clone", new CloneCommand(this))
                 .addSubCommand("setsize", new SetSizeCommand(this))
                 .addSubCommand("toggleperm", new ToggleRequirePermissionCommand(this))
@@ -130,17 +129,21 @@ public class VMPlugin extends CorePlugin {
         loadMappings();
     }
 
-    /** Setup Vault integration */
+    /**
+     * Setup Vault integration
+     */
     private void setupEconomy() {
         RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(Economy.class);
         if (economyProvider != null) {
-            econ = economyProvider.getProvider();
+            economy = economyProvider.getProvider();
         } else {
             Bukkit.getLogger().severe("[VillagerMarket] Could not find Economy Provider!");
         }
     }
 
-    /** Registers event listeners */
+    /**
+     * Registers event listeners
+     */
     private void registerEvents() {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new EntityListener(this), this);
@@ -152,9 +155,11 @@ public class VMPlugin extends CorePlugin {
         return 82965;
     }
 
-    /** Saves log to /log/ folder and clears log */
+    /**
+     * Saves log to /log/ folder and clears log
+     */
     public void saveLog() {
-        String fileName = new Date().toString().replace(":","-");
+        String fileName = new Date().toString().replace(":", "-");
         File file = new File(getDataFolder() + "/logs/" + fileName + ".yml");
         FileConfiguration logConfig = YamlConfiguration.loadConfiguration(file);
         logConfig.set("log", log);
@@ -170,6 +175,7 @@ public class VMPlugin extends CorePlugin {
     public ShopManager getShopManager() {
         return shopManager;
     }
+
     public PlayerListener getPlayerListener() {
         return playerListener;
     }
@@ -178,9 +184,10 @@ public class VMPlugin extends CorePlugin {
         return localizedMaterials.get(material);
     }
 
-    public Economy getEconomy() {
-        return econ;
+    public static Economy getEconomy() {
+        return economy;
     }
+
     public boolean isCitizensEnabled() {
         return Bukkit.getPluginManager().isPluginEnabled("Citizens");
     }

@@ -28,16 +28,16 @@ import java.util.Optional;
 public class EditItemMenu extends Menu {
 
     private final VMPlugin plugin;
-    private final ShopItem shopItem;
+    private final ShopItem item;
     private final VillagerShop shop;
     private final int page;
 
-    public EditItemMenu(VMPlugin plugin, VillagerShop shop, ShopItem shopItem, int page) {
+    public EditItemMenu(VMPlugin plugin, VillagerShop shop, ShopItem item, int page) {
         super(MenuConfig.fromConfig("menus.edit_item"));
 
         this.page = page;
         this.plugin = plugin;
-        this.shopItem = shopItem;
+        this.item = item;
         this.shop = shop;
     }
 
@@ -45,23 +45,23 @@ public class EditItemMenu extends Menu {
     protected void onCreate(MenuContent content) {
         int[] slots = ConfigManager.getIntArray("menus.edit_item.filler_slots");
         content.fillSlots(ConfigManager.getItem("items.filler").build(), slots);
-        shopItem.reloadMeta(shop);
+        item.reloadMeta(shop);
 
         int backSlot = ConfigManager.getInt("menus.edit_item.back_slot");
         content.setClickable(backSlot, Clickable.fromConfig("items.back", event -> {
-            Player player = (Player) event.getWhoClicked(); 
-            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+            Player player = (Player) event.getWhoClicked();
+            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.back"), 0.5f, 1);
             shop.getShopfrontHolder().open(player, Shopfront.Type.EDITOR, this.page);
         }));
-        
+
         content.setPlaced(PlacedClickable.fromConfig("menus.edit_item.items.delete", event -> {
             Player player = (Player) event.getWhoClicked();
-            
+
             new ConfirmActionMenu(() -> {
-                shop.getShopfrontHolder().removeItem(shopItem.getSlot());
+                shop.getShopfrontHolder().removeItem(item.getSlot());
                 player.playSound(player.getLocation(), ConfigManager.getSound("sounds.remove_item"), 1, 1);
                 shop.openInventory(player, ShopMenu.EDIT_SHOPFRONT);
-                DeleteShopItemEvent deleteShopItemEvent = new DeleteShopItemEvent(player,this.shop, shopItem);
+                DeleteShopItemEvent deleteShopItemEvent = new DeleteShopItemEvent(player, this.shop, item);
                 Bukkit.getPluginManager().callEvent(deleteShopItemEvent);
             }, () -> open(player)).open(player);
         }));
@@ -74,9 +74,9 @@ public class EditItemMenu extends Menu {
         String p = "menus.edit_item.items.";
 
         int slot = ConfigManager.getInt("menus.edit_item.item_slot");
-        content.setClickable(slot, Clickable.empty(shopItem.getRawItem()));
+        content.setClickable(slot, Clickable.empty(item.getRawItem()));
 
-        int cooldownSlot = ConfigManager.getInt( p + "limit_cooldown.slot");
+        int cooldownSlot = ConfigManager.getInt(p + "limit_cooldown.slot");
         int commandSlot = ConfigManager.getInt(p + "command.slot");
         int buyLimitSlot = ConfigManager.getInt(p + "buy_limit.slot");
         int playerLimitSlot = ConfigManager.getInt(p + "player_limit.slot");
@@ -86,55 +86,55 @@ public class EditItemMenu extends Menu {
         content.setClickable(buyLimitSlot, null);
         content.setClickable(playerLimitSlot, null);
 
-        String mode = shopItem.getMode().name().toLowerCase(Locale.ROOT);
+        String mode = item.getMode().name().toLowerCase(Locale.ROOT);
         String modeName = ConfigManager.getString("menus.shopfront.modes." + mode);
-        String modeCycle = shop.getModeCycle(mode, shopItem.isItemTrade());
+        String modeCycle = shop.getModeCycle(mode, item.isItemTrade());
 
         ItemStack modeItem = ConfigManager.getItem(p + "mode").replace("%cycle%", modeCycle).replace("%mode%", modeName).build();
-        ItemStack amountItem = ConfigManager.getItem(p + "amount").replace("%amount%", String.valueOf(shopItem.getAmount())).build();
+        ItemStack amountItem = ConfigManager.getItem(p + "amount").replace("%amount%", String.valueOf(item.getAmount())).build();
         ItemBuilder priceBuilder = ConfigManager.getItem(p + "price");
 
-        if (shopItem.isItemTrade()) {
-            priceBuilder.replace("%price%", shopItem.getItemTradeAmount() + "x " + shopItem.getItemTradeName());
-        } else if (shopItem.getSellPrice().equals(BigDecimal.ZERO)) {
+        if (item.isItemTrade()) {
+            priceBuilder.replace("%price%", item.getItemTradeAmount() + "x " + item.getItemTradeName());
+        } else if (item.getSellPrice().equals(BigDecimal.ZERO)) {
             priceBuilder.replace("%price%", ConfigManager.getString("quantity.free"));
-        } else if (shopItem.getMode() == ItemMode.BUY_AND_SELL) {
-            priceBuilder.replace("%price%", VMUtils.formatBuySellPrice(shopItem.getBuyPrice(false), shopItem.getSellPrice(false)));
+        } else if (item.getMode() == ItemMode.BUY_AND_SELL) {
+            priceBuilder.replace("%price%", VMUtils.formatBuySellPrice(item.getBuyPrice(false), item.getSellPrice(false)));
         } else {
-            priceBuilder.replaceCurrency("%price%",  shopItem.getSellPrice(false));
+            priceBuilder.replaceCurrency("%price%", item.getSellPrice(false));
         }
         ItemStack priceItem = priceBuilder.build();
-        if (shopItem.getMode() == ItemMode.BUY_AND_SELL) {
+        if (item.getMode() == ItemMode.BUY_AND_SELL) {
             ItemMeta meta = priceItem.getItemMeta();
             meta.setLore(ConfigManager.getStringList(p + "price.buy_and_sell_lore"));
             priceItem.setItemMeta(meta);
         }
 
-        if (shopItem.isItemTrade()) {
-            priceItem.setAmount(shopItem.getItemTradeAmount() > shopItem.getItemTrade().getAmount() ? 1 : shopItem.getItemTrade().getAmount());
-            priceItem.setType(shopItem.getItemTrade().getType());
+        if (item.isItemTrade()) {
+            priceItem.setAmount(item.getItemTradeAmount() > item.getItemTrade().getAmount() ? 1 : item.getItemTrade().getAmount());
+            priceItem.setType(item.getItemTrade().getType());
         }
 
-        String limit = (shopItem.getLimit() == 0 ? ConfigManager.getString("quantity.unlimited") : String.valueOf(shopItem.getLimit()));
+        String limit = (item.getLimit() == 0 ? ConfigManager.getString("quantity.unlimited") : String.valueOf(item.getLimit()));
 
         if (shop instanceof AdminShop) {
             ItemStack limitItem = ConfigManager.getItem(p + "limit_cooldown")
-                    .replace("%cooldown%", shopItem.getCooldown() == null ? "none" : shopItem.getCooldown())
-                    .replace("%next%", ConfigManager.getTimeLeft(shopItem.getNextReset())).build();
+                    .replace("%cooldown%", item.getCooldown() == null ? "none" : item.getCooldown())
+                    .replace("%next%", ConfigManager.getTimeLeft(item.getNextReset())).build();
             content.setClickable(cooldownSlot, Clickable.of(limitItem, this::handleCooldown));
 
-            String cycleName = shopItem.getLimitMode().name().toLowerCase();
+            String cycleName = item.getLimitMode().name().toLowerCase();
             content.setClickable(playerLimitSlot, Clickable.of(ConfigManager.getItem(p + "player_limit")
                     .replace("%limit%", limit)
                     .replace("%cycle%", ConfigManager.getString("menus.edit_item.limit_cycle." + cycleName)).build(), this::handleLimit));
 
-        } else if (shopItem.getMode() == ItemMode.BUY || shopItem.getMode() == ItemMode.BUY_AND_SELL) {
+        } else if (item.getMode() == ItemMode.BUY || item.getMode() == ItemMode.BUY_AND_SELL) {
             content.setClickable(buyLimitSlot, Clickable.of(ConfigManager.getItem(p + "buy_limit")
                     .replace("%limit%", limit).build(), this::handleLimit));
         }
 
-        if (shopItem.getMode() == ItemMode.COMMAND) {
-            ItemStack commandItem =  ConfigManager.getItem(p + "command").build();
+        if (item.getMode() == ItemMode.COMMAND) {
+            ItemStack commandItem = ConfigManager.getItem(p + "command").build();
             ItemMeta meta = commandItem.getItemMeta();
             List<String> lore = meta.getLore();
 
@@ -143,7 +143,7 @@ public class EditItemMenu extends Menu {
                 int index = lore.indexOf(commandLine.get());
                 lore.removeIf(l -> l.contains("%command%"));
 
-                for (String command : shopItem.getCommands()) {
+                for (String command : item.getCommands()) {
                     lore.add(index, commandLine.get().replace("%command%", command));
                     index++;
                 }
@@ -154,7 +154,7 @@ public class EditItemMenu extends Menu {
             content.setClickable(commandSlot, Clickable.of(commandItem, event -> {
 
                 if (event.getClick() == ClickType.RIGHT) {
-                    shopItem.resetCommand();
+                    item.resetCommand();
                     update();
                     return;
                 }
@@ -163,7 +163,7 @@ public class EditItemMenu extends Menu {
                 Player player = (Player) event.getWhoClicked();
                 player.sendMessage(ConfigManager.getMessage("messages.type_command"));
                 plugin.getChatListener().addStringListener(player, result -> {
-                    shopItem.addCommand(result);
+                    item.addCommand(result);
                     update();
                     open(player);
                 });
@@ -174,17 +174,25 @@ public class EditItemMenu extends Menu {
             event.getView().close();
             typeAmount((Player) event.getWhoClicked());
         }));
-        
+
         content.setClickable(ConfigManager.getInt(p + "mode.slot"), Clickable.of(modeItem, event -> {
-            shopItem.cycleTradeMode();
+            item.cycleTradeMode();
             update();
         }));
+
+        content.setPlaced(PlacedClickable.fromConfig(p + "custom_amount_" + (item.isAllowCustomAmount() ? "enabled" : "disabled"), event -> {
+            Player player = (Player) event.getWhoClicked();
+            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+            item.setAllowCustomAmount(!item.isAllowCustomAmount());
+            update();
+        }));
+
         content.setClickable(ConfigManager.getInt(p + "price.slot"), Clickable.of(priceItem, event -> {
-            Player player = (Player) event.getWhoClicked(); 
+            Player player = (Player) event.getWhoClicked();
             player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
             if (event.getCursor() != null && event.getCursor().getType() != Material.AIR) {
                 //Set Permissions
-                if(player.hasPermission("villagermarket.set_trade_type")){
+                if (player.hasPermission("villagermarket.set_trade_type")) {
                     player.sendMessage(ConfigManager.getMessage("messages.type_amount"));
                     ItemStack clone = event.getCursor().clone();
                     event.getView().close();
@@ -194,7 +202,7 @@ public class EditItemMenu extends Menu {
                             return;
                         }
                         clone.setAmount(amount.intValue() > clone.getMaxStackSize() ? 1 : amount.intValue());
-                        shopItem.setItemTrade(clone, amount.intValue());
+                        item.setItemTrade(clone, amount.intValue());
                         update();
                         open(player);
                     }));
@@ -203,16 +211,16 @@ public class EditItemMenu extends Menu {
                 }
 
             } else {
-                shopItem.setItemTrade(null, 0);
+                item.setItemTrade(null, 0);
                 event.getView().close();
-                typePrice(player, shopItem.getMode() == ItemMode.BUY_AND_SELL && !event.getClick().isRightClick());
+                typePrice(player, item.getMode() == ItemMode.BUY_AND_SELL && !event.getClick().isRightClick());
             }
         }));
 
-        if (!shopItem.isItemTrade()) {
+        if (!item.isItemTrade()) {
             ItemStack discountItem = ConfigManager.getItem(p + "discount")
-                    .replace("%discount%", String.valueOf(shopItem.getDiscount()))
-                    .replace("%discount_end%", ConfigManager.getTimeLeft(shopItem.getDiscountEnd())).build();
+                    .replace("%discount%", String.valueOf(item.getDiscount()))
+                    .replace("%discount_end%", ConfigManager.getTimeLeft(item.getDiscountEnd())).build();
 
             content.setClickable(ConfigManager.getInt(p + "discount.slot"), Clickable.of(discountItem, event -> {
                 event.getView().close();
@@ -248,13 +256,13 @@ public class EditItemMenu extends Menu {
                 player.sendMessage(ConfigManager.getMessage("messages.not_valid_range"));
                 return;
             }
-            EditShopItemEvent editShopItemEvent = new EditShopItemEvent(player,this.shop, shopItem,result, EditType.AMOUNT);
+            EditShopItemEvent editShopItemEvent = new EditShopItemEvent(player, this.shop, item, result, EditType.AMOUNT);
             Bukkit.getPluginManager().callEvent(editShopItemEvent);
-            if(editShopItemEvent.isCancelled()){
+            if (editShopItemEvent.isCancelled()) {
                 return;
             }
             player.sendMessage(ConfigManager.getMessage("messages.amount_successful"));
-            shopItem.setAmount(result.intValue());
+            item.setAmount(result.intValue());
             update();
             open(player);
         });
@@ -269,16 +277,16 @@ public class EditItemMenu extends Menu {
                 player.sendMessage(ConfigManager.getMessage("messages.max_item_price"));
                 return;
             }
-            EditShopItemEvent editShopItemEvent = new EditShopItemEvent(player,this.shop, shopItem,result,EditType.PRICE);
+            EditShopItemEvent editShopItemEvent = new EditShopItemEvent(player, this.shop, item, result, EditType.PRICE);
             Bukkit.getPluginManager().callEvent(editShopItemEvent);
-            if(editShopItemEvent.isCancelled()){
+            if (editShopItemEvent.isCancelled()) {
                 return;
             }
             player.sendMessage(ConfigManager.getMessage("messages.price_successful"));
             if (isBuy) {
-                shopItem.setBuyPrice(result);
+                item.setBuyPrice(result);
             } else {
-                shopItem.setSellPrice(result);
+                item.setSellPrice(result);
             }
             update();
             open(player);
@@ -298,14 +306,14 @@ public class EditItemMenu extends Menu {
                 return;
             }
             if (discount == 0) {
-                shopItem.setDiscount(0, Instant.MIN);
+                item.setDiscount(0, Instant.MIN);
                 update();
                 open(player);
                 return;
             }
-            EditShopItemEvent editShopItemEvent = new EditShopItemEvent(player,this.shop, shopItem,new BigDecimal(discount),EditType.DISCOUNT);
+            EditShopItemEvent editShopItemEvent = new EditShopItemEvent(player, this.shop, item, new BigDecimal(discount), EditType.DISCOUNT);
             Bukkit.getPluginManager().callEvent(editShopItemEvent);
-            if(editShopItemEvent.isCancelled()){
+            if (editShopItemEvent.isCancelled()) {
                 return;
             }
 
@@ -317,7 +325,7 @@ public class EditItemMenu extends Menu {
                     player.sendMessage(ConfigManager.getMessage("messages.not_valid_time"));
                     return;
                 }
-                shopItem.setDiscount(discount, VMUtils.getTimeFromNow(timeS));
+                item.setDiscount(discount, VMUtils.getTimeFromNow(timeS));
                 update();
                 open(player);
             });
@@ -328,7 +336,7 @@ public class EditItemMenu extends Menu {
         Player player = (Player) event.getWhoClicked();
         if (shop instanceof AdminShop && event.getClick() == ClickType.RIGHT) {
             player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-            shopItem.cycleLimitMode();
+            item.cycleLimitMode();
             update();
             return;
         }
@@ -336,7 +344,7 @@ public class EditItemMenu extends Menu {
 
         player.sendMessage(ConfigManager.getMessage("messages.type_limit_" + (shop instanceof AdminShop ? "admin" : "player")));
         plugin.getChatListener().addDecimalListener(player, (result) -> {
-            shopItem.setLimit(result.intValue());
+            item.setLimit(result.intValue());
             update();
             open(player);
         });
@@ -349,7 +357,7 @@ public class EditItemMenu extends Menu {
                 event.getView().close();
                 player.sendMessage(ConfigManager.getMessage("messages.type_limit_cooldown"));
                 plugin.getChatListener().addStringListener(player, (result) -> {
-                    shopItem.setCooldown(result);
+                    item.setCooldown(result);
                     player.sendMessage(ConfigManager.getMessage("messages.limit_cooldown_set").replace("%time%", result));
                     update();
                     open(player);
@@ -357,7 +365,7 @@ public class EditItemMenu extends Menu {
                 break;
             case RIGHT:
                 player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-                shopItem.clearLimits();
+                item.clearLimits();
                 player.sendMessage(ConfigManager.getMessage("messages.limits_cleared"));
         }
     }

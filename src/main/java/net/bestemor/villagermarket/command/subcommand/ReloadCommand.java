@@ -12,6 +12,7 @@ import java.util.List;
 public class ReloadCommand implements ISubCommand {
 
     private final VMPlugin plugin;
+
     public ReloadCommand(VMPlugin plugin) {
         this.plugin = plugin;
     }

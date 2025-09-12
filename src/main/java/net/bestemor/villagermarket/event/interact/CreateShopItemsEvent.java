@@ -6,14 +6,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class CreateShopItemsEvent extends InteractWithShopEvent{
+public class CreateShopItemsEvent extends InteractWithShopEvent {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
 
     public CreateShopItemsEvent(@NotNull Player who, VillagerShop shop, ShopItem shopItem) {
         super(who, shop, shopItem);
     }
 
-    /** Rest of file is required boilerplate for custom events **/
+    /**
+     * Rest of file is required boilerplate for custom events
+     **/
     @NotNull
     @Override
     public HandlerList getHandlers() {

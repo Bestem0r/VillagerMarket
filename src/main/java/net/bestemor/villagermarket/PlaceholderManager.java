@@ -1,10 +1,9 @@
 package net.bestemor.villagermarket;
 
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.bestemor.core.config.ConfigManager;
-import net.bestemor.villagermarket.shop.AdminShop;
 import net.bestemor.villagermarket.shop.PlayerShop;
 import net.bestemor.villagermarket.shop.VillagerShop;
-import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -55,19 +54,21 @@ public class PlaceholderManager extends PlaceholderExpansion {
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
 
-        if (params.equals("owned_shops")) {
-            return String.valueOf(plugin.getShopManager().getOwnedShops(player).size());
-        }
-        if (params.equals("available_for_rent")) {
-            return String.valueOf(plugin.getShopManager().getShops().stream()
-                    .filter(s -> s instanceof PlayerShop)
-                    .map(s -> (PlayerShop) s)
-                    .filter(s -> !s.hasOwner()).count());
-        }
-        if (params.equals("max_shops")) {
-            int maxShops = plugin.getShopManager().getMaxShops(player);
+        switch (params) {
+            case "owned_shops" -> {
+                return String.valueOf(plugin.getShopManager().getOwnedShops(player).size());
+            }
+            case "available_for_rent" -> {
+                return String.valueOf(plugin.getShopManager().getShops().stream()
+                        .filter(s -> s instanceof PlayerShop)
+                        .map(s -> (PlayerShop) s)
+                        .filter(s -> !s.hasOwner()).count());
+            }
+            case "max_shops" -> {
+                int maxShops = plugin.getShopManager().getMaxShops(player);
 
-            return maxShops == -1 ? ConfigManager.getString("quantity.unlimited") : String.valueOf(maxShops);
+                return maxShops == -1 ? ConfigManager.getString("quantity.unlimited") : String.valueOf(maxShops);
+            }
         }
 
         String[] split = params.split("_");

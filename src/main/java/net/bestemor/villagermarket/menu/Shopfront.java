@@ -33,7 +33,7 @@ public class Shopfront {
 
     private Inventory editorInventory;
     private final Map<UUID, Inventory> customerInventories = new ConcurrentHashMap<>();
-    private Inventory detailedInventory;
+    private final Inventory detailedInventory;
 
     private ItemStack back;
     private ItemStack filler;
@@ -74,7 +74,7 @@ public class Shopfront {
     }
 
     private String getDetailedTitle() {
-        String detailedTitle =  (ConfigManager.getString("menus.shopfront.title") + " " + ConfigManager.getString("menus.shopfront.detail_suffix"))
+        String detailedTitle = (ConfigManager.getString("menus.shopfront.title") + " " + ConfigManager.getString("menus.shopfront.detail_suffix"))
                 .replace("%shop%", shop.getShopName());
         if (isInfinite) {
             detailedTitle += " | " + (page + 1);
@@ -96,7 +96,9 @@ public class Shopfront {
             int start = page * 45;
             int end = start + 44;
             for (int slot : shop.getShopfrontHolder().getItemList().keySet()) {
-                if (slot < start || slot > end) { continue; }
+                if (slot < start || slot > end) {
+                    continue;
+                }
                 items.put(slot - start, shop.getShopfrontHolder().getItemList().get(slot));
             }
         } else {
@@ -107,7 +109,8 @@ public class Shopfront {
             for (ShopItem shopItem : shopItems) {
                 shopItem.reloadMeta(shop);
             }
-        } catch (ConcurrentModificationException ignore) {}
+        } catch (ConcurrentModificationException ignore) {
+        }
 
     }
 
@@ -142,7 +145,7 @@ public class Shopfront {
             if (item == null) {
                 continue;
             }
-            customerInventory.setItem(slot, item.getCustomerItem(player));
+            customerInventory.setItem(slot, item.getCustomerItem(player, item.getAmount()));
         }
         buildBottom(customerInventory);
         if (!ConfigManager.getBoolean("disable_lore_toggle")) {
@@ -151,6 +154,7 @@ public class Shopfront {
 
         return customerInventory;
     }
+
     private void updateDetailedInventory() {
         detailedInventory.clear();
         for (Integer slot : items.keySet()) {
@@ -168,6 +172,7 @@ public class Shopfront {
             detailedInventory.setItem(size - 1, details);
         }
     }
+
     private void updateEditorInventory() {
         editorInventory = Bukkit.createInventory(null, size, getEditorTitle());
         for (Integer slot : items.keySet()) {
@@ -201,7 +206,7 @@ public class Shopfront {
 
     private void buildBottom(Inventory inventory) {
         if (isInfinite) {
-            for (int i = inventory.getSize() - 9; i < inventory.getSize(); i ++) {
+            for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
                 inventory.setItem(i, filler);
             }
             if (page != 0) {
@@ -240,8 +245,12 @@ public class Shopfront {
         @SuppressWarnings("unused")
         @EventHandler
         public void onClick(InventoryClickEvent event) {
-            if (this.player != event.getWhoClicked()) { return; }
-            if (event.getRawSlot() < 0) { return; }
+            if (this.player != event.getWhoClicked()) {
+                return;
+            }
+            if (event.getRawSlot() < 0) {
+                return;
+            }
 
             if (Instant.now().isBefore(nextClick)) {
                 player.sendMessage(ConfigManager.getMessage("messages.shopfront_cooldown"));
@@ -266,13 +275,13 @@ public class Shopfront {
             if (event.getRawSlot() == event.getView().getTopInventory().getSize() - 1) {
                 event.setCancelled(true);
                 boolean owner;
-                if (shop instanceof PlayerShop playerShop){
+                if (shop instanceof PlayerShop playerShop) {
                     owner = playerShop.hasOwner() && playerShop.getOwnerUUID().equals(player.getUniqueId());
                 } else {
                     owner = player.hasPermission("villagermarket.admin");
                 }
 
-                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.back"), 0.5f, 1);
 
                 if (type == Type.EDITOR) {
                     shop.openInventory(player, ShopMenu.EDIT_SHOP);
@@ -297,12 +306,15 @@ public class Shopfront {
             }
             if (event.getRawSlot() < event.getView().getTopInventory().getSize()) {
                 event.setCancelled(true);
+
+                int slot = event.getSlot() + page * 45;
+                ShopItem shopItem = shop.getShopfrontHolder().getItemList().get(slot);
+
                 switch (type) {
                     case EDITOR:
 
-                        int slot = event.getSlot() + page * 45;
                         ItemStack cursor = event.getCursor();
-                        
+
                         if (cursor != null && cursor.getType() != Material.AIR) {
                             if (plugin.getShopManager().isBlackListed(cursor.getType())) {
                                 player.sendMessage(ConfigManager.getMessage("messages.blacklisted"));
@@ -316,16 +328,34 @@ public class Shopfront {
 
                             event.getView().close();
                         } else {
-                            ShopItem shopItem = shop.getShopfrontHolder().getItemList().get(slot);
                             if (shopItem != null) {
                                 player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
                                 shopItem.openEditor(player, shop, page);
                             }
                         }
-                        
                         break;
                     case CUSTOMER:
-                        shop.customerInteract(event, event.getSlot() + page * 45);
+                        ItemMode mode = shopItem.getMode();
+                        if (mode == ItemMode.BUY_AND_SELL || shopItem.isAllowCustomAmount()) {
+                            mode = mode == ItemMode.BUY_AND_SELL ? ItemMode.BUY : mode;
+                            BuyItemMenu buyItemMenu = new BuyItemMenu(shopItem, mode.inverted(), player, page);
+                            buyItemMenu.open(player);
+                        } else {
+                            if (mode == ItemMode.COMMAND && shop instanceof AdminShop adminShop) {
+                                adminShop.buyCommand(player, shopItem);
+                                Bukkit.getScheduler().runTaskAsynchronously(plugin, Shopfront.this::update);
+                                return;
+                            }
+                            switch (mode) {
+                                case SELL:
+                                    shop.buyItem(shopItem, shopItem.getAmount(), player);
+                                    break;
+                                case BUY:
+                                    shop.sellItem(shopItem, shopItem.getAmount(), player);
+                                    break;
+                            }
+                            Bukkit.getScheduler().runTaskAsynchronously(plugin, Shopfront.this::update);
+                        }
                         break;
                     case DETAILED:
                         if (event.isCancelled() && event.getCurrentItem() != null) {
@@ -338,14 +368,18 @@ public class Shopfront {
         @SuppressWarnings("unused")
         @EventHandler
         public void onDrag(InventoryDragEvent event) {
-            if (event.getWhoClicked() != this.player) { return; }
+            if (event.getWhoClicked() != this.player) {
+                return;
+            }
             event.setCancelled(true);
         }
 
         @SuppressWarnings("unused")
         @EventHandler
         public void onClose(InventoryCloseEvent event) {
-            if (this.player != event.getPlayer()) { return; }
+            if (this.player != event.getPlayer()) {
+                return;
+            }
             customerInventories.remove(player.getUniqueId());
 
             HandlerList.unregisterAll(this);
@@ -354,7 +388,7 @@ public class Shopfront {
         private void createShopItem(ItemStack i, int slot) {
 
             player.sendMessage(ConfigManager.getMessage("messages.type_amount"));
-            ShopItem shopItem = new ShopItem(plugin, i.clone(), slot);
+            ShopItem shopItem = new ShopItem(plugin, shop, i.clone(), slot);
             shopItem.setAdmin(shop instanceof AdminShop);
 
             plugin.getChatListener().addDecimalListener(player, (amount) -> {
@@ -378,13 +412,13 @@ public class Shopfront {
                     shopItem.setSellPrice(price);
 
                     shop.getShopfrontHolder().addItem(shopItem.getSlot(), shopItem);
-                    Shopfront.this.holder.update();
+                    update();
 
                     player.sendMessage(ConfigManager.getMessage("messages.add_successful"));
 
                     open(player, Type.EDITOR);
                     player.playSound(player.getLocation(), ConfigManager.getSound("sounds.add_item"), 0.5f, 1);
-                    CreateShopItemsEvent createShopItemsEvent = new CreateShopItemsEvent(player,shop, shopItem);
+                    CreateShopItemsEvent createShopItemsEvent = new CreateShopItemsEvent(player, shop, shopItem);
                     Bukkit.getPluginManager().callEvent(createShopItemsEvent);
 
                 });
@@ -396,11 +430,11 @@ public class Shopfront {
 
         @SuppressWarnings("unused")
         @EventHandler
-            public void onDrop(PlayerDropItemEvent event) {
-                if (event.getPlayer() != player) {
-                    return;
-                }
-                event.setCancelled(true);
+        public void onDrop(PlayerDropItemEvent event) {
+            if (event.getPlayer() != player) {
+                return;
             }
+            event.setCancelled(true);
         }
+    }
 }

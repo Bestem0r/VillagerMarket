@@ -36,9 +36,8 @@ public class MoveCommand implements ISubCommand {
 
     @Override
     public void run(CommandSender sender, String[] args) {
-        if (sender instanceof Player) {
+        if (sender instanceof Player player) {
 
-            Player player = (Player) sender;
             if (listener.selectShop.contains(player.getUniqueId())) {
                 return;
             }
@@ -73,7 +72,9 @@ public class MoveCommand implements ISubCommand {
         @EventHandler(priority = EventPriority.LOW)
         public void onInteract(PlayerInteractEntityEvent event) {
 
-            if (!selectShop.contains(event.getPlayer().getUniqueId())) { return; }
+            if (!selectShop.contains(event.getPlayer().getUniqueId())) {
+                return;
+            }
             event.setCancelled(true);
 
             VillagerShop shop = plugin.getShopManager().getShop(event.getRightClicked().getUniqueId());
@@ -88,10 +89,12 @@ public class MoveCommand implements ISubCommand {
             selectShop.remove(player.getUniqueId());
         }
 
-        @EventHandler (priority = EventPriority.LOWEST)
+        @EventHandler(priority = EventPriority.LOWEST)
         public void onInteract(PlayerInteractEvent event) {
 
-            if (!moveShop.containsKey(event.getPlayer().getUniqueId()) || event.getClickedBlock() == null) { return; }
+            if (!moveShop.containsKey(event.getPlayer().getUniqueId()) || event.getClickedBlock() == null) {
+                return;
+            }
             event.setCancelled(true);
 
             Entity entity = moveShop.get(event.getPlayer().getUniqueId());

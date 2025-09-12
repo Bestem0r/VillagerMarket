@@ -24,10 +24,9 @@ public class RemoveCommand implements ISubCommand {
 
     @Override
     public void run(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             return;
         }
-        Player player = (Player) sender;
 
 
         player.sendMessage(ConfigManager.getMessage("messages.remove_villager"));

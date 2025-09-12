@@ -22,12 +22,11 @@ public class ShopCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
 
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage("Only players can use this command");
             return false;
         }
 
-        Player player = (Player) sender;
         if (!player.hasPermission("villagermarket.command.shop")) {
             player.sendMessage(ConfigManager.getMessage("messages.no_permission_command"));
             return true;

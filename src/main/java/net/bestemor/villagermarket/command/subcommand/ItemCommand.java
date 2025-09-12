@@ -23,16 +23,12 @@ public class ItemCommand implements ISubCommand {
 
     @Override
     public List<String> getCompletion(String[] args) {
-        switch (args.length) {
-            case 2:
-                return Collections.singletonList("give");
-            case 3:
-                return null;
-            case 4: case 5:
-                return Arrays.asList("infinite", "1", "2", "3", "4", "5", "6");
-            default:
-                return new ArrayList<>();
-        }
+        return switch (args.length) {
+            case 2 -> Collections.singletonList("give");
+            case 3 -> null;
+            case 4, 5 -> Arrays.asList("infinite", "1", "2", "3", "4", "5", "6");
+            default -> new ArrayList<>();
+        };
     }
 
     @Override

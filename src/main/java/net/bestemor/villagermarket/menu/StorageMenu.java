@@ -4,7 +4,6 @@ import net.bestemor.core.config.ConfigManager;
 import net.bestemor.core.menu.Clickable;
 import net.bestemor.core.menu.Menu;
 import net.bestemor.core.menu.MenuContent;
-import net.bestemor.core.menu.MenuListener;
 import net.bestemor.villagermarket.utils.VMUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,8 +29,8 @@ public class StorageMenu extends Menu {
 
     private List<ItemStack> items = new ArrayList<>();
 
-    public StorageMenu(MenuListener listener, StorageHolder holder, int size, int page) {
-        super(listener, size == 0 ? 54 : size, ConfigManager.getString("menus.storage.title") + (size == 0 ? " | " + (page + 1) : ""));
+    public StorageMenu(StorageHolder holder, int size, int page) {
+        super(size == 0 ? 54 : size, ConfigManager.getString("menus.storage.title") + (size == 0 ? " | " + (page + 1) : ""));
         this.holder = holder;
 
         this.page = page;
@@ -70,7 +69,7 @@ public class StorageMenu extends Menu {
         content.setClickable(inventorySize - 1, Clickable.of(ConfigManager.getItem("items.back").build(), event -> {
             Player player = (Player) event.getWhoClicked();
             this.holder.back(player);
-            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.back"), 0.5f, 1);
         }));
     }
 
@@ -116,7 +115,7 @@ public class StorageMenu extends Menu {
 
     public int getAmount(ItemStack i) {
         int sum = 0;
-        for (int slot = 0; slot < itemsSize && slot < getInventory().getSize(); slot ++) {
+        for (int slot = 0; slot < itemsSize && slot < getInventory().getSize(); slot++) {
             ItemStack storageItem = getInventory().getItem(slot);
             if (VMUtils.compareItems(storageItem, i)) {
                 sum += storageItem.getAmount();
@@ -131,10 +130,10 @@ public class StorageMenu extends Menu {
         if (getInventory() == null) {
             return 0;
         }
-        for (int slot = 0; slot < itemsSize && slot < getInventory().getSize(); slot ++) {
+        for (int slot = 0; slot < itemsSize && slot < getInventory().getSize(); slot++) {
             ItemStack storageItem = getInventory().getItem(slot);
             if (storageItem == null || VMUtils.compareItems(storageItem, i)) {
-                availableSlots ++;
+                availableSlots++;
             }
         }
 
@@ -147,7 +146,7 @@ public class StorageMenu extends Menu {
 
     public List<ItemStack> getItems() {
         List<ItemStack> items = new ArrayList<>();
-        for (int slot = 0; slot < itemsSize && slot < getInventory().getSize(); slot ++) {
+        for (int slot = 0; slot < itemsSize && slot < getInventory().getSize(); slot++) {
             items.add(getInventory().getItem(slot));
         }
         items.removeIf(Objects::isNull);
@@ -157,7 +156,7 @@ public class StorageMenu extends Menu {
     public void addItem(ItemStack item, int amount) {
         int stacks = amount / item.getType().getMaxStackSize();
         int remainder = amount % item.getType().getMaxStackSize();
-        for (int i = 0; i < stacks; i ++) {
+        for (int i = 0; i < stacks; i++) {
             ItemStack clone = item.clone();
             clone.setAmount(item.getType().getMaxStackSize());
             getInventory().addItem(clone);

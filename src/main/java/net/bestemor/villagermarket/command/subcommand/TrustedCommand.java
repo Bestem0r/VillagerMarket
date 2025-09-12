@@ -49,10 +49,9 @@ public class TrustedCommand implements ISubCommand {
     @Override
     public void run(CommandSender sender, String[] args) {
 
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             return;
         }
-        Player player = (Player) sender;
 
         if (args.length < 3) {
             player.sendMessage(ChatColor.RED + "Incorrect number of arguments!");
@@ -120,8 +119,7 @@ public class TrustedCommand implements ISubCommand {
 
             VillagerShop shop = plugin.getShopManager().getShop(event.getRightClicked().getUniqueId());
             if (shop != null) {
-                if (shop instanceof PlayerShop) {
-                    PlayerShop playerShop = (PlayerShop) shop;
+                if (shop instanceof PlayerShop playerShop) {
                     if (!playerShop.getOwnerUUID().equals(sender.getUniqueId())) {
                         sender.sendMessage(ConfigManager.getMessage("messages.not_owner"));
                         return;
