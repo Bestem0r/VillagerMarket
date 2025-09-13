@@ -218,6 +218,9 @@ public class ShopItem {
     }
 
     public boolean isAllowCustomAmount() {
+        if (!ConfigManager.getBoolean("allow_custom_amount")) {
+            return false;
+        }
         return allowCustomAmount && !isItemTrade() && mode != COMMAND;
     }
 
