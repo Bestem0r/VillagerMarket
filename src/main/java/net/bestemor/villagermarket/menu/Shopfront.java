@@ -335,6 +335,9 @@ public class Shopfront {
                         }
                         break;
                     case CUSTOMER:
+                        if (shopItem == null) {
+                            return;
+                        }
                         ItemMode mode = shopItem.getMode();
                         if (mode == ItemMode.BUY_AND_SELL || shopItem.isAllowCustomAmount()) {
                             mode = mode == ItemMode.BUY_AND_SELL ? ItemMode.BUY : mode;
