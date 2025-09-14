@@ -268,12 +268,12 @@ public class ShopItem {
         return playerLimits.getOrDefault(player.getUniqueId(), 0);
     }
 
-    public void incrementPlayerTrades(Player player) {
-        playerLimits.put(player.getUniqueId(), getPlayerLimit(player) + 1);
+    public void incrementPlayerTrades(Player player, int amount) {
+        playerLimits.put(player.getUniqueId(), getPlayerLimit(player) + amount);
     }
 
-    public void incrementServerTrades() {
-        serverTrades++;
+    public void incrementServerTrades(int amount) {
+        serverTrades += amount;
     }
 
     private void reloadData(VillagerShop shop) {
@@ -372,7 +372,10 @@ public class ShopItem {
             return false;
         }
         boolean bypass = customer.hasPermission("villagermarket.bypass_limit");
-        if (isAdmin && !bypass && limit > 0 && ((limitMode == LimitMode.SERVER && serverTrades >= limit) || (limitMode == LimitMode.PLAYER && getPlayerLimit(customer) >= limit))) {
+        int transactionsAdded = (int) Math.ceil((double) amount / this.amount);
+        int serverTrades = this.serverTrades + transactionsAdded;
+        int playerTrades = getPlayerLimit(customer) + transactionsAdded;
+        if (isAdmin && !bypass && limit > 0 && ((limitMode == LimitMode.SERVER && serverTrades > limit) || (limitMode == LimitMode.PLAYER && playerTrades > limit))) {
             customer.sendMessage(ConfigManager.getMessage("messages.reached_" + (verifyMode == BUY ? "sell" : "buy") + "_limit"));
             return false;
         }
