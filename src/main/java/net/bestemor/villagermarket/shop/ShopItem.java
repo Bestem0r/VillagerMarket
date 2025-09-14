@@ -518,7 +518,7 @@ public class ShopItem {
 
     public BigDecimal getBuyPrice(boolean applyDiscount) {
         if (mode != BUY_AND_SELL) {
-            return sellPrice;
+            return getSellPrice(applyDiscount);
         } else if (buyPrice == null) {
             return BigDecimal.ZERO;
         } else if (!applyDiscount || discount <= 0) {
