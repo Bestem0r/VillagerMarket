@@ -179,14 +179,14 @@ public class EditItemMenu extends Menu {
             item.cycleTradeMode();
             update();
         }));
-
-        content.setPlaced(PlacedClickable.fromConfig(p + "custom_amount_" + (item.isAllowCustomAmount() ? "enabled" : "disabled"), event -> {
-            Player player = (Player) event.getWhoClicked();
-            player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
-            item.setAllowCustomAmount(!item.isAllowCustomAmount());
-            update();
-        }));
-
+        if (ConfigManager.getBoolean("allow_custom_amount")) {
+            content.setPlaced(PlacedClickable.fromConfig(p + "custom_amount_" + (item.isAllowCustomAmount() ? "enabled" : "disabled"), event -> {
+                Player player = (Player) event.getWhoClicked();
+                player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
+                item.setAllowCustomAmount(!item.isAllowCustomAmount());
+                update();
+            }));
+        }
         content.setClickable(ConfigManager.getInt(p + "price.slot"), Clickable.of(priceItem, event -> {
             Player player = (Player) event.getWhoClicked();
             player.playSound(player.getLocation(), ConfigManager.getSound("sounds.menu_click"), 0.5f, 1);
