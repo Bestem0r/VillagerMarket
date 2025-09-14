@@ -404,7 +404,7 @@ public class ShopItem {
         } else if (mode != BUY_AND_SELL) {
             if (discount > 0) {
                 ChatColor c = VMUtils.getCodeBeforePlaceholder(ConfigManager.getStringList(lorePath), "%price%");
-                String prePrice = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getSellPrice(amount, true)).build();
+                String prePrice = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getSellPrice(amount, false)).build();
                 String currentPrice = ConfigManager.getCurrencyBuilder("%price%").replaceCurrency("%price%", getSellPrice(amount, true)).build();
                 builder.replace("%price%", "§m" + prePrice + c + " " + currentPrice);
             } else {
@@ -511,7 +511,7 @@ public class ShopItem {
 
     public BigDecimal getBuyPrice(boolean applyDiscount) {
         if (mode != BUY_AND_SELL) {
-            return sellPrice;
+            return getSellPrice(applyDiscount);
         } else if (buyPrice == null) {
             return BigDecimal.ZERO;
         } else if (!applyDiscount || discount <= 0) {

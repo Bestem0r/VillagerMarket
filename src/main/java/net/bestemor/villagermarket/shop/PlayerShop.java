@@ -108,7 +108,7 @@ public class PlayerShop extends VillagerShop {
             BigDecimal taxAmount = tax.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP).multiply(price);
 
             depositOwner(price.subtract(taxAmount));
-            economy.withdrawPlayer(player, item.getSellPrice().doubleValue());
+            economy.withdrawPlayer(player, price.doubleValue());
             shopStats.addEarned(price.doubleValue());
 
 
@@ -288,11 +288,6 @@ public class PlayerShop extends VillagerShop {
         return available;
     }
 
-    protected String getGeneratedShopName() {
-        String shopOwnerName = this.getOwnerName().isBlank() ? config.getString("ownerName") : this.getOwnerName();
-        return ConfigManager.getString("villager.name_taken").replace("%player%", shopOwnerName == null ? "" : shopOwnerName);
-    }
-
     public void abandon() {
         Bukkit.getPluginManager().callEvent(new AbandonShopEvent(this));
 
@@ -389,7 +384,7 @@ public class PlayerShop extends VillagerShop {
         this.expireDate = (seconds == 0 ? null : Instant.now().plusSeconds(seconds));
 
         this.ownerName = player.getName();
-        setShopName(getGeneratedShopName());
+        setShopName(ConfigManager.getString("villager.name_taken").replace("%player%", player.getName()));
         this.ownerUUID = player.getUniqueId();
 
         super.timesRented = 1;
