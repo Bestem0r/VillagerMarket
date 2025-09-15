@@ -60,8 +60,10 @@ public class AdminShop extends VillagerShop {
 
         shopStats.addSold(amount);
         giveShopItem(player, item, amount);
-        item.incrementPlayerTrades(player, amount);
-        item.incrementServerTrades(amount);
+
+        int transactions = (int) Math.ceil(amount / (double) item.getAmount());
+        item.incrementPlayerTrades(player, transactions);
+        item.incrementServerTrades(transactions);
 
         BuyShopItemsEvent buyShopItemsEvent = new BuyShopItemsEvent(player, this, item, amount);
         Bukkit.getPluginManager().callEvent(buyShopItemsEvent);
@@ -90,8 +92,10 @@ public class AdminShop extends VillagerShop {
 
         economy.depositPlayer(player, price.doubleValue());
         removeItems(player.getInventory(), item.getRawItem(), amount);
-        item.incrementPlayerTrades(player, amount);
-        item.incrementServerTrades(amount);
+
+        int transactions = (int) Math.ceil(amount / (double) item.getAmount());
+        item.incrementPlayerTrades(player, transactions);
+        item.incrementServerTrades(transactions);
         shopStats.addBought(amount);
         shopStats.addSpent(price.doubleValue());
 
