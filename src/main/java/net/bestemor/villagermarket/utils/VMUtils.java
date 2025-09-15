@@ -9,6 +9,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.Repairable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -73,6 +75,9 @@ public class VMUtils {
         item1clone.setAmount(1);
         item2clone.setAmount(1);
 
+        normalizeMeta(item1clone);
+        normalizeMeta(item2clone);
+
         if (VersionUtils.getMCVersion() > 12) {
             item1clone.setDurability((short) 0);
             item2clone.setDurability((short) 0);
@@ -81,6 +86,15 @@ public class VMUtils {
         }
 
         return !item1clone.hasItemMeta() || Bukkit.getItemFactory().equals(item1clone.getItemMeta(), item2clone.getItemMeta());
+    }
+
+    private static void normalizeMeta(ItemStack stack) {
+        if (!stack.hasItemMeta()) return;
+        final ItemMeta meta = stack.getItemMeta();
+        if (meta instanceof Repairable rep && rep.hasRepairCost()) {
+            rep.setRepairCost(0);
+            stack.setItemMeta(meta);
+        }
     }
 
     public static boolean isInteger(String s) {
