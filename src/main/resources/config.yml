@@ -45,6 +45,8 @@ max_sell_amount: 64
 distribute_income: true
 #The admin shop that should open when doing /shop. Leave blank to disable.
 default_admin_shop: ""
+#Enable per-user shop size permission
+shop_size_permission: false
 
 #----------------------- Villager settings -----------------------#
 

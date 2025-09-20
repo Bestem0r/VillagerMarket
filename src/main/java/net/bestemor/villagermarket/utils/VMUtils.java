@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -18,6 +19,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -217,5 +219,15 @@ public class VMUtils {
             }
         }
         return amount;
+    }
+
+    public static Optional<Integer> getShopSizePermission(Player player) {
+        if (!ConfigManager.getBoolean("shop_size_permission")) return Optional.empty();
+        String basePerm = "villagermarket.limititems.";
+        int upperPermission = 0;
+        for (int i = 1; i <= 6; i++) {
+            if (player.hasPermission(basePerm + i)) upperPermission = i;
+        }
+        return upperPermission > 0 ? Optional.of(upperPermission) : Optional.empty();
     }
 }

@@ -56,6 +56,7 @@ permissions:
       villagermarket.command.getid: true
       villagermarket.use_citizens: true
       villagermarket.set_trade_type: true
+      villagermarket.limititems.6: true
 
   villagermarket.adminshops:
     default: op
@@ -123,3 +124,21 @@ permissions:
   villagermarket.set_trade_type:
     default: op
     description: Allows usage of trade for items mode
+  villagermarket.limititems.1:
+    default: op
+    description: Allow to sell one row of item while in per-user shop size mode
+  villagermarket.limititems.2:
+    default: false
+    description: Allow to sell two rows of item while in per-user shop size mode
+  villagermarket.limititems.3:
+    default: false
+    description: Allow to sell three rows of item while in per-user shop size mode
+  villagermarket.limititems.4:
+    default: false
+    description: Allow to sell four rows of item while in per-user shop size mode
+  villagermarket.limititems.5:
+    default: false
+    description: Allow to sell five rows of item while in per-user shop size mode
+  villagermarket.limititems.6:
+    default: false
+    description: Allow to sell six rows of item while in per-user shop size mode

@@ -138,6 +138,17 @@ public class ShopManager {
             } else {
                 boolean canEdit = playerShop.getOwnerUUID().equals(p.getUniqueId()) || playerShop.isTrusted(p) || (p.isSneaking() && p.hasPermission("villagermarket.spy"));
                 if (enableEdit && canEdit) {
+                    if (applyPerUserShopSize((PlayerShop) shop, p)) {
+                        this.plugin.getShopManager().loadShop(shop.getFile());
+                        Bukkit.getScheduler().runTask(plugin, () -> {
+                            VillagerShop freshVillagerShop = plugin.getShopManager().getShop(shop.getEntityUUID());
+                            if (freshVillagerShop != null) {
+                                freshVillagerShop.updateMenu(ShopMenu.EDIT_SHOP);
+                                freshVillagerShop.openInventory(p, ShopMenu.EDIT_SHOP);
+                            }
+                        });
+                        return;
+                    }
                     shop.updateMenu(ShopMenu.EDIT_SHOP);
                     shop.openInventory(p, ShopMenu.EDIT_SHOP);
                 } else {
@@ -147,6 +158,17 @@ public class ShopManager {
         }
 
         p.playSound(p.getLocation(), ConfigManager.getSound("sounds.open_shop"), 0.5f, 1);
+    }
+
+    private boolean applyPerUserShopSize(PlayerShop shop, Player p) {
+        Optional<Integer> perUserSizePermission = VMUtils.getShopSizePermission(p);
+        if (perUserSizePermission.isEmpty()) return false;
+        int actualSize = shop.getShopSize();
+        if (actualSize == perUserSizePermission.get()) return false;
+        shop.closeAllMenus();
+        shop.setShopfrontSize(perUserSizePermission.get());
+        shop.save();
+        return true;
     }
 
     public void resetShopEntity(UUID uuid) {
