@@ -277,6 +277,7 @@ menus:
           - "&7点击禁用交易提醒"
 
   #-------------------- Shopfront --------------------#
+  #Placeholders: %expire%
   shopfront:
     title: "&8%shop%"
     #Placeholders: %item_name%, %mode%

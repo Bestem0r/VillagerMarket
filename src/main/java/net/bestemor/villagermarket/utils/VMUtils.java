@@ -204,4 +204,30 @@ public class VMUtils {
         }
         return amount;
     }
+
+    public static String formatExpireDate(Instant expireDate) {
+        if (expireDate == null || expireDate.equals(Instant.ofEpochSecond(0))) {
+            return ConfigManager.getString("time.never");
+        }
+
+        Instant now = Instant.now();
+        if (expireDate.isBefore(now)) {
+            return ConfigManager.getString("time.never");
+        }
+
+        long secondsUntil = ChronoUnit.SECONDS.between(now, expireDate);
+
+        if (secondsUntil < 60) {
+            return ConfigManager.getString("time.less_than_a_minute");
+        } else if (secondsUntil < 3600) {
+            long minutes = secondsUntil / 60;
+            return minutes + " " + ConfigManager.getString(minutes == 1 ? "time.minute" : "time.minutes");
+        } else if (secondsUntil < 86400) {
+            long hours = secondsUntil / 3600;
+            return hours + " " + ConfigManager.getString(hours == 1 ? "time.hour" : "time.hours");
+        } else {
+            long days = secondsUntil / 86400;
+            return days + " " + ConfigManager.getString(days == 1 ? "time.day" : "time.days");
+        }
+    }
 }
