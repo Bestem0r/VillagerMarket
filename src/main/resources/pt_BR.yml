@@ -282,6 +282,7 @@ menus:
           - "&7Clique para desativar as notificações de negociação"
 
   #-------------------- Shopfront --------------------#
+  #Placeholders: %expire%
   shopfront:
     title: "&8%shop%"
     #Placeholders: %item_name%, %mode%

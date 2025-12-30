@@ -291,6 +291,7 @@ menus:
 
   
   #-------------------- Vitrine --------------------#
+  #Placeholders: %expire%
   shopfront:
     title: "&8%shop%"
     #Placeholders : %item_name%, %mode%

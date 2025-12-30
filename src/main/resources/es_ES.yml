@@ -282,6 +282,7 @@ menus:
           - "&7Clic para deshabilitar las notificaciones comerciales"
 
   #-------------------- Shopfront --------------------#
+  #Placeholders: %expire%
   shopfront:
     title: "&8%shop%"
     #Placeholders: %item_name%, %mode%
