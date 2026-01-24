@@ -81,6 +81,8 @@ messages:
   type_limit_admin: '&bBitte gebe im Chat das Kauf-/Verkaufslimit für diesen Artikel ein (&c0&bfür unbegrenzt)...'
   reached_sell_limit: '&cDu kannst nicht mehr von diesem Artikel verkaufen!'
   reached_buy_limit: '&cDu kannst nicht mehr von diesem Artikel kaufen!'
+  #Placeholders: %sold%, %total%, %unit%, %left%
+  batch_sell_partial: '&eSold %sold% of %total% (%unit% per trade). Left: %left%.'
   reached_command_limit: '&cDu hast das Kauflimit für diesen Befehl erreicht!'
   money_left: '&aDu hast noch %amount% übrig.'
   money_currently: '&aDu hast derzeit %amount%.'

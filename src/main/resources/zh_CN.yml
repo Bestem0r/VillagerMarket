@@ -80,6 +80,8 @@ messages:
   type_limit_admin: "&b请在聊天栏中输入你想要你限制玩家交易的最大数量 (&c0 &b表示数量不限)..."
   reached_sell_limit: "&c你不能再出售更多该物品了!"
   reached_buy_limit: "&c你不能再购买更多该物品了!"
+  #Placeholders: %sold%, %total%, %unit%, %left%
+  batch_sell_partial: "&eSold %sold% of %total% (%unit% per trade). Left: %left%."
   reached_command_limit: "&c你已经达到该命令的购买次数限制了!"
   money_left: "&a当前余额为 %amount%."
   money_currently: "&a你当前余额为 %amount%."

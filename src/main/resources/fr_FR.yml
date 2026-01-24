@@ -80,6 +80,8 @@ messages:
 
   reached_sell_limit: "&cVous ne pouvez pas vendre plus de cet article !"
   reached_buy_limit: "&cVous ne pouvez pas acheter plus de cet article !"
+  #Placeholders: %sold%, %total%, %unit%, %left%
+  batch_sell_partial: "&eSold %sold% of %total% (%unit% per trade). Left: %left%."
   reached_command_limit: "&cVous avez atteint la limite d'achat pour cette commande !"
   money_left: "&aIl vous reste %amount%."
   money_currently: "&aVous avez actuellement %amount%."
