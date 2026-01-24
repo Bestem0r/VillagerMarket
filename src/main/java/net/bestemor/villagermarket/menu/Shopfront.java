@@ -350,6 +350,9 @@ public class Shopfront {
                         if (shopItem == null) {
                             return;
                         }
+                        if (handleBatchSellClick(event, shopItem, player)) {
+                            return;
+                        }
                         ItemMode mode = shopItem.getMode();
                         if (mode == ItemMode.BUY_AND_SELL || shopItem.isAllowCustomAmount()) {
                             mode = mode == ItemMode.BUY_AND_SELL ? ItemMode.BUY : mode;
@@ -398,6 +401,54 @@ public class Shopfront {
             customerInventories.remove(player.getUniqueId());
 
             HandlerList.unregisterAll(this);
+        }
+
+        private boolean handleBatchSellClick(InventoryClickEvent event, ShopItem shopItem, Player player) {
+            if (!event.isShiftClick()
+                    || !(shop instanceof AdminShop)
+                    || !isBatchSellEnabled()
+                    || shopItem.getMode() != ItemMode.BUY) {
+                return false;
+            }
+            int amount = VMUtils.getAmountInventory(shopItem.getRawItem(), player.getInventory());
+            if (amount <= 0) {
+                player.sendMessage(ConfigManager.getMessage("messages.not_enough_in_inventory"));
+                return true;
+            }
+            int sellAmount = shopItem.getLimitCappedBatchAmount(player, amount);
+            if (sellAmount <= 0) {
+                String messageKey = amount < shopItem.getAmount()
+                        ? "messages.not_enough_in_inventory"
+                        : "messages.reached_sell_limit";
+                player.sendMessage(ConfigManager.getMessage(messageKey));
+                return true;
+            }
+            shop.sellItem(shopItem, sellAmount, player);
+            if (sellAmount < amount) {
+                int left = amount - sellAmount;
+                String message = getBatchSellPartialMessage();
+                if (message != null) {
+                    player.sendMessage(message
+                            .replace("%sold%", String.valueOf(sellAmount))
+                            .replace("%total%", String.valueOf(amount))
+                            .replace("%unit%", String.valueOf(shopItem.getAmount()))
+                            .replace("%left%", String.valueOf(left)));
+                }
+            }
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, Shopfront.this::update);
+            return true;
+        }
+
+        private boolean isBatchSellEnabled() {
+            return ConfigManager.getBoolean("admin_shop_batch_sell_all");
+        }
+
+        private String getBatchSellPartialMessage() {
+            String message = ConfigManager.getMessage("messages.batch_sell_partial");
+            if (message == null || message.isBlank() || message.equalsIgnoreCase("messages.batch_sell_partial")) {
+                return null;
+            }
+            return message;
         }
 
         private void createShopItem(ItemStack i, int slot) {

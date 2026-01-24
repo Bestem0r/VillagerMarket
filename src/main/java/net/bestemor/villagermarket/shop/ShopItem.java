@@ -374,15 +374,52 @@ public class ShopItem {
             customer.sendMessage(ConfigManager.getMessage("messages.reached_" + (isItemTrade() ? "buy" : "sell") + "_limit"));
             return false;
         }
-        boolean bypass = customer.hasPermission("villagermarket.bypass_limit");
-        int transactionsAdded = (int) Math.ceil((double) amount / this.amount);
-        int serverTrades = this.serverTrades + transactionsAdded;
-        int playerTrades = getPlayerLimit(customer) + transactionsAdded;
-        if (isAdmin && !bypass && limit > 0 && ((limitMode == LimitMode.SERVER && serverTrades > limit) || (limitMode == LimitMode.PLAYER && playerTrades > limit))) {
+        if (isAdmin && amount > getLimitCappedTradeAmount(customer, amount)) {
             customer.sendMessage(ConfigManager.getMessage("messages.reached_" + (verifyMode == BUY ? "sell" : "buy") + "_limit"));
             return false;
         }
         return true;
+    }
+
+    public int getLimitCappedTradeAmount(Player customer, int requestedAmount) {
+        if (requestedAmount <= 0 || !isAdmin) {
+            return Math.max(0, requestedAmount);
+        }
+        if (customer == null) {
+            return requestedAmount;
+        }
+        if (customer.hasPermission("villagermarket.bypass_limit")) {
+            return requestedAmount;
+        }
+        if (limit <= 0) {
+            return requestedAmount;
+        }
+        int currentTrades = limitMode == LimitMode.SERVER ? serverTrades : getPlayerLimit(customer);
+        int remainingTrades = limit - currentTrades;
+        if (remainingTrades <= 0) {
+            return 0;
+        }
+        long maxByLimit = (long) remainingTrades * amount;
+        if (maxByLimit <= 0) {
+            return 0;
+        }
+        return (int) Math.min((long) requestedAmount, maxByLimit);
+    }
+
+    public int getLimitCappedBatchAmount(Player customer, int requestedAmount) {
+        int batchSize = amount;
+        if (batchSize <= 0) {
+            return 0;
+        }
+        int limitAdjusted = getLimitCappedTradeAmount(customer, requestedAmount);
+        if (limitAdjusted <= 0) {
+            return 0;
+        }
+        long maxAmount = Math.min((long) requestedAmount, (long) limitAdjusted);
+        if (maxAmount < batchSize) {
+            return 0;
+        }
+        return (int) ((maxAmount / batchSize) * batchSize);
     }
 
     private List<String> getLore(String path, ItemMode mode, Player p, int amount) {

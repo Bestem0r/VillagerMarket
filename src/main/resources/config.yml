@@ -47,6 +47,8 @@ distribute_income: true
 default_admin_shop: ""
 #Enable custom amount menu
 allow_custom_amount: true
+#Allow batch sell-all in admin shops (triggered by shift-click)
+admin_shop_batch_sell_all: true
 
 #----------------------- Villager settings -----------------------#
 
