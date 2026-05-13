@@ -19,6 +19,7 @@ public class CloneCommand implements ISubCommand {
 
     @Override
     public List<String> getCompletion(String[] strings) {
+
         return new ArrayList<>();
     }
 

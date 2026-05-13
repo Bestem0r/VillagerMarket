@@ -47,6 +47,8 @@ distribute_income: true
 default_admin_shop: ""
 #Enable per-user shop size permission
 shop_size_permission: false
+#Enable custom amount menu
+allow_custom_amount: true
 
 #----------------------- Villager settings -----------------------#
 

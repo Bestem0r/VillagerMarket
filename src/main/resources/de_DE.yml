@@ -133,6 +133,32 @@ messages:
   require_permission_enabled: "&aBerechtigung erforderlich. Berechtigung: &e%permission%"
   require_permission_disabled: "&cBerechtigung nicht erforderlich."
 
+  teleport_usage: "&cVerwendung: &e/vm teleport <id>"
+  teleported_to_villager: "&aTeleportiert zu &b%shop%&a!"
+  teleport_location_invalid: "&cShop-Standort nicht gefunden oder Welt ist nicht geladen!"
+  villager_not_found: "&cVillager nicht gefunden! Der Villager wurde möglicherweise entfernt."
+  villager_shop_not_found: "&cVillager-Shop nicht gefunden! Verwende Tab-Vervollständigung, um verfügbare Shops zu sehen."
+
+  spawn_usage: "&cVerwendung: &e/vm spawn <all|id>"
+  spawn_villagers_spawned: "&a%count% Villager%plural% gespawnt."
+  spawn_villagers_failed: "&cFehler beim Spawnen von %count% Villager%plural%."
+  spawn_all_exist: "&7Alle Villager existieren bereits."
+  spawn_searching: "&7Suche nach Shop mit ID: %id%"
+  spawn_found_shop: "&7Shop gefunden: %id%"
+  spawn_not_found: "&cShop nicht gefunden! Verwende &e/vm list &cum verfügbare Shops zu sehen."
+  spawn_already_exists: "&cVillager existiert bereits für diesen Shop!"
+  spawn_invalid_location: "&cUngültiger Standort für diesen Shop!"
+  spawn_attempting: "&7Versuche Villager zu spawnen bei: %location%"
+  spawn_success: "&aVillager für Shop gespawnt: &b%shop%"
+  spawn_failed_null: "&cFehler beim Spawnen des Villagers (null entity returned)"
+  spawn_failed_error: "&cFehler beim Spawnen des Villagers: %error%"
+
+  list_header: "&6=== Villager Shops ==="
+  list_location_unknown: "  &7Standort: &cUnbekannt"
+  list_no_shops: "&cKeine Villager-Shops gefunden!"
+  list_found_shops: "&7%count% Villager-Shops gefunden."
+  list_click_help: "&7&oKlicke auf Shop-Namen oder Koordinaten zum Teleportieren!"
+
 stats_message:
   - '&bVillagerShop Statistiken:'
   - '&7>> Artikel verkauft: &a%items_sold%'
@@ -284,6 +310,7 @@ menus:
           - "&7Klicken um Handelsbenachrichtigungen zu deaktivieren"
 
   #-------------------- Shopfront --------------------#
+  #Placeholders: %expire%
   shopfront:
     title: '&8%shop%'
     #Placeholders: %item_name%, %mode%

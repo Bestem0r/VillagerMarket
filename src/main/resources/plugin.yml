@@ -1,6 +1,6 @@
 name: VillagerMarket
 main: net.bestemor.villagermarket.VMPlugin
-version: 1.13.2
+version: 1.13.3
 
 author: Bestem0r
 description: A plugin made by Bestem0r to create Villager Shops
@@ -48,6 +48,9 @@ permissions:
       villagermarket.command.move: true
       villagermarket.command.reload: true
       villagermarket.command.expiredstorage: true
+      villagermarket.command.list: true
+      villagermarket.command.teleport: true
+      villagermarket.command.spawn: true
       villagermarket.spy: true
       villagermarket.rename: true
       villagermarket.use_spawn_item: true
@@ -91,6 +94,15 @@ permissions:
   villagermarket.command.getid:
     default: op
     description: Get shop ID
+  villagermarket.command.list:
+    default: op
+    description: List Villager Shops
+  villagermarket.command.teleport:
+    default: op
+    description: Teleport to Villager Shop
+  villagermarket.command.spawn:
+    default: op
+    description: Spawn Villager Shops
   villagermarket.spy:
     default: op
     description: Open other player's shop editors

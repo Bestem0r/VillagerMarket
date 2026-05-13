@@ -11,7 +11,7 @@
 
     <groupId>me.bestemor.villagermarket</groupId>
     <artifactId>VillagerMarket</artifactId>
-    <version>1.13.2-SNAPSHOT</version>
+    <version>1.13.3-SNAPSHOT</version>
 
     <repositories>
         <repository>
@@ -159,7 +159,7 @@
         <dependency>
             <groupId>com.github.Bestem0r</groupId>
             <artifactId>BestemorCore</artifactId>
-            <version>083a13f4fd</version>
+            <version>5fcdd68ca7</version>
             <scope>compile</scope>
         </dependency>
 

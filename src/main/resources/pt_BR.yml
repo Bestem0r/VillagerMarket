@@ -35,6 +35,7 @@ villager:
 #----------------------- Messages -----------------------#
 
 messages:
+  player_only: "&cApenas jogadores podem usar este comando!"
   invalid_command_usage: "&cComando inválido! Use &e/vm help"
   reloaded: "&aPlugin recarregado."
   cancelled: "&cA ação foi cancelada!"
@@ -131,6 +132,32 @@ messages:
   toggle_require_permission: "&7Clique com o botão direito do mouse no &bVillagerShop&7 para o qual você deseja alternar o requisito de permissão."
   require_permission_enabled: "&aRequisito de permissão ativado! Permissão: &e%permission%"
   require_permission_disabled: "&cRequisito de permissão desativado!"
+
+  teleport_usage: "&cUso: &e/vm teleport <id>"
+  teleported_to_villager: "&aTeletransportado para &b%shop%&a!"
+  teleport_location_invalid: "&cLocalização da loja não encontrada ou mundo não carregado!"
+  villager_not_found: "&cAldeão não encontrado! O aldeão pode ter sido removido."
+  villager_shop_not_found: "&cLoja de aldeão não encontrada! Use o autocompletar para ver as lojas disponíveis."
+
+  spawn_usage: "&cUso: &e/vm spawn <all|id>"
+  spawn_villagers_spawned: "&a%count% aldeã%plural% gerado%plural%."
+  spawn_villagers_failed: "&cFalha ao gerar %count% aldeã%plural%."
+  spawn_all_exist: "&7Todos os aldeões já existem."
+  spawn_searching: "&7Procurando loja com ID: %id%"
+  spawn_found_shop: "&7Loja encontrada: %id%"
+  spawn_not_found: "&cLoja não encontrada! Use &e/vm list &cpara ver as lojas disponíveis."
+  spawn_already_exists: "&cO aldeão já existe para esta loja!"
+  spawn_invalid_location: "&cLocalização inválida para esta loja!"
+  spawn_attempting: "&7Tentando gerar aldeão em: %location%"
+  spawn_success: "&aAldeão gerado para a loja: &b%shop%"
+  spawn_failed_null: "&cFalha ao gerar aldeão (entidade nula retornada)"
+  spawn_failed_error: "&cFalha ao gerar aldeão: %error%"
+
+  list_header: "&6=== Lojas de Aldeões ==="
+  list_location_unknown: "  &7Localização: &cDesconhecida"
+  list_no_shops: "&cNenhuma loja de aldeão encontrada!"
+  list_found_shops: "&7Encontradas &b%count% &7lojas de aldeões."
+  list_click_help: "&7&oClique nos nomes das lojas ou coordenadas para se teletransportar!"
 
 stats_message:
   - "&bLojaVillager estatísticas:"
@@ -283,6 +310,7 @@ menus:
           - "&7Clique para desativar as notificações de negociação"
 
   #-------------------- Shopfront --------------------#
+  #Placeholders: %expire%
   shopfront:
     title: "&8%shop%"
     #Placeholders: %item_name%, %mode%

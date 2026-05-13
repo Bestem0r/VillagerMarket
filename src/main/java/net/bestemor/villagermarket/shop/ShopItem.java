@@ -218,6 +218,9 @@ public class ShopItem {
     }
 
     public boolean isAllowCustomAmount() {
+        if (!ConfigManager.getBoolean("allow_custom_amount")) {
+            return false;
+        }
         return allowCustomAmount && !isItemTrade() && mode != COMMAND;
     }
 
@@ -515,7 +518,9 @@ public class ShopItem {
         } else if (!applyDiscount || discount <= 0) {
             return sellPrice;
         } else {
-            return sellPrice.subtract(sellPrice.multiply(BigDecimal.valueOf(discount / 100.0)));
+            BigDecimal discountRate = BigDecimal.valueOf(discount)
+                    .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
+            return sellPrice.subtract(sellPrice.multiply(discountRate));
         }
     }
 
@@ -527,22 +532,38 @@ public class ShopItem {
         } else if (!applyDiscount || discount <= 0) {
             return buyPrice;
         } else {
-            return buyPrice.subtract(buyPrice.multiply(BigDecimal.valueOf(discount / 100.0)));
+            BigDecimal discountRate = BigDecimal.valueOf(discount)
+                    .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
+            return buyPrice.subtract(buyPrice.multiply(discountRate));
         }
     }
 
     public BigDecimal getBuyPrice(int amount, boolean applyDiscount) {
-        if (getBuyPrice(applyDiscount) == null) {
+        BigDecimal basePrice = getBuyPrice(applyDiscount);
+        if (basePrice == null || basePrice.compareTo(BigDecimal.ZERO) == 0) {
             return BigDecimal.ZERO;
         }
-        return getBuyPrice(applyDiscount).divide(BigDecimal.valueOf(item.getAmount()), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(amount));
+        int stackAmount = item.getAmount();
+        if (stackAmount <= 0 || amount <= 0) {
+            return BigDecimal.ZERO;
+        }
+        return basePrice.multiply(BigDecimal.valueOf(amount))
+                .divide(BigDecimal.valueOf(stackAmount), 32, RoundingMode.HALF_UP)
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     public BigDecimal getSellPrice(int amount, boolean applyDiscount) {
-        if (sellPrice == null) {
+        BigDecimal basePrice = getSellPrice(applyDiscount);
+        if (basePrice == null || basePrice.compareTo(BigDecimal.ZERO) == 0) {
             return BigDecimal.ZERO;
         }
-        return getSellPrice(applyDiscount).divide(BigDecimal.valueOf(item.getAmount()), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(amount));
+        int stackAmount = item.getAmount();
+        if (stackAmount <= 0 || amount <= 0) {
+            return BigDecimal.ZERO;
+        }
+        return basePrice.multiply(BigDecimal.valueOf(amount))
+                .divide(BigDecimal.valueOf(stackAmount), 32, RoundingMode.HALF_UP)
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     private String getItemName(ItemStack i) {

@@ -35,6 +35,7 @@ villager:
 #----------------------- Messages -----------------------#
 
 messages:
+  player_only: "&c只有玩家可以使用此命令！"
   invalid_command_usage: "&c无效命令! 请使用 &e/vm help &c获取帮助"
   reloaded: "&a插件已重载."
   cancelled: "&c操作已取消!"
@@ -131,6 +132,32 @@ messages:
   toggle_require_permission: "&7右键点击你想要切换权限要求的&b村民商店&7."
   require_permission_enabled: "&a权限限制已启用. 打开商店要求的权限节点: &e%permission%"
   require_permission_disabled: "&c权限限制已禁用."
+
+  teleport_usage: "&c用法: &e/vm teleport <id>"
+  teleported_to_villager: "&a已传送到 &b%shop%&a！"
+  teleport_location_invalid: "&c未找到商店位置或世界未加载！"
+  villager_not_found: "&c未找到村民！村民可能已被移除。"
+  villager_shop_not_found: "&c未找到村民商店！使用Tab补全查看可用商店。"
+
+  spawn_usage: "&c用法: &e/vm spawn <all|id>"
+  spawn_villagers_spawned: "&a已生成 &e%count% &a个村民。"
+  spawn_villagers_failed: "&c生成 &e%count% &c个村民失败。"
+  spawn_all_exist: "&7所有村民都已存在。"
+  spawn_searching: "&7正在搜索ID为 %id% 的商店"
+  spawn_found_shop: "&7找到商店: %id%"
+  spawn_not_found: "&c未找到商店！使用 &e/vm list &c查看可用商店。"
+  spawn_already_exists: "&c此商店的村民已存在！"
+  spawn_invalid_location: "&c此商店的位置无效！"
+  spawn_attempting: "&7正在尝试在以下位置生成村民: %location%"
+  spawn_success: "&a已为商店生成村民: &b%shop%"
+  spawn_failed_null: "&c生成村民失败（返回空实体）"
+  spawn_failed_error: "&c生成村民失败: %error%"
+
+  list_header: "&6=== 村民商店 ==="
+  list_location_unknown: "  &7位置: &c未知"
+  list_no_shops: "&c未找到村民商店！"
+  list_found_shops: "&7找到 &b%count% &7个村民商店。"
+  list_click_help: "&7&o点击商店名称或坐标进行传送！"
 
 stats_message:
   - "&b村民商店信息:"
@@ -278,6 +305,7 @@ menus:
           - "&7点击禁用交易提醒"
 
   #-------------------- Shopfront --------------------#
+  #Placeholders: %expire%
   shopfront:
     title: "&8%shop%"
     #Placeholders: %item_name%, %mode%

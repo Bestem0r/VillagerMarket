@@ -4,6 +4,7 @@ import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.VMPlugin;
 import net.bestemor.villagermarket.event.interact.CreateShopItemsEvent;
 import net.bestemor.villagermarket.shop.*;
+import net.bestemor.villagermarket.utils.VMUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -66,7 +67,9 @@ public class Shopfront {
     }
 
     private String getEditorTitle() {
-        String editorTitle = ConfigManager.getString("menus.edit_shopfront.title").replace("%shop%", shop.getShopName());
+        String editorTitle = ConfigManager.getString("menus.edit_shopfront.title")
+                .replace("%shop%", shop.getShopName())
+                .replace("%expire%", VMUtils.formatExpireDate(shop.getExpireDate()));
         if (isInfinite) {
             editorTitle += " | " + (page + 1);
         }
@@ -75,7 +78,8 @@ public class Shopfront {
 
     private String getDetailedTitle() {
         String detailedTitle = (ConfigManager.getString("menus.shopfront.title") + " " + ConfigManager.getString("menus.shopfront.detail_suffix"))
-                .replace("%shop%", shop.getShopName());
+                .replace("%shop%", shop.getShopName())
+                .replace("%expire%", VMUtils.formatExpireDate(shop.getExpireDate()));
         if (isInfinite) {
             detailedTitle += " | " + (page + 1);
         }
@@ -84,10 +88,16 @@ public class Shopfront {
 
     public void loadItemsFromConfig() {
         this.back = ConfigManager.getItem("items.back").build();
-        this.details = ConfigManager.getItem("menus.shopfront.items.toggle_details").build();
+        this.details = buildDetailsItem();
         this.filler = ConfigManager.getItem("items.filler").build();
         this.next = ConfigManager.getItem("items.next").build();
         this.previous = ConfigManager.getItem("items.previous").build();
+    }
+
+    private ItemStack buildDetailsItem() {
+        return ConfigManager.getItem("menus.shopfront.items.toggle_details")
+                .replace("%expire%", VMUtils.formatExpireDate(shop.getExpireDate()))
+                .build();
     }
 
     private void loadItems() {
@@ -134,7 +144,9 @@ public class Shopfront {
     }
 
     private Inventory getCustomerInventory(Player player) {
-        String customerTitle = ConfigManager.getString("menus.shopfront.title").replace("%shop%", shop.getShopName());
+        String customerTitle = ConfigManager.getString("menus.shopfront.title")
+                .replace("%shop%", shop.getShopName())
+                .replace("%expire%", VMUtils.formatExpireDate(shop.getExpireDate()));
         if (isInfinite) {
             customerTitle += " | " + (page + 1);
         }
@@ -149,7 +161,7 @@ public class Shopfront {
         }
         buildBottom(customerInventory);
         if (!ConfigManager.getBoolean("disable_lore_toggle")) {
-            customerInventory.setItem(size - 1, details);
+            customerInventory.setItem(size - 1, buildDetailsItem());
         }
 
         return customerInventory;
@@ -169,7 +181,7 @@ public class Shopfront {
         }
         buildBottom(detailedInventory);
         if (!ConfigManager.getBoolean("disable_lore_toggle")) {
-            detailedInventory.setItem(size - 1, details);
+            detailedInventory.setItem(size - 1, buildDetailsItem());
         }
     }
 

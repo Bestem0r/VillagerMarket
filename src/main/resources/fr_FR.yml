@@ -34,6 +34,7 @@ villager:
 #----------------------- Messages -----------------------#
 
 messages:
+  player_only: "&cSeuls les joueurs peuvent utiliser cette commande!"
   invalid_command_usage: "&cUtilisation de commande invalide ! Utilisez &e/vm help"
   reloaded: "&aLe plugin a été rechargé."
   cancelled: "&cL'action a été annulée !"
@@ -134,6 +135,32 @@ messages:
   toggle_require_permission: "&7Cliquez avec le bouton droit sur la &bVillager Shop &7que vous souhaitez activer ou désactiver la nécessité de permission."
   require_permission_enabled: "&aExigence de permission activée. Permission : &e%permission%"
   require_permission_disabled: "&cExigence de permission désactivée."
+
+  teleport_usage: "&cUtilisation : &e/vm teleport <id>"
+  teleported_to_villager: "&aTéléporté vers &b%shop%&a !"
+  teleport_location_invalid: "&cEmplacement de la boutique introuvable ou monde non chargé !"
+  villager_not_found: "&cVillageois introuvable ! Il a peut-être été supprimé."
+  villager_shop_not_found: "&cBoutique de villageois introuvable ! Utilisez l'auto-complétion pour voir les boutiques disponibles."
+
+  spawn_usage: "&cUtilisation : &e/vm spawn <all|id>"
+  spawn_villagers_spawned: "&a%count% villageois%plural% ont été généré(s)."
+  spawn_villagers_failed: "&cÉchec de génération de &e%count% &cvillageois%plural%."
+  spawn_all_exist: "&7Tous les villageois existent déjà."
+  spawn_searching: "&7Recherche de la boutique avec l'ID : %id%"
+  spawn_found_shop: "&7Boutique trouvée : %id%"
+  spawn_not_found: "&cBoutique introuvable ! Utilisez &e/vm list &cpour voir les boutiques disponibles."
+  spawn_already_exists: "&cUn villageois existe déjà pour cette boutique !"
+  spawn_invalid_location: "&cEmplacement invalide pour cette boutique !"
+  spawn_attempting: "&7Tentative de génération du villageois à : %location%"
+  spawn_success: "&aVillageois généré pour la boutique : &b%shop%"
+  spawn_failed_null: "&cÉchec de génération du villageois (entité nulle retournée)"
+  spawn_failed_error: "&cÉchec de génération du villageois : %error%"
+
+  list_header: "&6=== Boutiques de villageois ==="
+  list_location_unknown: "  &7Emplacement : &cInconnu"
+  list_no_shops: "&cAucune boutique de villageois trouvée !"
+  list_found_shops: "&7%count% &7boutiques de villageois trouvées."
+  list_click_help: "&7&oCliquez sur les noms des boutiques ou les coordonnées pour vous téléporter !"
 
 
 stats_message:
@@ -292,6 +319,7 @@ menus:
 
   
   #-------------------- Vitrine --------------------#
+  #Placeholders: %expire%
   shopfront:
     title: "&8%shop%"
     #Placeholders : %item_name%, %mode%

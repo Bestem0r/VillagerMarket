@@ -128,7 +128,10 @@ public class PlayerListener implements Listener {
     public void onItemClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack itemStack = player.getInventory().getItemInHand();
-        if (itemStack.getItemMeta() == null || event.getClickedBlock() == null || event.getAction() == Action.LEFT_CLICK_AIR) {
+        if (itemStack.getItemMeta() == null || event.getClickedBlock() == null
+                || event.getAction() == Action.LEFT_CLICK_AIR
+                || event.getAction() == Action.LEFT_CLICK_BLOCK
+                || event.getAction() == Action.PHYSICAL) {
             return;
         }
 
@@ -273,7 +276,7 @@ public class PlayerListener implements Listener {
             PlayerShop playerShop = (PlayerShop) plugin.getShopManager().getShop(entity.getUniqueId());
             playerShop.setOwner(player);
         } else {
-            Bukkit.getLogger().severe(ChatColor.RED + "[VillagerMarket] Unable to spawn Villager! Does WorldGuard deny mobs pawn?");
+            Bukkit.getLogger().severe(ChatColor.RED + "[VillagerMarket] Unable to spawn Villager! Does WorldGuard deny mobs spawn?");
         }
 
         player.playSound(clickedLoc, ConfigManager.getSound("sounds.create_shop"), 1, 1);

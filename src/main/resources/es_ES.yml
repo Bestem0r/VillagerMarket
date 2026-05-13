@@ -35,6 +35,7 @@ villager:
 # ----------------------- Messages -----------------------#
 
 messages:
+  player_only: "&c¡Solo los jugadores pueden usar este comando!"
   invalid_command_usage: "&cUso de comando no válido! Usa &e/vm help"
   reloaded: "&aComplemento recargado."
   cancelled: "&cLa acción fue cancelada!"
@@ -131,6 +132,32 @@ messages:
   toggle_require_permission: "&7Haga clic derecho en &bVillagerShop &7para el que desea alternar el requisito de permiso."
   require_permission_enabled: "&aSe requiere permiso para usar esta tienda! Permiso: &e%permission%"
   require_permission_disabled: "&cNo se requiere permiso para usar esta tienda!"
+
+  teleport_usage: "&cUso: &e/vm teleport <id>"
+  teleported_to_villager: "&a¡Teletransportado a &b%shop%&a!"
+  teleport_location_invalid: "&c¡Ubicación de la tienda no encontrada o el mundo no está cargado!"
+  villager_not_found: "&c¡Aldeano no encontrado! Puede que haya sido eliminado."
+  villager_shop_not_found: "&c¡Tienda de aldeano no encontrada! Usa el autocompletado para ver las tiendas disponibles."
+
+  spawn_usage: "&cUso: &e/vm spawn <all|id>"
+  spawn_villagers_spawned: "&aSe han generado &e%count% &aaldeano%plural%."
+  spawn_villagers_failed: "&cNo se han podido generar &e%count% &caldeano%plural%."
+  spawn_all_exist: "&7Todos los aldeanos ya existen."
+  spawn_searching: "&7Buscando la tienda con ID: %id%"
+  spawn_found_shop: "&7Tienda encontrada: %id%"
+  spawn_not_found: "&c¡Tienda no encontrada! Usa &e/vm list &cpara ver las tiendas disponibles."
+  spawn_already_exists: "&c¡Ya existe un aldeano para esta tienda!"
+  spawn_invalid_location: "&c¡Ubicación inválida para esta tienda!"
+  spawn_attempting: "&7Intentando generar el aldeano en: %location%"
+  spawn_success: "&aAldeano generado para la tienda: &b%shop%"
+  spawn_failed_null: "&cError al generar el aldeano (entidad nula devuelta)"
+  spawn_failed_error: "&cError al generar el aldeano: %error%"
+
+  list_header: "&6=== Tiendas de aldeanos ==="
+  list_location_unknown: "  &7Ubicación: &cDesconocida"
+  list_no_shops: "&c¡No se han encontrado tiendas de aldeanos!"
+  list_found_shops: "&7Se han encontrado &b%count% &7tiendas de aldeanos."
+  list_click_help: "&7&o¡Haz clic en los nombres de las tiendas o coordenadas para teletransportarte!"
 
 stats_message:
   - "&bEstadísticas de VillagerShop:"
@@ -283,6 +310,7 @@ menus:
           - "&7Clic para deshabilitar las notificaciones comerciales"
 
   #-------------------- Shopfront --------------------#
+  #Placeholders: %expire%
   shopfront:
     title: "&8%shop%"
     #Placeholders: %item_name%, %mode%

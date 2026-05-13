@@ -5,6 +5,9 @@ import net.bestemor.core.command.CommandModule;
 import net.bestemor.core.config.ConfigManager;
 import net.bestemor.villagermarket.command.ShopCommand;
 import net.bestemor.villagermarket.command.subcommand.*;
+import net.bestemor.villagermarket.command.subcommand.TeleportCommand;
+import net.bestemor.villagermarket.command.subcommand.ListCommand;
+import net.bestemor.villagermarket.command.subcommand.SpawnCommand;
 import net.bestemor.villagermarket.listener.EntityListener;
 import net.bestemor.villagermarket.listener.PlayerListener;
 import net.bestemor.villagermarket.shop.ShopManager;
@@ -104,6 +107,9 @@ public class VMPlugin extends CorePlugin {
                 .addSubCommand("create", new CreateCommand(this))
                 .addSubCommand("item", new ItemCommand(this))
                 .addSubCommand("move", new MoveCommand(this))
+                .addSubCommand("teleport", new TeleportCommand(this))
+                .addSubCommand("spawn", new SpawnCommand(this))
+                .addSubCommand("list", new ListCommand(this))
                 .addSubCommand("reload", new ReloadCommand(this))
                 .addSubCommand("remove", new RemoveCommand(this))
                 .addSubCommand("search", new SearchCommand(this))
